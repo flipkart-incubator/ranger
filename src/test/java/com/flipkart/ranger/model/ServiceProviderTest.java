@@ -3,7 +3,7 @@ package com.flipkart.ranger.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.ServiceDiscoveryBuilders;
+import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthcheck;
@@ -118,7 +118,7 @@ public class ServiceProviderTest {
     }
 
     private void registerService(String host, int port, int shardId) throws Exception {
-        final ServiceProvider<TestShardInfo> serviceProvider = ServiceDiscoveryBuilders.<TestShardInfo>shardedServiceDiscoveryBuilder()
+        final ServiceProvider<TestShardInfo> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
