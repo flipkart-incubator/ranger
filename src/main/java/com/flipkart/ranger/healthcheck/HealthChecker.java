@@ -1,7 +1,7 @@
 package com.flipkart.ranger.healthcheck;
 
-import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.model.ServiceNode;
+import com.flipkart.ranger.serviceprovider.ServiceProvider;
 
 import java.util.List;
 

@@ -1,7 +1,5 @@
 package com.flipkart.ranger.finder.unsharded;
 
-import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
-import com.flipkart.ranger.finder.unsharded.UnshardedClusterServiceRegistry;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ShardSelector;
 

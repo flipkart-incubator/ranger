@@ -3,14 +3,16 @@ package com.flipkart.ranger.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.ServiceFinderBuilders;
+import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import org.apache.curator.test.TestingCluster;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;

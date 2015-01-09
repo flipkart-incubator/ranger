@@ -1,8 +1,8 @@
 package com.flipkart.ranger.finder.sharded;
 
 import com.flipkart.ranger.finder.BaseServiceFinderBuilder;
-import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.finder.Service;
+import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNodeSelector;
 import com.flipkart.ranger.model.ShardSelector;
 

@@ -1,6 +1,5 @@
 package com.flipkart.ranger.finder.sharded;
 
-import com.flipkart.ranger.finder.sharded.MapBasedServiceRegistry;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ShardSelector;
 
