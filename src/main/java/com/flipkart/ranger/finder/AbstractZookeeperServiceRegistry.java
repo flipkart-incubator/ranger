@@ -3,32 +3,35 @@ package com.flipkart.ranger.finder;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.PathBuilder;
 import com.flipkart.ranger.model.ServiceRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistry<T> {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractZookeeperServiceRegistry.class);
+    private int refreshIntervalMillis;
     private ServiceRegistryUpdater<T> updater;
     private ExecutorService executorService = Executors.newFixedThreadPool(1);
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> scheduledFuture;
 
-    protected AbstractZookeeperServiceRegistry(Service service, Deserializer<T> deserializer) {
+    protected AbstractZookeeperServiceRegistry(Service service, Deserializer<T> deserializer, int refreshIntervalMillis) {
         super(service, deserializer);
+        this.refreshIntervalMillis = refreshIntervalMillis;
     }
 
     @Override
     public void start() throws Exception {
         final Service service = getService();
-        service.getCuratorFramework().start();
         service.getCuratorFramework().blockUntilConnected();
-        System.out.println("Connected");
-        service.getCuratorFramework().newNamespaceAwareEnsurePath(PathBuilder.path(service)).ensure(service.getCuratorFramework().getZookeeperClient());
+        logger.debug("Connected to zookeeper cluster");
+        service.getCuratorFramework().newNamespaceAwareEnsurePath(PathBuilder.path(service))
+                                    .ensure(service.getCuratorFramework().getZookeeperClient());
         updater = new ServiceRegistryUpdater<T>(this);
         updater.start();
         executorService.submit(updater);
-        scheduler.scheduleWithFixedDelay(new Runnable() {
+        scheduledFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -37,13 +40,23 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
                     e.printStackTrace();
                 }
             }
-        }, 0, 1, TimeUnit.SECONDS);
+        }, 0, refreshIntervalMillis, TimeUnit.MILLISECONDS);
+        logger.debug("Service Registry Started");
     }
 
     @Override
     public void stop() throws Exception {
+        try {
+            if( null != scheduledFuture ) {
+                scheduledFuture.cancel(true);
+            }
+            updater.stop();
+        } catch (Exception e) {
+            logger.error("Error stopping ZK poller: ", e);
+        }
         getService().getCuratorFramework().close();
         //TODO
+        logger.debug("Service Registry Started");
     }
 
 }

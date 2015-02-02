@@ -10,40 +10,31 @@ import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
-import com.google.common.collect.Lists;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
 
-public class ServiceProviderTest {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderTest.class);
+public class ServiceNoProviderTest {
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
-    private List<ServiceProvider<TestShardInfo>> serviceProviders = Lists.newArrayList();
 
     @Before
     public void startTestCluster() throws Exception {
         objectMapper = new ObjectMapper();
         testingCluster = new TestingCluster(3);
         testingCluster.start();
-        registerService("localhost-1", 9000, 1);
-        registerService("localhost-2", 9000, 1);
-        registerService("localhost-3", 9000, 2);
+        //registerService("localhost-1", 9000, 1);
+        //registerService("localhost-2", 9000, 1);
+        //registerService("localhost-3", 9000, 2);
     }
 
     @After
     public void stopTestCluster() throws Exception {
-        for(ServiceProvider<TestShardInfo> serviceProvider : serviceProviders) {
-            serviceProvider.stop();
-        }
         if(null != testingCluster) {
             testingCluster.close();
         }
@@ -106,30 +97,10 @@ public class ServiceProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
-        }
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
-        }
-        long startTime = System.currentTimeMillis();
-        for(long i = 0; i <1000000; i++)
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(2));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(2, node.getNodeData().getShardId());
-        }
-        logger.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(99));
-            Assert.assertNull(node);
-        }
+        ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
+        Assert.assertNull(node);
         serviceFinder.stop();
-        //while (true);
+
     }
 
     @Test
@@ -154,61 +125,9 @@ public class ServiceProviderTest {
                                                                         })
                                                                         .build();
         serviceFinder.start();
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
-            System.out.println(node.getHost());
-        }
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
-            System.out.println(node.getHost());
-        }
-        long startTime = System.currentTimeMillis();
-        for(long i = 0; i <1000000; i++)
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(2));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(2, node.getNodeData().getShardId());
-        }
-        logger.info("PERF::RoundRobinSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(99));
-            Assert.assertNull(node);
-        }
+        ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
+        Assert.assertNull(node);
         serviceFinder.stop();
-        //while (true);
     }
 
-    private void registerService(String host, int port, int shardId) throws Exception {
-        final ServiceProvider<TestShardInfo> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
-                .withConnectionString(testingCluster.getConnectString())
-                .withNamespace("test")
-                .withServiceName("test-service")
-                .withSerializer(new Serializer<TestShardInfo>() {
-                    @Override
-                    public byte[] serialize(ServiceNode<TestShardInfo> data) {
-                        try {
-                            return objectMapper.writeValueAsBytes(data);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
-                .withHostname(host)
-                .withPort(port)
-                .withNodeData(new TestShardInfo(shardId))
-                .withHealthcheck(new Healthcheck() {
-                    @Override
-                    public HealthcheckStatus check() {
-                        return HealthcheckStatus.healthy;
-                    }
-                })
-                .buildServiceDiscovery();
-        serviceProvider.start();
-        serviceProviders.add(serviceProvider);
-    }
 }

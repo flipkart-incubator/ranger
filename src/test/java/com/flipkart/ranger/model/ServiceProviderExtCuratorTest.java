@@ -11,6 +11,9 @@ import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.google.common.collect.Lists;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
@@ -22,18 +25,24 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-public class ServiceProviderTest {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderTest.class);
+public class ServiceProviderExtCuratorTest {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderExtCuratorTest.class);
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
     private List<ServiceProvider<TestShardInfo>> serviceProviders = Lists.newArrayList();
+    private CuratorFramework curatorFramework;
 
     @Before
     public void startTestCluster() throws Exception {
         objectMapper = new ObjectMapper();
         testingCluster = new TestingCluster(3);
         testingCluster.start();
+        curatorFramework = CuratorFrameworkFactory.builder()
+                .namespace("test")
+                .connectString(testingCluster.getConnectString())
+                .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
+        curatorFramework.start();
         registerService("localhost-1", 9000, 1);
         registerService("localhost-2", 9000, 1);
         registerService("localhost-3", 9000, 2);
@@ -44,6 +53,7 @@ public class ServiceProviderTest {
         for(ServiceProvider<TestShardInfo> serviceProvider : serviceProviders) {
             serviceProvider.stop();
         }
+        curatorFramework.close();
         if(null != testingCluster) {
             testingCluster.close();
         }
@@ -88,7 +98,7 @@ public class ServiceProviderTest {
     @Test
     public void testBasicDiscovery() throws Exception {
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                .withConnectionString(testingCluster.getConnectString())
+                .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withServiceName("test-service")
                 .withDeserializer(new Deserializer<TestShardInfo>() {
@@ -132,59 +142,9 @@ public class ServiceProviderTest {
         //while (true);
     }
 
-    @Test
-    public void testBasicDiscoveryRR() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                                                                        .withConnectionString(testingCluster.getConnectString())
-                                                                        .withNamespace("test")
-                                                                        .withServiceName("test-service")
-                                                                        .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
-                                                                        .withDeserializer(new Deserializer<TestShardInfo>() {
-                                                                            @Override
-                                                                            public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                                                                                try {
-                                                                                    return objectMapper.readValue(data,
-                                                                                            new TypeReference<ServiceNode<TestShardInfo>>() {
-                                                                                            });
-                                                                                } catch (IOException e) {
-                                                                                    e.printStackTrace();
-                                                                                }
-                                                                                return null;
-                                                                            }
-                                                                        })
-                                                                        .build();
-        serviceFinder.start();
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
-            System.out.println(node.getHost());
-        }
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
-            System.out.println(node.getHost());
-        }
-        long startTime = System.currentTimeMillis();
-        for(long i = 0; i <1000000; i++)
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(2));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(2, node.getNodeData().getShardId());
-        }
-        logger.info("PERF::RoundRobinSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(99));
-            Assert.assertNull(node);
-        }
-        serviceFinder.stop();
-        //while (true);
-    }
-
     private void registerService(String host, int port, int shardId) throws Exception {
         final ServiceProvider<TestShardInfo> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
-                .withConnectionString(testingCluster.getConnectString())
+                .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withServiceName("test-service")
                 .withSerializer(new Serializer<TestShardInfo>() {

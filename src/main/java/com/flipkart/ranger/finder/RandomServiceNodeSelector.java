@@ -11,9 +11,6 @@ public class RandomServiceNodeSelector<T> implements ServiceNodeSelector<T> {
 
     @Override
     public ServiceNode<T> select(List<ServiceNode<T>> serviceNodes) {
-        if(serviceNodes == null || serviceNodes.isEmpty()) {
-            return null;
-        }
         return serviceNodes.get(random.nextInt(serviceNodes.size()));
     }
 }

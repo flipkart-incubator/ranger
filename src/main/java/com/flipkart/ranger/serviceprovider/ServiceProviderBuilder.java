@@ -20,6 +20,7 @@ public class ServiceProviderBuilder<T> {
     private String hostname;
     private int port;
     private T nodeData;
+    private int refreshIntervalMillis;
     private List<Healthcheck> healthchecks = Lists.newArrayList();
 
     public ServiceProviderBuilder<T> withNamespace(final String namespace) {
@@ -67,6 +68,11 @@ public class ServiceProviderBuilder<T> {
         return this;
     }
 
+    public ServiceProviderBuilder<T> withRefreshIntervalMillis(int refreshIntervalMillis) {
+        this.refreshIntervalMillis = refreshIntervalMillis;
+        return this;
+    }
+
     public ServiceProvider<T> buildServiceDiscovery() {
         Preconditions.checkNotNull(namespace);
         Preconditions.checkNotNull(serviceName);
@@ -80,8 +86,13 @@ public class ServiceProviderBuilder<T> {
                     .namespace(namespace)
                     .connectString(connectionString)
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
+            curatorFramework.start();
         }
-        return new ServiceProvider<T>(serviceName, serializer, curatorFramework, new ServiceNode<T>(hostname, port, nodeData), healthchecks);
+        if( 0 == refreshIntervalMillis) {
+            refreshIntervalMillis = 1000;
+        }
+        return new ServiceProvider<T>(serviceName, serializer, curatorFramework,
+                new ServiceNode<T>(hostname, port, nodeData), healthchecks, refreshIntervalMillis);
     }
 
 }

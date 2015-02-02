@@ -13,8 +13,10 @@ public class UnshardedClusterServiceRegistry extends AbstractZookeeperServiceReg
     private AtomicReference<List<ServiceNode<UnshardedClusterInfo>>> nodes
                                         = new AtomicReference<List<ServiceNode<UnshardedClusterInfo>>>();
 
-    protected UnshardedClusterServiceRegistry(Service service, Deserializer<UnshardedClusterInfo> deserializer) {
-        super(service, deserializer);
+    protected UnshardedClusterServiceRegistry(Service service,
+                                              Deserializer<UnshardedClusterInfo> deserializer,
+                                              int refreshInterval) {
+        super(service, deserializer, refreshInterval);
     }
 
     public List<ServiceNode<UnshardedClusterInfo>> nodes() {

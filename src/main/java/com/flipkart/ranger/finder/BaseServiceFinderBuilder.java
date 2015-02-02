@@ -14,6 +14,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
     private String serviceName;
     private CuratorFramework curatorFramework;
     private String connectionString;
+    private int healthcheckRefreshTimeMillis;
     private Deserializer<T> deserializer;
     private ShardSelector<T, RegistryType> shardSelector;
     private ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<T>();
@@ -53,6 +54,13 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         return this;
     }
 
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> witHhealthcheckRefreshTimeMillis(int healthcheckRefreshTimeMillis) {
+        this.healthcheckRefreshTimeMillis = healthcheckRefreshTimeMillis;
+        return this;
+    }
+
+
+
     public FinderType build() throws Exception {
         Preconditions.checkNotNull(namespace);
         Preconditions.checkNotNull(serviceName);
@@ -63,14 +71,19 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
                     .namespace(namespace)
                     .connectString(connectionString)
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
+            curatorFramework.start();
+        }
+        if( 0 == healthcheckRefreshTimeMillis) {
+            healthcheckRefreshTimeMillis = 1000;
         }
         Service service = new Service(curatorFramework, namespace, serviceName);
-        return buildFinder(service, deserializer, shardSelector, nodeSelector);
+        return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
     }
 
     protected abstract FinderType buildFinder(Service service,
                                               Deserializer<T> deserializer,
                                               ShardSelector<T, RegistryType> shardSelector,
-                                              ServiceNodeSelector<T> nodeSelector);
+                                              ServiceNodeSelector<T> nodeSelector,
+                                              int healthcheckRefreshTimeMillis);
 
 }

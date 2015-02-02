@@ -2,10 +2,14 @@ package com.flipkart.ranger.healthcheck;
 
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class HealthChecker<T> implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(HealthChecker.class);
+
     private List<Healthcheck> healthchecks;
     private ServiceProvider<T> serviceProvider;
 
@@ -28,8 +32,10 @@ public class HealthChecker<T> implements Runnable {
         serviceNode.setLastUpdatedTimeStamp(System.currentTimeMillis());
         try {
             serviceProvider.updateState(serviceNode);
+            logger.debug(String.format("Node is %s for (%s, %d)",
+                                        healthcheckStatus, serviceNode.getHost(), serviceNode.getPort()));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error updating health state in zookeeper: ", e);
         }
     }
 }

@@ -8,8 +8,14 @@ import com.flipkart.ranger.model.ShardSelector;
 
 public class UnshardedFinderBuilder extends BaseServiceFinderBuilder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedClusterFinder> {
     @Override
-    protected UnshardedClusterFinder buildFinder(Service service, Deserializer<UnshardedClusterInfo> deserializer, ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry> shardSelector, ServiceNodeSelector<UnshardedClusterInfo> nodeSelector) {
-        UnshardedClusterServiceRegistry unshardedClusterServiceRegistry = new UnshardedClusterServiceRegistry(service, deserializer);
+    protected UnshardedClusterFinder buildFinder(Service service,
+                                                 Deserializer<UnshardedClusterInfo> deserializer,
+                                                 ShardSelector<UnshardedClusterInfo,
+                                                 UnshardedClusterServiceRegistry> shardSelector,
+                                                 ServiceNodeSelector<UnshardedClusterInfo> nodeSelector,
+                                                 int healthcheckRefreshTimeMillis) {
+        UnshardedClusterServiceRegistry unshardedClusterServiceRegistry
+                = new UnshardedClusterServiceRegistry(service, deserializer, healthcheckRefreshTimeMillis);
         return new UnshardedClusterFinder(unshardedClusterServiceRegistry, new NoOpShardSelector(), nodeSelector);
     }
 }

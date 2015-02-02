@@ -1,6 +1,7 @@
 package com.flipkart.ranger.finder;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
 
 public class Service {
     private CuratorFramework curatorFramework;
@@ -23,5 +24,10 @@ public class Service {
 
     public String getServiceName() {
         return serviceName;
+    }
+
+    public boolean isRunning() {
+        return curatorFramework != null
+                && (curatorFramework.getState() == CuratorFrameworkState.STARTED);
     }
 }
