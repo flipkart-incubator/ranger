@@ -90,6 +90,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
 
     private List<ServiceNode<T>> checkForUpdateOnZookeeper() {
         try {
+            final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
             final Service service = serviceRegistry.getService();
             if(!service.isRunning()) {
                 return null;
@@ -106,10 +107,12 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 }
                 byte data[] = curatorFramework.getData().forPath(path);
                 if(null == data) {
-                    continue; //TODO::LOG
+                    logger.warn("Not data present for node: " + path);
+                    continue;
                 }
                 ServiceNode<T> key = deserializer.deserialize(data);
-                if(HealthcheckStatus.healthy == key.getHealthcheckStatus()) {
+                if(HealthcheckStatus.healthy == key.getHealthcheckStatus()
+                        && key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime) {
                     nodes.add(key);
                 }
             }

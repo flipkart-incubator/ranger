@@ -15,7 +15,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-//TODO::INTERFACE
 public class ServiceProvider<T> {
     private static final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
 
