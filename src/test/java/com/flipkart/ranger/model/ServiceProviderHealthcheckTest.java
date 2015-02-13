@@ -121,7 +121,7 @@ public class ServiceProviderHealthcheckTest {
         Assert.assertEquals("localhost-1", node.getHost());
         TestServiceProvider testServiceProvider = serviceProviders.get(node.getHost());
         testServiceProvider.oor();
-        Thread.sleep(20);
+        Thread.sleep(1000);
         Assert.assertNull(serviceFinder.get(new TestShardInfo(1)));
         serviceFinder.stop();
     }
