@@ -53,7 +53,7 @@ Service providers register to the Ranger system by building and starting a Servi
   - _Healthcheck.check()_ function returns _HealthcheckStatus.unhealthy_. This signifies, the service is unhealthy or out of rotation.
   - _Healthcheck.check()_ does not update the status for a minute. This signifies that the process is probably zombified.
 
-#### Registering a simple unsharded
+#### Registering a simple unsharded service
 This is very simple. Use the following boilerplate code.
 ```
 ServiceProvider<UnshardedClusterInfo> serviceProvider
