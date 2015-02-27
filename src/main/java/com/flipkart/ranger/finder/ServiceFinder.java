@@ -20,7 +20,6 @@ import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ServiceNodeSelector;
 import com.flipkart.ranger.model.ServiceRegistry;
 import com.flipkart.ranger.model.ShardSelector;
-import com.google.common.collect.Lists;
 
 import java.util.List;
 
@@ -41,6 +40,10 @@ public class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
             return null;
         }
         return nodeSelector.select(nodes);
+    }
+
+    public List<ServiceNode<T>> getAll(T criteria) {
+        return shardSelector.nodes(criteria, serviceRegistry);
     }
 
     public void start() throws Exception {
