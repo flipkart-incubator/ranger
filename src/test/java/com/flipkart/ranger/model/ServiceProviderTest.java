@@ -52,7 +52,8 @@ public class ServiceProviderTest {
         testingCluster.start();
         registerService("localhost-1", 9000, 1);
         registerService("localhost-2", 9000, 1);
-        registerService("localhost-3", 9000, 2);
+        registerService("localhost-3", 9000, 1);
+        registerService("localhost-4", 9000, 2);
     }
 
     @After
@@ -196,6 +197,37 @@ public class ServiceProviderTest {
         }
         serviceFinder.stop();
         //while (true);
+    }
+
+    @Test
+    public void testVisibility() throws Exception {
+        SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+                .withConnectionString(testingCluster.getConnectString())
+                .withNamespace("test")
+                .withServiceName("test-service")
+                .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
+                .withDeserializer(new Deserializer<TestShardInfo>() {
+                    @Override
+                    public ServiceNode<TestShardInfo> deserialize(byte[] data) {
+                        try {
+                            return objectMapper.readValue(data,
+                                    new TypeReference<ServiceNode<TestShardInfo>>() {
+                                    });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+                })
+                .build();
+        serviceFinder.start();
+        List<ServiceNode<TestShardInfo>> all = serviceFinder.getAll(new TestShardInfo(1));
+        logger.info("Testing ServiceFinder.getAll()");
+        for(ServiceNode<TestShardInfo> serviceNode: all){
+            logger.info("node = " + serviceNode.getHost() + ":"+ serviceNode.getPort() + "  "+ serviceNode.getHealthcheckStatus() + " "+serviceNode.getLastUpdatedTimeStamp());
+        }
+        Assert.assertEquals(3, all.size());
+        serviceFinder.stop();
     }
 
     private void registerService(String host, int port, int shardId) throws Exception {
