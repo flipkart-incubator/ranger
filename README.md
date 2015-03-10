@@ -27,6 +27,14 @@ We'll take these up, one by one.
         mvn install
 
 ### Maven Dependency
+Use the following repository:
+```
+<repository>
+    <id>clojars</id>
+    <name>Clojars repository</name>
+    <url>https://clojars.org/repo</url>
+</repository>
+```
 Use the following maven dependency:
 ```
 <dependency>
