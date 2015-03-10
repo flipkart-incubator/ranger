@@ -5,11 +5,11 @@ Ranger is a high level service discovery framework built on Zookeeper. The frame
   - Support for healthcheck of service provider nodes
   - Provides typesafe genric interface for integration with support for custom serializers and deserializers
   - Provides simple ways to plug in custom shard and node selection
-  - Safe client side discovery with a combination of watchers and polling on watched nodes
+  - Fault tolerant client side discovery with a combination of watchers and polling on watched nodes
 
 ## Why?
 
-As request rates go sky high load balancers, even the very expensive ones, become bottlenecks. We needed to move beyond and handle requests apart from it. There is obviouly curator discovery; but as much as we love curator, we needed more features on top of it. As such we built this library to handle app level sharding and healtchecks. Btw, it still uses curator for low level ZK interactions.
+As request rates increase, load balancers, even the very expensive ones, become bottlenecks. We needed to move beyond and be able to talk to services without having to channel all traffic through load-balancer. There is obviouly curator discovery; but as much as we love curator, we needed more features on top of it. As such we built this library to handle app level sharding and healtchecks. Btw, it still uses curator for low level ZK interactions.
 
 ## Usage
 Ranger provides two types of discovery out of the box:
