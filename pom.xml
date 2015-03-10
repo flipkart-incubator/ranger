@@ -9,6 +9,14 @@
     <packaging>jar</packaging>
     <version>0.1-SNAPSHOT</version>
 
+    <distributionManagement>
+        <repository>
+            <id>clojars</id>
+            <name>Clojars repository</name>
+            <url>https://clojars.org/repo</url>
+        </repository>
+    </distributionManagement>
+
     <scm>
         <connection>scm:git:https://github.com/flipkart-incubator/ranger.git</connection>
         <developerConnection>scm:git:https://github.com/flipkart-incubator/ranger.git</developerConnection>
@@ -30,6 +38,11 @@
             <id>santanusinha</id>
             <name>Santanu Sinha</name>
             <email>santanu.sinha@gmail.com</email>
+        </developer>
+        <developer>
+            <id>Tushar-Naik</id>
+            <name>Tushar Naik</name>
+            <email>tushar.naik@flipkart.com</email>
         </developer>
     </developers>
 
