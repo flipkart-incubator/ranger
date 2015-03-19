@@ -23,11 +23,16 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RoundRobinServiceNodeSelector<T> implements ServiceNodeSelector<T> {
-    private AtomicInteger index = new AtomicInteger(0);
+    private static final ThreadLocal<Integer> index =
+            new ThreadLocal<Integer>() {
+                @Override protected Integer initialValue() {
+                    return 0;
+                }
+            };
 
     @Override
     public ServiceNode<T> select(List<ServiceNode<T>> serviceNodes) {
-        index.set(index.incrementAndGet() % serviceNodes.size());
+        index.set((index.get() + 1) % serviceNodes.size());
         return serviceNodes.get(index.get());
     }
 }
