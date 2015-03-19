@@ -40,7 +40,7 @@ Use the following maven dependency:
 <dependency>
     <groupId>com.flipkart.ranger</groupId>
     <artifactId>ranger</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
 </dependency>
 ```
 ## How it works
