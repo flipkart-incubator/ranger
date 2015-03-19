@@ -20,13 +20,12 @@ import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ServiceNodeSelector;
 
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomServiceNodeSelector<T> implements ServiceNodeSelector<T> {
-    private Random random = new Random(System.currentTimeMillis());
 
     @Override
     public ServiceNode<T> select(List<ServiceNode<T>> serviceNodes) {
-        return serviceNodes.get(random.nextInt(serviceNodes.size()));
+        return serviceNodes.get(ThreadLocalRandom.current().nextInt(serviceNodes.size()));
     }
 }
