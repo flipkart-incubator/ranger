@@ -57,8 +57,12 @@ public class ServiceProvider<T> {
     }
 
     public void updateState(ServiceNode<T> serviceNode) throws Exception {
+        final String path = String.format("/%s/%s", serviceName, serviceNode.representation());
+        if(null == curatorFramework.checkExists().forPath(path)) {
+            createPath();
+        }
         curatorFramework.setData().forPath(
-                String.format("/%s/%s", serviceName, serviceNode.representation()),
+                path,
                 serializer.serialize(serviceNode));
     }
 
@@ -66,9 +70,7 @@ public class ServiceProvider<T> {
         curatorFramework.blockUntilConnected();
         curatorFramework.newNamespaceAwareEnsurePath(String.format("/%s", serviceName)).ensure(curatorFramework.getZookeeperClient());
         logger.debug("Connected to zookeeper");
-        curatorFramework.create().withMode(CreateMode.EPHEMERAL).forPath(
-                String.format("/%s/%s", serviceName, serviceNode.representation()),
-                serializer.serialize(serviceNode));
+        createPath();
         logger.debug("Set initial node data on zookeeper.");
         future = executorService.scheduleWithFixedDelay(new HealthChecker<T>(healthchecks, this), 0, refreshInterval, TimeUnit.MILLISECONDS);
     }
@@ -82,5 +84,11 @@ public class ServiceProvider<T> {
 
     public ServiceNode<T> getServiceNode() {
         return serviceNode;
+    }
+
+    private void createPath() throws Exception {
+        curatorFramework.create().withMode(CreateMode.EPHEMERAL).forPath(
+                String.format("/%s/%s", serviceName, serviceNode.representation()),
+                serializer.serialize(serviceNode));
     }
 }
