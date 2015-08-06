@@ -40,7 +40,7 @@ public class HealthChecker<T> implements Runnable {
         for(Healthcheck healthcheck : healthchecks) {
             if(HealthcheckStatus.unhealthy == healthcheck.check()) {
                 healthcheckStatus = HealthcheckStatus.unhealthy;
-            }else if(HealthcheckStatus.down == healthcheck.check()) {
+            } else if(HealthcheckStatus.down == healthcheck.check()) {
                 healthcheckStatus = HealthcheckStatus.down;
                 break;
             }
