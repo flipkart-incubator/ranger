@@ -88,7 +88,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 else {
                     logger.warn("No service shards/nodes found. We are disconnected from zookeeper. Keeping old list.");
                 }
-                checkForUpdate =false;
+                checkForUpdate = false;
             } finally {
                 checkLock.unlock();
             }
@@ -138,15 +138,13 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 }
             }
 
-            if(service.getNamespace().equals("hudson")){
-                int minNodes = (int) (children.size() * serviceRegistry.getMinNodesAvailablePercentage()) / 100;
-                minNodes = (minNodes == 0 ? 1 : minNodes);
-                int randomUnhealthyNode;
-                while (nodes.size() < minNodes && unHealthyNodes.size() > 0) {
-                    randomUnhealthyNode = ThreadLocalRandom.current().nextInt(unHealthyNodes.size());
-                    nodes.add(unHealthyNodes.get(randomUnhealthyNode));
-                    unHealthyNodes.remove(randomUnhealthyNode);
-                }
+            int minNodes = (int) (children.size() * serviceRegistry.getMinNodesAvailablePercentage()) / 100;
+            minNodes = (minNodes == 0 ? 1 : minNodes);
+            int randomUnhealthyNode;
+            while (nodes.size() < minNodes && unHealthyNodes.size() > 0) {
+                randomUnhealthyNode = ThreadLocalRandom.current().nextInt(unHealthyNodes.size());
+                nodes.add(unHealthyNodes.get(randomUnhealthyNode));
+                unHealthyNodes.remove(randomUnhealthyNode);
             }
             return nodes;
         } catch (Exception e) {
