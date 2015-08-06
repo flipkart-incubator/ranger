@@ -36,10 +36,12 @@ public class HealthChecker<T> implements Runnable {
 
     @Override
     public void run() {
-        HealthcheckStatus healthcheckStatus = HealthcheckStatus.unhealthy;
+        HealthcheckStatus healthcheckStatus = HealthcheckStatus.healthy;
         for(Healthcheck healthcheck : healthchecks) {
-            healthcheckStatus = healthcheck.check();
-            if(HealthcheckStatus.unhealthy == healthcheckStatus || HealthcheckStatus.down == healthcheckStatus) {
+            if(HealthcheckStatus.unhealthy == healthcheck.check()) {
+                healthcheckStatus = HealthcheckStatus.unhealthy;
+            }else if(HealthcheckStatus.down == healthcheck.check()) {
+                healthcheckStatus = HealthcheckStatus.down;
                 break;
             }
         }
