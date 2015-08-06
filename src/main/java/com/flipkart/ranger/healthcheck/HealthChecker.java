@@ -39,7 +39,7 @@ public class HealthChecker<T> implements Runnable {
         HealthcheckStatus healthcheckStatus = HealthcheckStatus.unhealthy;
         for(Healthcheck healthcheck : healthchecks) {
             healthcheckStatus = healthcheck.check();
-            if(HealthcheckStatus.unhealthy == healthcheckStatus) {
+            if(HealthcheckStatus.unhealthy == healthcheckStatus || HealthcheckStatus.down == healthcheckStatus) {
                 break;
             }
         }

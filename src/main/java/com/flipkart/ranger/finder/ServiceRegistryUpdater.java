@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -116,6 +117,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
             final String parentPath = PathBuilder.path(service);
             List<String> children = curatorFramework.getChildren().forPath(parentPath);
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());
+            List<ServiceNode<T>> unHealthyNodes = Lists.newArrayListWithCapacity(children.size());
             for(String child : children) {
                 final String path = String.format("%s/%s", parentPath, child);
                 if(null == curatorFramework.checkExists().forPath(path)) {
@@ -130,6 +132,20 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 if(HealthcheckStatus.healthy == key.getHealthcheckStatus()
                         && key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime) {
                     nodes.add(key);
+                } else if(HealthcheckStatus.unhealthy == key.getHealthcheckStatus()
+                        && key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime) {
+                    unHealthyNodes.add(key);
+                }
+            }
+
+            if(service.getNamespace().equals("hudson")){
+                int minNodes = (int) (children.size() * serviceRegistry.getMinNodesAvailablePercentage()) / 100;
+                minNodes = (minNodes == 0 ? 1 : minNodes);
+                int randomUnhealthyNode;
+                while (nodes.size() < minNodes && unHealthyNodes.size() > 0) {
+                    randomUnhealthyNode = ThreadLocalRandom.current().nextInt(unHealthyNodes.size());
+                    nodes.add(unHealthyNodes.get(randomUnhealthyNode));
+                    unHealthyNodes.remove(randomUnhealthyNode);
                 }
             }
             return nodes;

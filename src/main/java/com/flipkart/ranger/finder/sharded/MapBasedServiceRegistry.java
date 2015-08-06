@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MapBasedServiceRegistry<T> extends AbstractZookeeperServiceRegistry<T> {
     private AtomicReference<ListMultimap<T,ServiceNode<T>>> nodes = new AtomicReference<ListMultimap<T, ServiceNode<T>>>();
 
-    public MapBasedServiceRegistry(Service service, Deserializer<T> deserializer, int refreshInterval) {
-        super(service, deserializer, refreshInterval);
+    public MapBasedServiceRegistry(Service service, Deserializer<T> deserializer, int refreshInterval, int minNodesAvailablePercentage) {
+        super(service, deserializer, refreshInterval, minNodesAvailablePercentage);
     }
 
     public ListMultimap<T, ServiceNode<T>> nodes() {

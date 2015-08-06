@@ -29,9 +29,10 @@ public class UnshardedFinderBuilder extends BaseServiceFinderBuilder<UnshardedCl
                                                  ShardSelector<UnshardedClusterInfo,
                                                  UnshardedClusterServiceRegistry> shardSelector,
                                                  ServiceNodeSelector<UnshardedClusterInfo> nodeSelector,
-                                                 int healthcheckRefreshTimeMillis) {
+                                                 int healthcheckRefreshTimeMillis,
+                                                 int minNodesAvailablePercentage) {
         UnshardedClusterServiceRegistry unshardedClusterServiceRegistry
-                = new UnshardedClusterServiceRegistry(service, deserializer, healthcheckRefreshTimeMillis);
+                = new UnshardedClusterServiceRegistry(service, deserializer, healthcheckRefreshTimeMillis, minNodesAvailablePercentage);
         return new UnshardedClusterFinder(unshardedClusterServiceRegistry, new NoOpShardSelector(), nodeSelector);
     }
 }

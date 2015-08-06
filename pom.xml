@@ -7,7 +7,7 @@
     <groupId>com.flipkart.ranger</groupId>
     <artifactId>ranger</artifactId>
     <packaging>jar</packaging>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2-HEALTH-SNAPSHOT</version>
 
     <distributionManagement>
         <repository>
