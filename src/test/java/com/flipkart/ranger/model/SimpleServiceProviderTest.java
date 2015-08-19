@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
+import com.flipkart.ranger.finder.unsharded.NoOpShardSelector;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.healthcheck.Healthcheck;
@@ -64,6 +65,7 @@ public class SimpleServiceProviderTest {
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
+                .withShardSelector(new NoOpShardSelector(70))
                 .withDeserializer(new Deserializer<UnshardedClusterInfo>() {
                     @Override
                     public ServiceNode<UnshardedClusterInfo> deserialize(byte[] data) {

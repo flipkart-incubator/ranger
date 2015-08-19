@@ -23,21 +23,15 @@ import java.util.List;
 public abstract class ServiceRegistry<T> {
     private final Service service;
     private final Deserializer<T> deserializer;
-    private final int minNodesAvailablePercentage;
 
-    protected ServiceRegistry(Service service, Deserializer<T> deserializer, int minNodesAvailablePercentage) {
+    protected ServiceRegistry(Service service, Deserializer<T> deserializer) {
         this.service = service;
         this.deserializer = deserializer;
-        this.minNodesAvailablePercentage = minNodesAvailablePercentage;
     }
 
     public abstract void start() throws Exception;
 
     public abstract void stop() throws Exception;
-
-    public int getMinNodesAvailablePercentage() {
-        return minNodesAvailablePercentage;
-    }
 
     abstract public void nodes(List<ServiceNode<T>> nodes);
 

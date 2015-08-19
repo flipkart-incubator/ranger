@@ -31,7 +31,6 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
     private CuratorFramework curatorFramework;
     private String connectionString;
     private int healthcheckRefreshTimeMillis;
-    private int minNodesAvailablePercentage;
     private Deserializer<T> deserializer;
     private ShardSelector<T, RegistryType> shardSelector;
     private ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<T>();
@@ -43,11 +42,6 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
 
     public BaseServiceFinderBuilder<T, RegistryType, FinderType> withServiceName(final String serviceName) {
         this.serviceName = serviceName;
-        return this;
-    }
-
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withMinAvailableNodesPercentage(final int minNodesAvailablePercentage) {
-        this.minNodesAvailablePercentage = minNodesAvailablePercentage;
         return this;
     }
 
@@ -87,6 +81,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         Preconditions.checkNotNull(namespace);
         Preconditions.checkNotNull(serviceName);
         Preconditions.checkNotNull(deserializer);
+        Preconditions.checkNotNull(shardSelector);
         if( null == curatorFramework) {
             Preconditions.checkNotNull(connectionString);
             curatorFramework = CuratorFrameworkFactory.builder()
@@ -99,14 +94,13 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
             healthcheckRefreshTimeMillis = 1000;
         }
         Service service = new Service(curatorFramework, namespace, serviceName);
-        return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis, minNodesAvailablePercentage);
+        return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
     }
 
     protected abstract FinderType buildFinder(Service service,
                                               Deserializer<T> deserializer,
                                               ShardSelector<T, RegistryType> shardSelector,
                                               ServiceNodeSelector<T> nodeSelector,
-                                              int healthcheckRefreshTimeMillis,
-                                              int minNodesAvailablePercentage);
+                                              int healthcheckRefreshTimeMillis);
 
 }

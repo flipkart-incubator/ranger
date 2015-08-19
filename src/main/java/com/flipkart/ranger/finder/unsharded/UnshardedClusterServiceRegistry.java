@@ -31,9 +31,8 @@ public class UnshardedClusterServiceRegistry extends AbstractZookeeperServiceReg
 
     protected UnshardedClusterServiceRegistry(Service service,
                                               Deserializer<UnshardedClusterInfo> deserializer,
-                                              int refreshInterval,
-                                              int minNodesAvailablePercentage) {
-        super(service, deserializer, refreshInterval, minNodesAvailablePercentage);
+                                              int refreshInterval) {
+        super(service, deserializer, refreshInterval);
     }
 
     public List<ServiceNode<UnshardedClusterInfo>> nodes() {

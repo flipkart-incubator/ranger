@@ -32,8 +32,8 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> scheduledFuture;
 
-    protected AbstractZookeeperServiceRegistry(Service service, Deserializer<T> deserializer, int refreshIntervalMillis, int minNodesAvailablePercentage) {
-        super(service, deserializer, minNodesAvailablePercentage);
+    protected AbstractZookeeperServiceRegistry(Service service, Deserializer<T> deserializer, int refreshIntervalMillis) {
+        super(service, deserializer);
         this.refreshIntervalMillis = refreshIntervalMillis;
     }
 

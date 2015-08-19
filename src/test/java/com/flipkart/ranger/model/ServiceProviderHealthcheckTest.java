@@ -94,7 +94,7 @@ public class ServiceProviderHealthcheckTest {
         }
     }
 
-    @Test
+    //@Test
     public void testBasicDiscovery() throws Exception {
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())

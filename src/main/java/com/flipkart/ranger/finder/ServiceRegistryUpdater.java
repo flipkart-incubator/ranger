@@ -107,7 +107,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
 
     private List<ServiceNode<T>> checkForUpdateOnZookeeper() {
         try {
-            final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
+            //final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
             final Service service = serviceRegistry.getService();
             if(!service.isRunning()) {
                 return null;
@@ -117,7 +117,6 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
             final String parentPath = PathBuilder.path(service);
             List<String> children = curatorFramework.getChildren().forPath(parentPath);
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());
-            List<ServiceNode<T>> unHealthyNodes = Lists.newArrayListWithCapacity(children.size());
             for(String child : children) {
                 final String path = String.format("%s/%s", parentPath, child);
                 if(null == curatorFramework.checkExists().forPath(path)) {
@@ -129,23 +128,13 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                     continue;
                 }
                 ServiceNode<T> key = deserializer.deserialize(data);
-                if(HealthcheckStatus.healthy == key.getHealthcheckStatus()
+                nodes.add(key);
+                /*if(HealthcheckStatus.down != key.getHealthcheckStatus()
                         && key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime) {
                     nodes.add(key);
-                } else if(HealthcheckStatus.unhealthy == key.getHealthcheckStatus()
-                        && key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime) {
-                    unHealthyNodes.add(key);
-                }
+                }*/
             }
 
-            int minNodes = (int) (children.size() * serviceRegistry.getMinNodesAvailablePercentage()) / 100;
-            minNodes = (minNodes == 0 ? 1 : minNodes);
-            int randomUnhealthyNode;
-            while (nodes.size() < minNodes && unHealthyNodes.size() > 0) {
-                randomUnhealthyNode = ThreadLocalRandom.current().nextInt(unHealthyNodes.size());
-                nodes.add(unHealthyNodes.get(randomUnhealthyNode));
-                unHealthyNodes.remove(randomUnhealthyNode);
-            }
             return nodes;
         } catch (Exception e) {
             logger.error("Error getting service data from zookeeper: ", e);
