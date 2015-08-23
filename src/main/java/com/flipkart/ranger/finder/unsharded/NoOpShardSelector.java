@@ -16,18 +16,15 @@
 
 package com.flipkart.ranger.finder.unsharded;
 
-import com.flipkart.ranger.finder.ServiceableNodesSelector;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ShardSelector;
 
 import java.util.List;
 
-public class NoOpShardSelector extends ServiceableNodesSelector<UnshardedClusterInfo>
-        implements ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry> {
+public class NoOpShardSelector extends ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry> {
 
-
-    public NoOpShardSelector(int minNodesAvailablePercentage) {
-        super(minNodesAvailablePercentage);
+    public NoOpShardSelector(int minNodesAvailability) {
+        super(minNodesAvailability);
     }
 
     @Override

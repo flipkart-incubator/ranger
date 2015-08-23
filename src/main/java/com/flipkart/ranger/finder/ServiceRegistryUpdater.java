@@ -16,7 +16,6 @@
 
 package com.flipkart.ranger.finder;
 
-import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.PathBuilder;
 import com.flipkart.ranger.model.ServiceNode;
@@ -30,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -107,7 +105,6 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
 
     private List<ServiceNode<T>> checkForUpdateOnZookeeper() {
         try {
-            //final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
             final Service service = serviceRegistry.getService();
             if(!service.isRunning()) {
                 return null;
@@ -129,10 +126,6 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 }
                 ServiceNode<T> key = deserializer.deserialize(data);
                 nodes.add(key);
-                /*if(HealthcheckStatus.down != key.getHealthcheckStatus()
-                        && key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime) {
-                    nodes.add(key);
-                }*/
             }
 
             return nodes;

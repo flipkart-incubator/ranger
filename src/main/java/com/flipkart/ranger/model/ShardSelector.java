@@ -16,8 +16,42 @@
 
 package com.flipkart.ranger.model;
 
-import java.util.List;
+import com.flipkart.ranger.healthcheck.HealthcheckStatus;
+import com.google.common.collect.Lists;
 
-public interface ShardSelector<T, ServiceRegistryType extends ServiceRegistry<T>> {
-    public List<ServiceNode<T>> nodes(T criteria, ServiceRegistryType serviceRegistry);
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+public abstract class ShardSelector<T, ServiceRegistryType extends ServiceRegistry<T>> {
+    private int minNodesAvailability;
+
+    public ShardSelector(int minNodesAvailability) {
+        this.minNodesAvailability = minNodesAvailability;
+    }
+
+    public List<ServiceNode<T>> getServiceableNodes(List<ServiceNode<T>> nodes) {
+        final long zombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
+        List<ServiceNode<T>> serviceableNodes = Lists.newArrayListWithCapacity(nodes.size());
+        List<ServiceNode<T>> unhealthyNodes = Lists.newArrayListWithCapacity(nodes.size());
+
+        minNodesAvailability = (minNodesAvailability == 0 ? 1 : minNodesAvailability);
+
+        for (ServiceNode<T> node: nodes) {
+            if (HealthcheckStatus.healthy == node.getHealthcheckStatus() && node.getLastUpdatedTimeStamp() > zombieCheckThresholdTime) {
+                serviceableNodes.add(node);
+            } else if (HealthcheckStatus.unhealthy == node.getHealthcheckStatus() && node.getLastUpdatedTimeStamp() > zombieCheckThresholdTime) {
+                unhealthyNodes.add(node);
+            }
+        }
+        int randomUnhealthyNode;
+        while (serviceableNodes.size() < minNodesAvailability && unhealthyNodes.size() > 0) {
+            randomUnhealthyNode = ThreadLocalRandom.current().nextInt(unhealthyNodes.size());
+            serviceableNodes.add(unhealthyNodes.get(randomUnhealthyNode));
+            unhealthyNodes.remove(randomUnhealthyNode);
+        }
+
+        return serviceableNodes;
+    }
+
+    public abstract List<ServiceNode<T>> nodes(T criteria, ServiceRegistryType serviceRegistry);
 }

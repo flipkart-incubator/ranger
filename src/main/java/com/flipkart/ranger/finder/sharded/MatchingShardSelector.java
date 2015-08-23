@@ -16,16 +16,15 @@
 
 package com.flipkart.ranger.finder.sharded;
 
-import com.flipkart.ranger.finder.ServiceableNodesSelector;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ShardSelector;
 
 import java.util.List;
 
-public class MatchingShardSelector<T> extends ServiceableNodesSelector<T> implements ShardSelector<T, MapBasedServiceRegistry<T>> {
+public class MatchingShardSelector<T> extends ShardSelector<T, MapBasedServiceRegistry<T>> {
 
-    public MatchingShardSelector(int minAvailableNodesPercentage) {
-        super(minAvailableNodesPercentage);
+    public MatchingShardSelector(int minNodesAvailability) {
+        super(minNodesAvailability);
     }
 
     @Override

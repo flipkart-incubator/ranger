@@ -113,7 +113,11 @@ public class CustomShardSelectorTest {
         }
     }
 
-    private static final class TestShardSelector implements ShardSelector<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>> {
+    private static final class TestShardSelector extends ShardSelector<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>> {
+
+        public TestShardSelector(int minNodesAvailablePercentage) {
+            super(minNodesAvailablePercentage);
+        }
 
         @Override
         public List<ServiceNode<TestShardInfo>> nodes(TestShardInfo criteria, MapBasedServiceRegistry<TestShardInfo> serviceRegistry) {
@@ -127,13 +131,14 @@ public class CustomShardSelectorTest {
             return nodes;
         }
     }
+
     @Test
     public void testBasicDiscovery() throws Exception {
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withShardSelector(new TestShardSelector())
+                .withShardSelector(new TestShardSelector(70))
                 .withDeserializer(new Deserializer<TestShardInfo>() {
                     @Override
                     public ServiceNode<TestShardInfo> deserialize(byte[] data) {
