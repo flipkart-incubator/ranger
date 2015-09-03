@@ -45,11 +45,13 @@ public class HealthChecker<T> implements Runnable {
                 break;
             }
         }
-        ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
-        serviceNode.setHealthcheckStatus(healthcheckStatus);
-        serviceNode.setLastUpdatedTimeStamp(System.currentTimeMillis());
+
         try {
+            ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
+            serviceNode.setHealthcheckStatus(healthcheckStatus);
+            serviceNode.setLastUpdatedTimeStamp(System.currentTimeMillis());
             serviceProvider.updateState(serviceNode);
+            logger.info("Updated status in zookeeper");
             logger.debug(String.format("Node is %s for (%s, %d)",
                                         healthcheckStatus, serviceNode.getHost(), serviceNode.getPort()));
         } catch (Exception e) {
