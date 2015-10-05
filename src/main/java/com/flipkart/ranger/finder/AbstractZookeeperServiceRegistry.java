@@ -72,7 +72,7 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
         }
         getService().getCuratorFramework().close();
         //TODO
-        logger.debug("Service Registry Started");
+        logger.debug("Service Registry stopped");
     }
 
 }
