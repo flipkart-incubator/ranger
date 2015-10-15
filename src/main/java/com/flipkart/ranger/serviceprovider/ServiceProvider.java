@@ -92,7 +92,7 @@ public class ServiceProvider<T> {
                 .retryIfExceptionOfType(KeeperException.NodeExistsException.class) //Ephimeral node still exists
                 .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.SECONDS))
                 .withBlockStrategy(BlockStrategies.threadSleepStrategy())
-                .withStopStrategy(StopStrategies.stopAfterAttempt(60))
+                .withStopStrategy(StopStrategies.neverStop())
                 .build();
         try {
             retryer.call(new Callable<Void>() {
