@@ -20,16 +20,17 @@ import com.flipkart.ranger.healthcheck.HealthChecker;
 import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
+import com.github.rholder.retry.*;
+import com.google.common.base.Predicates;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class ServiceProvider<T> {
     private static final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
@@ -87,8 +88,26 @@ public class ServiceProvider<T> {
     }
 
     private void createPath() throws Exception {
-        curatorFramework.create().withMode(CreateMode.EPHEMERAL).forPath(
-                String.format("/%s/%s", serviceName, serviceNode.representation()),
-                serializer.serialize(serviceNode));
+        Retryer<Void> retryer = RetryerBuilder.<Void>newBuilder()
+                .retryIfExceptionOfType(KeeperException.NodeExistsException.class) //Ephimeral node still exists
+                .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.SECONDS))
+                .withBlockStrategy(BlockStrategies.threadSleepStrategy())
+                .withStopStrategy(StopStrategies.stopAfterAttempt(60))
+                .build();
+        try {
+            retryer.call(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    curatorFramework.create().withMode(CreateMode.EPHEMERAL).forPath(
+                            String.format("/%s/%s", serviceName, serviceNode.representation()),
+                            serializer.serialize(serviceNode));
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("Could not create node after 60 retries (1 min). This service will not be discoverable. Retry after some time.", e);
+            throw new Exception("Could not create node after 60 retries (1 min). This service will not be discoverable. Retry after some time.", e);
+        }
+
     }
 }
