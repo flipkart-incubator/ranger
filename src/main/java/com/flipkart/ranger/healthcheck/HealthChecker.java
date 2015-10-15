@@ -38,7 +38,12 @@ public class HealthChecker<T> implements Runnable {
     public void run() {
         HealthcheckStatus healthcheckStatus = HealthcheckStatus.unhealthy;
         for(Healthcheck healthcheck : healthchecks) {
-            healthcheckStatus = healthcheck.check();
+            try {
+                healthcheckStatus = healthcheck.check();
+            } catch (Throwable t) {
+                logger.error("Error running healthcheck. Setting node to unhealthy");
+                healthcheckStatus = HealthcheckStatus.unhealthy;
+            }
             if(HealthcheckStatus.unhealthy == healthcheckStatus) {
                 break;
             }
