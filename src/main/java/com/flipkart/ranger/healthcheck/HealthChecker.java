@@ -37,24 +37,29 @@ public class HealthChecker<T> implements Runnable {
     @Override
     public void run() {
 
-        try {
-            HealthcheckStatus healthcheckStatus = HealthcheckStatus.healthy;
-            for(Healthcheck healthcheck : healthchecks) {
-                if(HealthcheckStatus.unhealthy == healthcheck.check()) {
+        HealthcheckStatus healthcheckStatus = HealthcheckStatus.healthy;
+        for (Healthcheck healthcheck : healthchecks) {
+            try {
+                if (HealthcheckStatus.unhealthy == healthcheck.check()) {
                     healthcheckStatus = HealthcheckStatus.unhealthy;
-                } else if(HealthcheckStatus.down == healthcheck.check()) {
+                } else if (HealthcheckStatus.down == healthcheck.check()) {
                     healthcheckStatus = HealthcheckStatus.down;
                     break;
                 }
+            } catch (Throwable t) {
+                logger.error("Error running healthcheck. Setting node to unhealthy");
+                healthcheckStatus = HealthcheckStatus.unhealthy;
             }
-            ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
-            serviceNode.setHealthcheckStatus(healthcheckStatus);
-            serviceNode.setLastUpdatedTimeStamp(System.currentTimeMillis());
+        }
+        ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
+        serviceNode.setHealthcheckStatus(healthcheckStatus);
+        serviceNode.setLastUpdatedTimeStamp(System.currentTimeMillis());
+        try {
             serviceProvider.updateState(serviceNode);
             logger.debug(String.format("Node is %s for (%s, %d)",
-                                        healthcheckStatus, serviceNode.getHost(), serviceNode.getPort()));
-        } catch (Throwable e) {
-            logger.error("Error updating health state in zookeeper: ", e);
+                    healthcheckStatus, serviceNode.getHost(), serviceNode.getPort()));
+        } catch (Throwable t) {
+            logger.error("Error updating health state in zookeeper: ", t);
         }
     }
 }
