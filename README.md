@@ -3,13 +3,13 @@
 Ranger is a high level service discovery framework built on Zookeeper. The framework brings the following to the table:
   - Support of sharding of the service provider nodes
   - Support for healthcheck of service provider nodes
-  - Provides typesafe genric interface for integration with support for custom serializers and deserializers
+  - Provides type-safe generic interface for integration with support for custom serializers and deserializers
   - Provides simple ways to plug in custom shard and node selection
   - Fault tolerant client side discovery with a combination of watchers and polling on watched nodes
 
 ## Why?
 
-As request rates increase, load balancers, even the very expensive ones, become bottlenecks. We needed to move beyond and be able to talk to services without having to channel all traffic through load-balancer. There is obviouly curator discovery; but as much as we love curator, we needed more features on top of it. As such we built this library to handle app level sharding and healtchecks. Btw, it still uses curator for low level ZK interactions.
+As request rates increase, load balancers, even the very expensive ones, become bottlenecks. We needed to move beyond and be able to talk to services without having to channel all traffic through a load-balancer. There is obviously curator discovery; but as much as we love curator, we needed more features on top of it. As such we built this library to handle app level sharding and healtchecks. Btw, it still uses curator for low level ZK interactions.
 
 ## Usage
 Ranger provides two types of discovery out of the box:
@@ -47,7 +47,7 @@ Use the following maven dependency:
 There are service providers and service clients. We will look at the interactions from both sides.
 ### Service Provider
 Service providers register to the Ranger system by building and starting a ServiceProvider instance. During registering itself the provider must provide the following:
-- _ShardInfo type_ - This is a type parameter to the ServiceProvider class. This can be any class that can be serialized and deserialized by the Serializer and Deserializer provided (seee below). The hashCode() for this class is used to match and find the matching shard for a query. So be sure to implement this properly. A special version of this class _UnshardedClusterInfo_ is provided for unsharded discovery.
+- _ShardInfo type_ - This is a type parameter to the ServiceProvider class. This can be any class that can be serialized and deserialized by the Serializer and Deserializer provided (see below). The hashCode() for this class is used to match and find the matching shard for a query. So be sure to implement this properly. A special version of this class _UnshardedClusterInfo_ is provided for unsharded discovery.
 - _Zookeeper details_ - Can be any one of the following:
   - _Connection String_ - Zookeeper connections string to connect to ZK cluster.
   - CuratorFramework object - A prebuilt CuratorFramework object.
@@ -176,7 +176,7 @@ serviceProvider.stop()
 
 ### Service discovery
 For service discovery, a _ServiceFinder_ object needs to be built and used.
-- _ShardInfo type_ - This is a type parameter to the ServiceFinder class. This can be any class that can be serialized and deserialized by the Serializer and Deserializer provided (seee below). The hashCode() for this class is used to match and find the matching shard for a query. So be sure to implement this properly. A special version of this class _UnshardedClusterInfo_ is provided for unsharded discovery.
+- _ShardInfo type_ - This is a type parameter to the ServiceFinder class. This can be any class that can be serialized and deserialized by the Serializer and Deserializer provided (see below). The hashCode() for this class is used to match and find the matching shard for a query. So be sure to implement this properly. A special version of this class _UnshardedClusterInfo_ is provided for unsharded discovery.
 - _Zookeeper details_ - Can be any one of the following:
   - _Connection String_ - Zookeeper connections string to connect to ZK cluster.
   - CuratorFramework object - A prebuilt CuratorFramework object.
@@ -227,7 +227,7 @@ serviceFinder.stop()
 ```
 
 #### Finding an instance of a sharded Service Provider
-This is similar to the above but for the type paramter you are using everywhere.
+This is similar to the above but for the type parameter you are using everywhere.
 
 ```
 SimpleShardedServiceFinder<TestShardInfo> serviceFinder
@@ -268,7 +268,7 @@ serviceFinder.stop()
 Version
 ----
 
-0.1-SNAPSHOT
+0.2.1
 
 Tech
 -----------
