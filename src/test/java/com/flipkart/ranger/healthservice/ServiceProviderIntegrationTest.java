@@ -75,6 +75,8 @@ public class ServiceProviderIntegrationTest {
             testingCluster.close();
         }
         serviceFinder.stop();
+        Thread.sleep(1000);
+        serviceHealthAggregator.stop();
     }
 
     @Test

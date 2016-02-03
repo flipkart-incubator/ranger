@@ -18,6 +18,7 @@ public class ServiceHealthAggregatorTest {
         serviceHealthAggregator.addMonitor(testMonitor);
 
         serviceHealthAggregator.start();
+        Thread.sleep(1000);
     }
 
     @After
@@ -28,9 +29,10 @@ public class ServiceHealthAggregatorTest {
     @Test
     public void testStaleRun() throws Exception {
 
+        testMonitor.run();
         testMonitor.setThreadSleep(2000);
 
-        Thread.sleep(2000);
+        Thread.sleep(4000);
 
         /* in the TestMonitor, thread was sleeping for 2 seconds, */
         /* so its state is supposed to be stale (>1 second) and service has to be unhealthy */
@@ -43,15 +45,6 @@ public class ServiceHealthAggregatorTest {
         /* in the TestMonitor, thread is sleeping only for 10 milliseconds, */
         /* so its state is supposed to be NOT stale (>1 second) and service has to be healthy */
         Assert.assertEquals(HealthcheckStatus.healthy, serviceHealthAggregator.getServiceHealth());
-
-    }
-
-    @Test
-    public void testManyTimes() throws Exception {
-        for (int i = 0; i < 3; i++) {
-            System.out.println("i = " + i);
-            testStaleRun();
-        }
 
     }
 
@@ -71,7 +64,7 @@ public class ServiceHealthAggregatorTest {
         }
 
         @Override
-        public HealthcheckStatus monitor() {
+        public synchronized HealthcheckStatus monitor() {
             try {
                 Thread.sleep(threadSleep);
             } catch (InterruptedException e) {
