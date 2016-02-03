@@ -2,6 +2,7 @@ package com.flipkart.ranger.healthservice;
 
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.monitor.HealthMonitor;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,11 +20,17 @@ public class ServiceHealthAggregatorTest {
         serviceHealthAggregator.start();
     }
 
+    @After
+    public void tearDown() throws Exception {
+        serviceHealthAggregator.stop();
+    }
+
     @Test
     public void testStaleRun() throws Exception {
 
+        testMonitor.setThreadSleep(2000);
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         /* in the TestMonitor, thread was sleeping for 2 seconds, */
         /* so its state is supposed to be stale (>1 second) and service has to be unhealthy */
@@ -31,15 +38,21 @@ public class ServiceHealthAggregatorTest {
 
 
         testMonitor.setThreadSleep(10);
-        Thread.sleep(1000);
+        Thread.sleep(4000);
 
         /* in the TestMonitor, thread is sleeping only for 10 milliseconds, */
         /* so its state is supposed to be NOT stale (>1 second) and service has to be healthy */
         Assert.assertEquals(HealthcheckStatus.healthy, serviceHealthAggregator.getServiceHealth());
 
+    }
 
+    @Test
+    public void testManyTimes() throws Exception {
+        for (int i = 0; i < 3; i++) {
+            System.out.println("i = " + i);
+            testStaleRun();
+        }
 
-        serviceHealthAggregator.stop();
     }
 
     private class TestMonitor extends HealthMonitor {
@@ -60,11 +73,9 @@ public class ServiceHealthAggregatorTest {
         @Override
         public HealthcheckStatus monitor() {
             try {
-                System.out.println("sleeing for threadSleep = " + threadSleep);
                 Thread.sleep(threadSleep);
             } catch (InterruptedException e) {
             }
-            System.out.println("returning healthy");
             return HealthcheckStatus.healthy;
         }
     }
