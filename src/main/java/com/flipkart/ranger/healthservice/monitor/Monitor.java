@@ -12,12 +12,12 @@ public interface Monitor<T> {
     T monitor();
 
     /**
-     * enable the monitor
+     * disable the monitor
      */
     void disable();
 
     /**
-     * disable the monitor
+     * enable the monitor
      */
     void enable();
 }
