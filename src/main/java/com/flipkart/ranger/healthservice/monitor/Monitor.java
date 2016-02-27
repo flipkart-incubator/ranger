@@ -12,12 +12,8 @@ public interface Monitor<T> {
     T monitor();
 
     /**
-     * disable the monitor
+     * @return true if the monitor is disabled, else false
      */
-    void disable();
+    boolean isDisabled();
 
-    /**
-     * enable the monitor
-     */
-    void enable();
 }

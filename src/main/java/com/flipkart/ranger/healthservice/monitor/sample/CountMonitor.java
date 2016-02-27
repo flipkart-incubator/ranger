@@ -2,7 +2,7 @@ package com.flipkart.ranger.healthservice.monitor.sample;
 
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.TimeEntity;
-import com.flipkart.ranger.healthservice.monitor.HealthMonitor;
+import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
 
 /**
  * A monitor that can be used as a counting monitor to check if any countable entity breaches a threashhold
@@ -15,7 +15,7 @@ import com.flipkart.ranger.healthservice.monitor.HealthMonitor;
  *
  * @see DiskSpaceMonitor
  */
-public abstract class CountMonitor extends HealthMonitor {
+public abstract class CountMonitor extends IsolatedHealthMonitor {
 
     public enum CheckSign {
         LESSER_THAN,

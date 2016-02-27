@@ -2,7 +2,7 @@ package com.flipkart.ranger.healthservice.monitor.sample;
 
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.TimeEntity;
-import com.flipkart.ranger.healthservice.monitor.HealthMonitor;
+import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.healthservice.monitor.RollingWindowHealthQueue;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -21,7 +21,7 @@ import java.util.concurrent.*;
  * A Ping checking monitor, which executes a {@link HttpRequest} at regular intervals
  * Maintains every healthcheck in a {@link RollingWindowHealthQueue} to prevent continuous flaps of health
  */
-public class PingCheckMonitor extends HealthMonitor {
+public class PingCheckMonitor extends IsolatedHealthMonitor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PingCheckMonitor.class.getSimpleName());
 

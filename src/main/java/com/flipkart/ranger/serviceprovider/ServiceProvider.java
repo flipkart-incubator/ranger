@@ -18,17 +18,16 @@ package com.flipkart.ranger.serviceprovider;
 
 import com.flipkart.ranger.healthcheck.HealthChecker;
 import com.flipkart.ranger.healthcheck.Healthcheck;
+import com.flipkart.ranger.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
 import com.github.rholder.retry.*;
-import com.google.common.base.Predicates;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -43,18 +42,22 @@ public class ServiceProvider<T> {
     private final int refreshInterval;
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> future;
+    private ServiceHealthAggregator serviceHealthAggregator;
+
 
     public ServiceProvider(String serviceName, Serializer<T> serializer,
                            CuratorFramework curatorFramework,
                            ServiceNode<T> serviceNode,
                            List<Healthcheck> healthchecks,
-                           int refreshInterval) {
+                           int refreshInterval,
+                           ServiceHealthAggregator serviceHealthAggregator) {
         this.serviceName = serviceName;
         this.serializer = serializer;
         this.curatorFramework = curatorFramework;
         this.serviceNode = serviceNode;
         this.healthchecks = healthchecks;
         this.refreshInterval = refreshInterval;
+        this.serviceHealthAggregator = serviceHealthAggregator;
     }
 
     public void updateState(ServiceNode<T> serviceNode) throws Exception {
@@ -68,6 +71,7 @@ public class ServiceProvider<T> {
     }
 
     public void start() throws Exception {
+        serviceHealthAggregator.start();
         curatorFramework.blockUntilConnected();
         curatorFramework.newNamespaceAwareEnsurePath(String.format("/%s", serviceName)).ensure(curatorFramework.getZookeeperClient());
         logger.debug("Connected to zookeeper");
@@ -77,6 +81,7 @@ public class ServiceProvider<T> {
     }
 
     public void stop() throws Exception {
+        serviceHealthAggregator.stop();
         if(null != future) {
             future.cancel(true);
         }

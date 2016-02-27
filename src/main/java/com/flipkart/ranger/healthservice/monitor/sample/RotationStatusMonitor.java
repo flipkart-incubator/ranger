@@ -2,7 +2,7 @@ package com.flipkart.ranger.healthservice.monitor.sample;
 
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.TimeEntity;
-import com.flipkart.ranger.healthservice.monitor.HealthMonitor;
+import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * </li>
  * </ul>
  */
-public class RotationStatusMonitor extends HealthMonitor {
+public class RotationStatusMonitor extends IsolatedHealthMonitor {
 
     private String filePath;
 

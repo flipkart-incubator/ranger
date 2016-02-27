@@ -1,7 +1,8 @@
 package com.flipkart.ranger.healthservice;
 
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
-import com.flipkart.ranger.healthservice.monitor.HealthMonitor;
+import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
+import com.flipkart.ranger.healthservice.monitor.Monitor;
 
 /**
  * An interface which can be used to track the health of any service
@@ -13,10 +14,25 @@ public interface HealthService {
 
     /**
      * Register a monitor to the service, to setup a continuous monitoring on the monitor
+     * <p/>
+     * this method can be used to add a {@link IsolatedHealthMonitor} which will later be
+     * scheduled at regular intervals and monitored to generate and maintain an aggregated health of the service
+     * the scheduling will happen in an isolated thread
      *
-     * @param monitor an implementation of the {@link HealthMonitor}
+     * @param monitor an implementation of the {@link IsolatedHealthMonitor}
      */
-    void addMonitor(HealthMonitor monitor);
+    void addIsolatedMonitor(IsolatedHealthMonitor monitor);
+
+    /**
+     * Add a monitor which will be run in the same thread.
+     * <p/>
+     * this method can be used to add a {@link Monitor}
+     * this monitor will not be scheduled in a separate isolated thread,
+     * but instead its execution will happen inline, in a single thread, along with other inline monitors
+     *
+     * @param monitor an implementation of line {@link Monitor<HealthcheckStatus>}
+     */
+    void addInlineMonitor(Monitor<HealthcheckStatus> monitor);
 
     /**
      * Start monitoring all registered monitors.

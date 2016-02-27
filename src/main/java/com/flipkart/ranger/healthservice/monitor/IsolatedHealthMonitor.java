@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @see com.flipkart.ranger.healthservice.monitor.sample.RotationStatusMonitor
  * @see com.flipkart.ranger.healthservice.monitor.sample.CountMonitor
  */
-public abstract class HealthMonitor implements Runnable, Monitor<HealthcheckStatus> {
+public abstract class IsolatedHealthMonitor implements Runnable, Monitor<HealthcheckStatus> {
 
     /* name of the monitor */
     protected String name;
@@ -27,7 +27,7 @@ public abstract class HealthMonitor implements Runnable, Monitor<HealthcheckStat
     private Date lastStatusUpdateTime;
 
     /* how often should this monitor run */
-    private TimeEntity timeEntity;
+    private TimeEntity runInterval;
 
     /* reference to if this monitor is disabled or not (default: false) */
     private final AtomicBoolean disabled = new AtomicBoolean(false);
@@ -37,24 +37,24 @@ public abstract class HealthMonitor implements Runnable, Monitor<HealthcheckStat
 
     /**
      * @param name       name of the monitor
-     * @param timeEntity initial delay, time interval of how regularly the monitor is to be run, and timeunit
+     * @param runInterval initial delay, time interval of how regularly the monitor is to be run, and timeunit
      *                   to specify how often the {@link #monitor()} check needs to be executed
      */
-    public HealthMonitor(String name, TimeEntity timeEntity) {
-        this(name, timeEntity, 60000);
+    public IsolatedHealthMonitor(String name, TimeEntity runInterval) {
+        this(name, runInterval, 60000);
     }
 
     /**
      * @param name                     name of the monitor
-     * @param timeEntity               initial delay, time interval of how regularly the monitor is to be run, and timeunit
+     * @param runInterval               initial delay, time interval of how regularly the monitor is to be run, and timeunit
      *                                 to specify how often the {@link #monitor()} check needs to be executed
      * @param stalenessAllowedInMillis after how long (in milliseconds) should the monitor be regarded as stale (default: 60 seconds)
      */
-    public HealthMonitor(String name, TimeEntity timeEntity, long stalenessAllowedInMillis) {
+    public IsolatedHealthMonitor(String name, TimeEntity runInterval, long stalenessAllowedInMillis) {
         this.name = name;
         this.stalenessAllowedInMillis = stalenessAllowedInMillis;
         this.healthStatus = new AtomicReference<>(HealthcheckStatus.healthy);
-        this.timeEntity = timeEntity;
+        this.runInterval = runInterval;
         this.disabled.set(false);
     }
 
@@ -72,7 +72,6 @@ public abstract class HealthMonitor implements Runnable, Monitor<HealthcheckStat
      * disable the monitor, and dont use this monitor to track the aggregated health of the system
      * monitor is enabled by default
      */
-    @Override
     public void disable() {
         disabled.set(true);
     }
@@ -81,13 +80,12 @@ public abstract class HealthMonitor implements Runnable, Monitor<HealthcheckStat
      * enable the monitor, and consider it while aggregating the health of the system
      * monitor is enabled by default
      */
-    @Override
     public void enable() {
         disabled.set(false);
     }
 
-    public TimeEntity getTimeEntity() {
-        return timeEntity;
+    public TimeEntity getRunInterval() {
+        return runInterval;
     }
 
     public HealthcheckStatus getHealthStatus() {
@@ -109,6 +107,7 @@ public abstract class HealthMonitor implements Runnable, Monitor<HealthcheckStat
         return stalenessAllowedInMillis;
     }
 
+    @Override
     public boolean isDisabled() {
         return disabled.get();
     }
