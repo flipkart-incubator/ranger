@@ -92,6 +92,7 @@ public class ServiceProviderInlineMonitorTest {
 
         /* with file existing, 3 nodes should be healthy */
         boolean filecreate = file.createNewFile();
+        System.out.println("created file");
         Thread.sleep(4000);
         List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
@@ -99,6 +100,7 @@ public class ServiceProviderInlineMonitorTest {
 
         /* with file deleted, all 3 nodes should be unhealthy */
         delete = file.delete();
+        System.out.println("deleted file");
         Thread.sleep(2000);
         all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
@@ -106,7 +108,8 @@ public class ServiceProviderInlineMonitorTest {
 
         /* with anotherFile created, the 4th node should become healthy and discoverable */
         filecreate = anotherFile.createNewFile();
-        Thread.sleep(2000);
+        System.out.println("created anotherFile");
+        Thread.sleep(4000);
         all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(1, all.size());
