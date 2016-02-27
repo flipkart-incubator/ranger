@@ -9,7 +9,6 @@ import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
-import com.flipkart.ranger.healthservice.monitor.Monitor;
 import com.flipkart.ranger.healthservice.monitor.sample.RotationStatusMonitor;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.Serializer;
@@ -24,7 +23,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class ServiceProviderIntegrationTest {
 
@@ -99,7 +97,7 @@ public class ServiceProviderIntegrationTest {
         /* with file deleted, all 3 nodes should be unhealthy */
         delete = file.delete();
         System.out.println("deleted file");
-        Thread.sleep(2000);
+        Thread.sleep(4000);
         all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(0, all.size());
@@ -141,18 +139,7 @@ public class ServiceProviderIntegrationTest {
                         return HealthcheckStatus.healthy;
                     }
                 })
-                .withIsolatedHealthMonitor(new RotationStatusMonitor(new TimeEntity(50, TimeUnit.MILLISECONDS), file.getAbsolutePath()))
-                .withInlineHealthMonitor(new Monitor<HealthcheckStatus>() {
-                    @Override
-                    public HealthcheckStatus monitor() {
-                        return HealthcheckStatus.healthy;
-                    }
-
-                    @Override
-                    public boolean isDisabled() {
-                        return false;
-                    }
-                })
+                .withIsolatedHealthMonitor(new RotationStatusMonitor(TimeEntity.EverySecond(), file.getAbsolutePath()))
                 .buildServiceDiscovery();
         serviceProvider.start();
     }
