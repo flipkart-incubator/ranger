@@ -140,7 +140,7 @@ public class ServiceProviderInlineMonitorTest {
                         return HealthcheckStatus.healthy;
                     }
                 })
-                .withInlineHealthMonitor(new Monitor.FileExistanceCheckMonitor(file.getAbsolutePath()))
+                .withInlineHealthMonitor(Monitors.fileExistanceCheckMonitor(file.getAbsolutePath()))
                 .buildServiceDiscovery();
         serviceProvider.start();
     }
