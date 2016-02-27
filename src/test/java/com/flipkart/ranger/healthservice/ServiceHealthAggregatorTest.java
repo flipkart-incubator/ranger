@@ -1,7 +1,8 @@
 package com.flipkart.ranger.healthservice;
 
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
-import com.flipkart.ranger.healthservice.monitor.HealthMonitor;
+import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
+import com.flipkart.ranger.healthservice.monitor.Monitor;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,7 +16,18 @@ public class ServiceHealthAggregatorTest {
     @Before
     public void setUp() throws Exception {
         testMonitor = new TestMonitor("TestHealthMonitor", TimeEntity.EverySecond(), 1000);
-        serviceHealthAggregator.addMonitor(testMonitor);
+        serviceHealthAggregator.addIsolatedMonitor(testMonitor);
+        serviceHealthAggregator.addInlineMonitor(new Monitor<HealthcheckStatus>() {
+            @Override
+            public HealthcheckStatus monitor() {
+                return HealthcheckStatus.healthy;
+            }
+
+            @Override
+            public boolean isDisabled() {
+                return false;
+            }
+        });
 
         serviceHealthAggregator.start();
         Thread.sleep(1000);
@@ -48,7 +60,7 @@ public class ServiceHealthAggregatorTest {
 
     }
 
-    private class TestMonitor extends HealthMonitor {
+    private class TestMonitor extends IsolatedHealthMonitor {
         int threadSleep = 2000;
 
         public TestMonitor(String name, TimeEntity timeEntity) {

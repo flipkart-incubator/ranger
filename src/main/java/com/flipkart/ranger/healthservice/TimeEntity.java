@@ -16,6 +16,27 @@ public class TimeEntity {
         return new TimeEntity(0, 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * @return a TimeEntity with time interval of every minute
+     */
+    public static TimeEntity EveryMinute() {
+        return new TimeEntity(0, 1, TimeUnit.MINUTES);
+    }
+
+    /**
+     * @return a TimeEntity with time interval of every hour
+     */
+    public static TimeEntity EveryHour() {
+        return new TimeEntity(0, 1, TimeUnit.HOURS);
+    }
+
+    /**
+     * @return a TimeEntity with time interval of every day
+     */
+    public static TimeEntity EveryDay() {
+        return new TimeEntity(0, 1, TimeUnit.DAYS);
+    }
+
     private long initialDelay;
     private long timeInterval;
     private TimeUnit timeUnit;

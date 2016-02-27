@@ -9,6 +9,7 @@ import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.healthservice.monitor.Monitor;
 import com.flipkart.ranger.healthservice.monitor.sample.RotationStatusMonitor;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.Serializer;
@@ -29,24 +30,26 @@ public class ServiceProviderIntegrationTest {
 
     final String filePath = "/tmp/rangerRotationFile.html";
     File file = new File(filePath);
+    final String filePath2 = "/tmp/rangerRotationFile2.html";
+    File anotherFile = new File(filePath2);
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
 
-    ServiceHealthAggregator serviceHealthAggregator;
     UnshardedClusterFinder serviceFinder;
 
     @Before
     public void startTestCluster() throws Exception {
-        serviceHealthAggregator = new ServiceHealthAggregator();
-        serviceHealthAggregator.addMonitor(new RotationStatusMonitor(new TimeEntity(50, TimeUnit.MILLISECONDS), filePath));
-        serviceHealthAggregator.start();
         objectMapper = new ObjectMapper();
         testingCluster = new TestingCluster(3);
         testingCluster.start();
-        registerService("localhost-1", 9000, 1);
-        registerService("localhost-2", 9000, 1);
-        registerService("localhost-3", 9000, 2);
+
+        /* registering 3 with RotationMonitor on file and 1 on anotherFile */
+        registerService("localhost-1", 9000, 1, file);
+        registerService("localhost-2", 9000, 1, file);
+        registerService("localhost-3", 9000, 2, file);
+
+        registerService("localhost-4", 9000, 2, anotherFile);
 
         serviceFinder = ServiceFinderBuilders.unshardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
@@ -71,29 +74,47 @@ public class ServiceProviderIntegrationTest {
 
     @After
     public void stopTestCluster() throws Exception {
-        if(null != testingCluster) {
+        if (null != testingCluster) {
             testingCluster.close();
         }
         serviceFinder.stop();
         Thread.sleep(1000);
-        serviceHealthAggregator.stop();
     }
 
     @Test
     public void testBasicDiscovery() throws Exception {
-        final boolean filecreate = file.createNewFile();
-        Thread.sleep(2000);
+
+        /* clean slate */
+        boolean delete = file.delete();
+        delete = anotherFile.delete();
+
+        /* with file existing, 3 nodes should be healthy */
+        boolean filecreate = file.createNewFile();
+        Thread.sleep(4000);
         List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(3, all.size());
-        final boolean delete = file.delete();
+
+        /* with file deleted, all 3 nodes should be unhealthy */
+        delete = file.delete();
         Thread.sleep(2000);
         all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(0, all.size());
+
+        /* with anotherFile created, the 4th node should become healthy and discoverable */
+        filecreate = anotherFile.createNewFile();
+        Thread.sleep(2000);
+        all = serviceFinder.getAll(null);
+        System.out.println("all = " + all);
+        Assert.assertEquals(1, all.size());
+
+        /* clean slate */
+        delete = file.delete();
+        delete = anotherFile.delete();
     }
 
-    private void registerService(String host, int port, int shardId) throws Exception {
+    private void registerService(String host, int port, int shardId, File file) throws Exception {
         ServiceProvider<UnshardedClusterInfo> serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
@@ -114,7 +135,19 @@ public class ServiceProviderIntegrationTest {
                 .withHealthcheck(new Healthcheck() {
                     @Override
                     public HealthcheckStatus check() {
-                        return serviceHealthAggregator.getServiceHealth();
+                        return HealthcheckStatus.healthy;
+                    }
+                })
+                .withIsolatedHealthMonitor(new RotationStatusMonitor(new TimeEntity(50, TimeUnit.MILLISECONDS), file.getAbsolutePath()))
+                .withInlineHealthMonitor(new Monitor<HealthcheckStatus>() {
+                    @Override
+                    public HealthcheckStatus monitor() {
+                        return HealthcheckStatus.healthy;
+                    }
+
+                    @Override
+                    public boolean isDisabled() {
+                        return false;
                     }
                 })
                 .buildServiceDiscovery();
