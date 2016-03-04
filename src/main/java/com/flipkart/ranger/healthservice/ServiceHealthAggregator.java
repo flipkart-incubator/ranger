@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ServiceHealthAggregator implements HealthService, Healthcheck {
 
     /* Logger */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceHealthAggregator.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(ServiceHealthAggregator.class.getSimpleName());
 
     /* An atomic reference of the aggregated health */
     private AtomicReference<HealthcheckStatus> healthcheckStatusAtomicReference;
@@ -88,7 +88,7 @@ public class ServiceHealthAggregator implements HealthService, Healthcheck {
     public void start() {
         if (running.get()) {
             /* in case the aggregator is already running */
-            LOGGER.info("Service aggregator is already running");
+            logger.info("Service aggregator is already running");
             return;
         }
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(isolatedHealthMonitorList.size());
@@ -111,7 +111,7 @@ public class ServiceHealthAggregator implements HealthService, Healthcheck {
     @Override
     public synchronized void stop() {
         if (running.get()) {
-            LOGGER.error("Service aggregator is currently not running, cannot stop..");
+            logger.error("Service aggregator is currently not running, cannot stop..");
             return;
         }
         for (ScheduledFuture<?> scheduledFuture : scheduledFutureList) {
@@ -148,7 +148,7 @@ public class ServiceHealthAggregator implements HealthService, Healthcheck {
             /* check if the monitor and its last updated time is stale, if so, mark status as unhealthy */
             if ((timeDifference == null || timeDifference > isolatedHealthMonitor.getStalenessAllowedInMillis())
                     && HealthcheckStatus.unhealthy != healthcheckStatusAtomicReference.get()) {
-                LOGGER.error("Monitor: {} is stuck and its status is stale. Marking service as unhealthy", isolatedHealthMonitor.getName());
+                logger.error("Monitor: {} is stuck and its status is stale. Marking service as unhealthy", isolatedHealthMonitor.getName());
                 healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);
             } else if (HealthcheckStatus.unhealthy == isolatedHealthMonitor.getHealthStatus()) {
                 healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);

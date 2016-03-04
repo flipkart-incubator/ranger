@@ -23,7 +23,7 @@ import java.util.concurrent.*;
  */
 public class PingCheckMonitor extends IsolatedHealthMonitor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PingCheckMonitor.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(PingCheckMonitor.class.getSimpleName());
 
     private HttpRequest httpRequest;
     private String host;
@@ -65,7 +65,7 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
 
     @Override
     public HealthcheckStatus monitor() {
-        LOGGER.debug("Running ping monitor :{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
+        logger.debug("Running ping monitor :{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
         Future<Boolean> futurePingResponse = executorService.submit(new Callable<Boolean>() {
             public Boolean call() {
                 return healthPing();
@@ -80,7 +80,7 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
                 return getRollingWindowHealthcheckStatus(HealthcheckStatus.healthy);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOGGER.error("Ping monitor failed:{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port, e);
+            logger.error("Ping monitor failed:{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port, e);
             return getRollingWindowHealthcheckStatus(HealthcheckStatus.unhealthy);
         }
     }
@@ -89,7 +89,7 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
         if (rollingWindowHealthQueue.checkInRollingWindow(healthy)) {
             return HealthcheckStatus.healthy;
         } else {
-            LOGGER.info("{} is marking itself unhealthy since the current rolling window frame contains many failures (> threshold)). " +
+            logger.info("{} is marking itself unhealthy since the current rolling window frame contains many failures (> threshold)). " +
                     "Was pinging on HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
             return HealthcheckStatus.unhealthy;
         }
@@ -97,17 +97,17 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
 
     private boolean healthPing() {
         try {
-            LOGGER.debug("executing http HttpRequest: {}, host:{}, port:{}", httpRequest, host, port);
+            logger.debug("executing http HttpRequest: {}, host:{}, port:{}", httpRequest, host, port);
             CloseableHttpResponse response = httpClient.execute(new HttpHost(host, port), httpRequest);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                LOGGER.error("Error while executing Ping Test. HttpRequest: {}, host:{}, port:{}, reason:{}", httpRequest, host, port, response.getStatusLine().getReasonPhrase());
+                logger.error("Error while executing Ping Test. HttpRequest: {}, host:{}, port:{}, reason:{}", httpRequest, host, port, response.getStatusLine().getReasonPhrase());
                 response.close();
                 return false;
             }
             response.close();
             return true;
         } catch (Exception e) {
-            LOGGER.error("Exception while executing HttpRequest: ", e);
+            logger.error("Exception while executing HttpRequest: ", e);
             return false;
         }
     }
