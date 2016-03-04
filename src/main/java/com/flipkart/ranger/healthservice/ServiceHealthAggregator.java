@@ -87,7 +87,8 @@ public class ServiceHealthAggregator implements HealthService, Healthcheck {
     @Override
     public void start() {
         if (running.get()) {
-            /* in case the monitor is already running */
+            /* in case the aggregator is already running */
+            LOGGER.info("Service aggregator is already running");
             return;
         }
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(isolatedHealthMonitorList.size());
@@ -108,7 +109,11 @@ public class ServiceHealthAggregator implements HealthService, Healthcheck {
      * stop all running monitors
      */
     @Override
-    public void stop() {
+    public synchronized void stop() {
+        if (running.get()) {
+            LOGGER.error("Service aggregator is currently not running, cannot stop..");
+            return;
+        }
         for (ScheduledFuture<?> scheduledFuture : scheduledFutureList) {
             scheduledFuture.cancel(true);
         }
