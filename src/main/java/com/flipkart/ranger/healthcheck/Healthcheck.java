@@ -16,6 +16,15 @@
 
 package com.flipkart.ranger.healthcheck;
 
+/**
+ * An interface used to check the health of the service
+ */
 public interface Healthcheck {
+
+    /**
+     * return healthy/unhealthy status of the service
+     *
+     * @return health status
+     */
     public HealthcheckStatus check();
 }

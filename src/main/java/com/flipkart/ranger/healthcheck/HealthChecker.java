@@ -23,6 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * A Runnable which maintains the health state of the ServiceProvider
+ * @param <T>
+ */
 public class HealthChecker<T> implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(HealthChecker.class);
 
@@ -41,7 +45,7 @@ public class HealthChecker<T> implements Runnable {
             try {
                 healthcheckStatus = healthcheck.check();
             } catch (Throwable t) {
-                logger.error("Error running healthcheck. Setting node to unhealthy");
+                logger.error("Error running healthcheck. Setting node to unhealthy", t);
                 healthcheckStatus = HealthcheckStatus.unhealthy;
             }
             if(HealthcheckStatus.unhealthy == healthcheckStatus) {
