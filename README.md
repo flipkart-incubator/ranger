@@ -1,4 +1,4 @@
-# Ranger [![Travis build status](https://travis-ci.org/flipkart-incubator/ranger.svg?branch=master)](https://travis-ci.org/flipkart-incubator/ranger)
+# Ranger [![Travis build status](https://travis-ci.org/flipkart-incubator/ranger.svg?branch=master)](https://travis-ci.org/flipkart-incubator/ranger) [![Join the chat at https://gitter.im/flipkart-incubator/ranger](https://badges.gitter.im/flipkart-incubator/ranger.svg)](https://gitter.im/flipkart-incubator/ranger?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Ranger is a high level service discovery framework built on Zookeeper. The framework brings the following to the table:
   - Support of sharding of the service provider nodes
