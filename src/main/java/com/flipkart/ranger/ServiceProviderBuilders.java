@@ -20,6 +20,11 @@ import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.serviceprovider.ServiceProviderBuilder;
 
 public class ServiceProviderBuilders {
+    
+    private ServiceProviderBuilders() {
+        throw new InstantiationError("Must not instantiate this class");
+    }
+    
     public static <T> ServiceProviderBuilder<T> shardedServiceProviderBuilder() {
         return new ServiceProviderBuilder<T>();
     }

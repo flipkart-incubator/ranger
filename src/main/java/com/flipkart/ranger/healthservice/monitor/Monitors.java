@@ -11,6 +11,10 @@ import java.io.File;
  */
 public class Monitors {
 
+    private Monitors() {
+        throw new InstantiationError("Must not instantiate this class");
+    }
+    
     public static Monitor<HealthcheckStatus> fileExistanceCheckMonitor(final String filePath) {
         return new Monitor<HealthcheckStatus>() {
             @Override

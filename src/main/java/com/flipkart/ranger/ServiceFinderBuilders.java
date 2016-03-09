@@ -20,6 +20,11 @@ import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinderBuilder;
 import com.flipkart.ranger.finder.unsharded.UnshardedFinderBuilder;
 
 public class ServiceFinderBuilders {
+    
+    private ServiceFinderBuilders() {
+        throw new InstantiationError("Must not instantiate this class");
+    }
+    
     public static <T> SimpleShardedServiceFinderBuilder<T> shardedFinderBuilder() {
         return new SimpleShardedServiceFinderBuilder<T>();
     }
