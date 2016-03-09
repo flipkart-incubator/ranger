@@ -12,28 +12,28 @@ public class TimeEntity {
     /**
      * @return a TimeEntity with time interval of every second
      */
-    public static TimeEntity EverySecond() {
+    public static TimeEntity everySecond() {
         return new TimeEntity(0, 1, TimeUnit.SECONDS);
     }
 
     /**
      * @return a TimeEntity with time interval of every minute
      */
-    public static TimeEntity EveryMinute() {
+    public static TimeEntity everyMinute() {
         return new TimeEntity(0, 1, TimeUnit.MINUTES);
     }
 
     /**
      * @return a TimeEntity with time interval of every hour
      */
-    public static TimeEntity EveryHour() {
+    public static TimeEntity everyHour() {
         return new TimeEntity(0, 1, TimeUnit.HOURS);
     }
 
     /**
      * @return a TimeEntity with time interval of every day
      */
-    public static TimeEntity EveryDay() {
+    public static TimeEntity everyDay() {
         return new TimeEntity(0, 1, TimeUnit.DAYS);
     }
 
