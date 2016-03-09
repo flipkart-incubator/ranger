@@ -63,6 +63,8 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                     case NodeDeleted:
                     case NodeDataChanged:
                         break;
+                    default:
+                        break;
                 }
             }
         }).forPath(PathBuilder.path(serviceRegistry.getService())); //Start watcher on service node
