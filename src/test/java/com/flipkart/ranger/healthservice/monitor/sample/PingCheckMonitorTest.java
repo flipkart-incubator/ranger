@@ -14,12 +14,12 @@ public class PingCheckMonitorTest {
     public void testMonitor() throws Exception {
         final HttpGet httpRequest = new HttpGet("/");
         PingCheckMonitor pingCheckMonitor = new PingCheckMonitor(new TimeEntity(2, TimeUnit.SECONDS), httpRequest, 5000, 5, 3, "google.com", 80);
-        Assert.assertEquals(HealthcheckStatus.healthy, pingCheckMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, pingCheckMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, pingCheckMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, pingCheckMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, pingCheckMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, pingCheckMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, pingCheckMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, pingCheckMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, pingCheckMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, pingCheckMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, pingCheckMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, pingCheckMonitor.monitor());
 
     }
 
@@ -27,10 +27,10 @@ public class PingCheckMonitorTest {
     public void testMonitor2() throws Exception {
         final HttpGet httpRequest = new HttpGet("/help");
         PingCheckMonitor pingCheckMonitor = new PingCheckMonitor(new TimeEntity(2, TimeUnit.SECONDS), httpRequest, 5000, 5, 3, "google.com", 80);
-        Assert.assertEquals(HealthcheckStatus.healthy, pingCheckMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, pingCheckMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.unhealthy, pingCheckMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.unhealthy, pingCheckMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, pingCheckMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, pingCheckMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.UNHEALTHY, pingCheckMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.UNHEALTHY, pingCheckMonitor.monitor());
 
     }
 }

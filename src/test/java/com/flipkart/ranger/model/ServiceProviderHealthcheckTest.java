@@ -127,7 +127,7 @@ public class ServiceProviderHealthcheckTest {
     }
 
     private static final class CustomHealthcheck implements Healthcheck {
-        private HealthcheckStatus status = HealthcheckStatus.healthy;
+        private HealthcheckStatus status = HealthcheckStatus.HEALTHY;
         public void setStatus(HealthcheckStatus status) {
             this.status = status;
         }
@@ -158,10 +158,10 @@ public class ServiceProviderHealthcheckTest {
         }
 
         public void bir() {
-            healthcheck.setStatus(HealthcheckStatus.healthy);
+            healthcheck.setStatus(HealthcheckStatus.HEALTHY);
         }
         public void oor() {
-            healthcheck.setStatus(HealthcheckStatus.unhealthy);
+            healthcheck.setStatus(HealthcheckStatus.UNHEALTHY);
         }
 
         public void start() throws Exception {

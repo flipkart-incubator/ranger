@@ -28,7 +28,7 @@ public class RotationStatusMonitorTest {
         deleteRotationFile();
         RotationStatusMonitor rotationStatusMonitor = new RotationStatusMonitor("/tmp/rotationFile.html");
         final HealthcheckStatus monitorResult = rotationStatusMonitor.monitor();
-        Assert.assertEquals(HealthcheckStatus.unhealthy, monitorResult);
+        Assert.assertEquals(HealthcheckStatus.UNHEALTHY, monitorResult);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class RotationStatusMonitorTest {
         if (file.createNewFile()) {
             RotationStatusMonitor rotationStatusMonitor = new RotationStatusMonitor(filePath);
             final HealthcheckStatus monitorResult = rotationStatusMonitor.monitor();
-            Assert.assertEquals(HealthcheckStatus.healthy, monitorResult);
+            Assert.assertEquals(HealthcheckStatus.HEALTHY, monitorResult);
         } else {
             System.out.println("Unable to create file = " + filePath);
             throw new Exception("Unable to create file = " + filePath);

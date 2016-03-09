@@ -40,15 +40,15 @@ public class HealthChecker<T> implements Runnable {
 
     @Override
     public void run() {
-        HealthcheckStatus healthcheckStatus = HealthcheckStatus.unhealthy;
+        HealthcheckStatus healthcheckStatus = HealthcheckStatus.UNHEALTHY;
         for(Healthcheck healthcheck : healthchecks) {
             try {
                 healthcheckStatus = healthcheck.check();
             } catch (Throwable t) {
-                logger.error("Error running healthcheck. Setting node to unhealthy", t);
-                healthcheckStatus = HealthcheckStatus.unhealthy;
+                logger.error("Error running healthcheck. Setting node to UNHEALTHY", t);
+                healthcheckStatus = HealthcheckStatus.UNHEALTHY;
             }
-            if(HealthcheckStatus.unhealthy == healthcheckStatus) {
+            if(HealthcheckStatus.UNHEALTHY == healthcheckStatus) {
                 break;
             }
         }

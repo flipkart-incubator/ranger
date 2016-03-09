@@ -53,7 +53,7 @@ public abstract class IsolatedHealthMonitor implements Runnable, Monitor<Healthc
     public IsolatedHealthMonitor(String name, TimeEntity runInterval, long stalenessAllowedInMillis) {
         this.name = name;
         this.stalenessAllowedInMillis = stalenessAllowedInMillis;
-        this.healthStatus = new AtomicReference<>(HealthcheckStatus.healthy);
+        this.healthStatus = new AtomicReference<>(HealthcheckStatus.HEALTHY);
         this.runInterval = runInterval;
         this.disabled.set(false);
     }

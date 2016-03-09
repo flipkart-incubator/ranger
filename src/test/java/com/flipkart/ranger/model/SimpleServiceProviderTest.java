@@ -118,7 +118,7 @@ public class SimpleServiceProviderTest {
                 .withHealthcheck(new Healthcheck() {
                     @Override
                     public HealthcheckStatus check() {
-                        return HealthcheckStatus.healthy;
+                        return HealthcheckStatus.HEALTHY;
                     }
                 })
                 .buildServiceDiscovery();

@@ -17,9 +17,9 @@ public class Monitors {
             public HealthcheckStatus monitor() {
                 File file = new File(filePath);
                 if (file.exists()) {
-                    return HealthcheckStatus.healthy;
+                    return HealthcheckStatus.HEALTHY;
                 } else {
-                    return HealthcheckStatus.unhealthy;
+                    return HealthcheckStatus.UNHEALTHY;
                 }
             }
 

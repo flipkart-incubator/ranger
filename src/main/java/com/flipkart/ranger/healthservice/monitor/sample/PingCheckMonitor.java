@@ -75,23 +75,23 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
         try {
             final Boolean pingSuccessful = futurePingResponse.get(pingTimeoutInMilliseconds, TimeUnit.MILLISECONDS);
             if (!pingSuccessful) {
-                return getRollingWindowHealthcheckStatus(HealthcheckStatus.unhealthy);
+                return getRollingWindowHealthcheckStatus(HealthcheckStatus.UNHEALTHY);
             } else {
-                return getRollingWindowHealthcheckStatus(HealthcheckStatus.healthy);
+                return getRollingWindowHealthcheckStatus(HealthcheckStatus.HEALTHY);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.error("Ping monitor failed:{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port, e);
-            return getRollingWindowHealthcheckStatus(HealthcheckStatus.unhealthy);
+            return getRollingWindowHealthcheckStatus(HealthcheckStatus.UNHEALTHY);
         }
     }
 
     private HealthcheckStatus getRollingWindowHealthcheckStatus(HealthcheckStatus healthy) {
         if (rollingWindowHealthQueue.checkInRollingWindow(healthy)) {
-            return HealthcheckStatus.healthy;
+            return HealthcheckStatus.HEALTHY;
         } else {
-            logger.info("{} is marking itself unhealthy since the current rolling window frame contains many failures (> threshold)). " +
+            logger.info("{} is marking itself UNHEALTHY since the current rolling window frame contains many failures (> threshold)). " +
                     "Was pinging on HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
-            return HealthcheckStatus.unhealthy;
+            return HealthcheckStatus.UNHEALTHY;
         }
     }
 

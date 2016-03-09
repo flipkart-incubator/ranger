@@ -22,7 +22,7 @@ public class ServiceNode<T> {
     private String host;
     private int port;
     private T nodeData;
-    private HealthcheckStatus healthcheckStatus = HealthcheckStatus.healthy;
+    private HealthcheckStatus healthcheckStatus = HealthcheckStatus.HEALTHY;
     private long lastUpdatedTimeStamp = Long.MIN_VALUE;
 
     public ServiceNode() {

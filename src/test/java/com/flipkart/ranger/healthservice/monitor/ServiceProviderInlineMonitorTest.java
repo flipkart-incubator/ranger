@@ -90,7 +90,7 @@ public class ServiceProviderInlineMonitorTest {
         boolean delete = file.delete();
         delete = anotherFile.delete();
 
-        /* with file existing, 3 nodes should be healthy */
+        /* with file existing, 3 nodes should be HEALTHY */
         boolean filecreate = file.createNewFile();
         System.out.println("created file");
         Thread.sleep(4000);
@@ -98,7 +98,7 @@ public class ServiceProviderInlineMonitorTest {
         System.out.println("all = " + all);
         Assert.assertEquals(3, all.size());
 
-        /* with file deleted, all 3 nodes should be unhealthy */
+        /* with file deleted, all 3 nodes should be UNHEALTHY */
         delete = file.delete();
         System.out.println("deleted file");
         Thread.sleep(2000);
@@ -106,7 +106,7 @@ public class ServiceProviderInlineMonitorTest {
         System.out.println("all = " + all);
         Assert.assertEquals(0, all.size());
 
-        /* with anotherFile created, the 4th node should become healthy and discoverable */
+        /* with anotherFile created, the 4th node should become HEALTHY and discoverable */
         filecreate = anotherFile.createNewFile();
         System.out.println("created anotherFile");
         Thread.sleep(4000);
@@ -140,7 +140,7 @@ public class ServiceProviderInlineMonitorTest {
                 .withHealthcheck(new Healthcheck() {
                     @Override
                     public HealthcheckStatus check() {
-                        return HealthcheckStatus.healthy;
+                        return HealthcheckStatus.HEALTHY;
                     }
                 })
                 .withInlineHealthMonitor(Monitors.fileExistanceCheckMonitor(file.getAbsolutePath()))

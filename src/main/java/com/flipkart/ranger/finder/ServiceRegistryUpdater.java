@@ -127,7 +127,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                     continue;
                 }
                 ServiceNode<T> key = deserializer.deserialize(data);
-                if(HealthcheckStatus.healthy == key.getHealthcheckStatus()
+                if(HealthcheckStatus.HEALTHY == key.getHealthcheckStatus()
                         && key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime) {
                     nodes.add(key);
                 }
