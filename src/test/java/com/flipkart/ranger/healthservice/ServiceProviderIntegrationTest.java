@@ -139,7 +139,7 @@ public class ServiceProviderIntegrationTest {
                         return HealthcheckStatus.healthy;
                     }
                 })
-                .withIsolatedHealthMonitor(new RotationStatusMonitor(TimeEntity.EverySecond(), file.getAbsolutePath()))
+                .withIsolatedHealthMonitor(new RotationStatusMonitor(TimeEntity.everySecond(), file.getAbsolutePath()))
                 .buildServiceDiscovery();
         serviceProvider.start();
     }
