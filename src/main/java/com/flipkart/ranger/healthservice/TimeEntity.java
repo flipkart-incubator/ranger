@@ -9,6 +9,31 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeEntity {
 
+    private long initialDelay;
+    private long timeInterval;
+    private TimeUnit timeUnit;
+
+    /**
+     * defaults initial delay to 0 timeunits
+     *
+     * @param timeInterval repeat time interval of task
+     * @param timeUnit     unit of time, for tracking the interval
+     */
+    public TimeEntity(long timeInterval, TimeUnit timeUnit) {
+        this(0, timeInterval, timeUnit);
+    }
+    
+    /**
+     * @param initialDelay initial delay for triggering the task
+     * @param timeInterval repeat time interval of task
+     * @param timeUnit     unit of time, for tracking the interval
+     */
+    public TimeEntity(long initialDelay, long timeInterval, TimeUnit timeUnit) {
+        this.initialDelay = initialDelay;
+        this.timeInterval = timeInterval;
+        this.timeUnit = timeUnit;
+    }
+    
     /**
      * @return a TimeEntity with time interval of every second
      */
@@ -35,31 +60,6 @@ public class TimeEntity {
      */
     public static TimeEntity EveryDay() {
         return new TimeEntity(0, 1, TimeUnit.DAYS);
-    }
-
-    private long initialDelay;
-    private long timeInterval;
-    private TimeUnit timeUnit;
-
-    /**
-     * defaults initial delay to 0 timeunits
-     *
-     * @param timeInterval repeat time interval of task
-     * @param timeUnit     unit of time, for tracking the interval
-     */
-    public TimeEntity(long timeInterval, TimeUnit timeUnit) {
-        this(0, timeInterval, timeUnit);
-    }
-
-    /**
-     * @param initialDelay initial delay for triggering the task
-     * @param timeInterval repeat time interval of task
-     * @param timeUnit     unit of time, for tracking the interval
-     */
-    public TimeEntity(long initialDelay, long timeInterval, TimeUnit timeUnit) {
-        this.initialDelay = initialDelay;
-        this.timeInterval = timeInterval;
-        this.timeUnit = timeUnit;
     }
 
     public long getTimeInterval() {
