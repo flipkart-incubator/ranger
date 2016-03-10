@@ -14,11 +14,11 @@ public class DiskSpaceMonitorTest {
 
     @Test
     public void testGetCount() throws Exception {
-        Assert.assertEquals(HealthcheckStatus.healthy, diskSpaceMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, diskSpaceMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, diskSpaceMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, diskSpaceMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, diskSpaceMonitor.monitor());
-        Assert.assertEquals(HealthcheckStatus.healthy, diskSpaceMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, diskSpaceMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, diskSpaceMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, diskSpaceMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, diskSpaceMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, diskSpaceMonitor.monitor());
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, diskSpaceMonitor.monitor());
     }
 }

@@ -131,7 +131,7 @@ public class ServiceHealthAggregator implements HealthService, Healthcheck {
             throw new UnsupportedOperationException("Cannot get HealthStatus, when Aggregator isnt running. " +
                     "Please start the aggregator before trying to get health");
         }
-        healthcheckStatusAtomicReference.set(HealthcheckStatus.healthy);
+        healthcheckStatusAtomicReference.set(HealthcheckStatus.HEALTHY);
         Date currentTime = new Date();
 
         /* check health status of isolated monitors */
@@ -145,13 +145,13 @@ public class ServiceHealthAggregator implements HealthService, Healthcheck {
             } else {
                 timeDifference = null;
             }
-            /* check if the monitor and its last updated time is stale, if so, mark status as unhealthy */
+            /* check if the monitor and its last updated time is stale, if so, mark status as UNHEALTHY */
             if ((timeDifference == null || timeDifference > isolatedHealthMonitor.getStalenessAllowedInMillis())
-                    && HealthcheckStatus.unhealthy != healthcheckStatusAtomicReference.get()) {
-                logger.error("Monitor: {} is stuck and its status is stale. Marking service as unhealthy", isolatedHealthMonitor.getName());
-                healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);
-            } else if (HealthcheckStatus.unhealthy == isolatedHealthMonitor.getHealthStatus()) {
-                healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);
+                    && HealthcheckStatus.UNHEALTHY != healthcheckStatusAtomicReference.get()) {
+                logger.error("Monitor: {} is stuck and its status is stale. Marking service as UNHEALTHY", isolatedHealthMonitor.getName());
+                healthcheckStatusAtomicReference.set(HealthcheckStatus.UNHEALTHY);
+            } else if (HealthcheckStatus.UNHEALTHY == isolatedHealthMonitor.getHealthStatus()) {
+                healthcheckStatusAtomicReference.set(HealthcheckStatus.UNHEALTHY);
             }
         }
 
@@ -161,8 +161,8 @@ public class ServiceHealthAggregator implements HealthService, Healthcheck {
                 continue;
             }
             final HealthcheckStatus monitorStatus = healthMonitor.monitor();
-            if (HealthcheckStatus.unhealthy == monitorStatus) {
-                healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);
+            if (HealthcheckStatus.UNHEALTHY == monitorStatus) {
+                healthcheckStatusAtomicReference.set(HealthcheckStatus.UNHEALTHY);
             }
         }
 

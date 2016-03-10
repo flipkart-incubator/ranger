@@ -20,7 +20,7 @@ public class ServiceHealthAggregatorTest {
         serviceHealthAggregator.addInlineMonitor(new Monitor<HealthcheckStatus>() {
             @Override
             public HealthcheckStatus monitor() {
-                return HealthcheckStatus.healthy;
+                return HealthcheckStatus.HEALTHY;
             }
 
             @Override
@@ -47,16 +47,16 @@ public class ServiceHealthAggregatorTest {
         Thread.sleep(4000);
 
         /* in the TestMonitor, thread was sleeping for 2 seconds, */
-        /* so its state is supposed to be stale (>1 second) and service has to be unhealthy */
-        Assert.assertEquals(HealthcheckStatus.unhealthy, serviceHealthAggregator.getServiceHealth());
+        /* so its state is supposed to be stale (>1 second) and service has to be UNHEALTHY */
+        Assert.assertEquals(HealthcheckStatus.UNHEALTHY, serviceHealthAggregator.getServiceHealth());
 
 
         testMonitor.setThreadSleep(10);
         Thread.sleep(4000);
 
         /* in the TestMonitor, thread is sleeping only for 10 milliseconds, */
-        /* so its state is supposed to be NOT stale (>1 second) and service has to be healthy */
-        Assert.assertEquals(HealthcheckStatus.healthy, serviceHealthAggregator.getServiceHealth());
+        /* so its state is supposed to be NOT stale (>1 second) and service has to be HEALTHY */
+        Assert.assertEquals(HealthcheckStatus.HEALTHY, serviceHealthAggregator.getServiceHealth());
 
     }
 
@@ -81,7 +81,7 @@ public class ServiceHealthAggregatorTest {
                 Thread.sleep(threadSleep);
             } catch (InterruptedException e) {
             }
-            return HealthcheckStatus.healthy;
+            return HealthcheckStatus.HEALTHY;
         }
     }
 }

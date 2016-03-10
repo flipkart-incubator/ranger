@@ -51,10 +51,10 @@ public class RollingWindowHealthQueue {
      */
     public boolean checkInRollingWindow(HealthcheckStatus currentHealthStatus) {
         HealthcheckStatus oldestStatus;
-        if (currentHealthStatus == HealthcheckStatus.healthy) {
+        if (currentHealthStatus == HealthcheckStatus.HEALTHY) {
             if (statusQueue.size() == rollingWindowSize) {
                 oldestStatus = statusQueue.remove();
-                if (oldestStatus == HealthcheckStatus.unhealthy) {
+                if (oldestStatus == HealthcheckStatus.UNHEALTHY) {
                     currentFailuresCount.getAndSet(currentFailuresCount.get() - 1);
                 }
             }
@@ -62,7 +62,7 @@ public class RollingWindowHealthQueue {
         } else {
             if (statusQueue.size() == rollingWindowSize) {
                 oldestStatus = statusQueue.remove();
-                if (oldestStatus == HealthcheckStatus.healthy) {
+                if (oldestStatus == HealthcheckStatus.HEALTHY) {
                     currentFailuresCount.getAndSet(currentFailuresCount.get() + 1);
                 }
             } else {

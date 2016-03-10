@@ -184,7 +184,7 @@ public class CustomShardSelectorTest {
                 .withHealthcheck(new Healthcheck() {
                     @Override
                     public HealthcheckStatus check() {
-                        return HealthcheckStatus.healthy;
+                        return HealthcheckStatus.HEALTHY;
                     }
                 })
                 .buildServiceDiscovery();

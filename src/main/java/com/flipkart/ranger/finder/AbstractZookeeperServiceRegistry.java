@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.*;
 
 public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistry<T> {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractZookeeperServiceRegistry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractZookeeperServiceRegistry.class);
     private int refreshIntervalMillis;
     private ServiceRegistryUpdater<T> updater;
     private ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -41,7 +41,7 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
     public void start() throws Exception {
         final Service service = getService();
         service.getCuratorFramework().blockUntilConnected();
-        logger.debug("Connected to zookeeper cluster");
+        LOGGER.debug("Connected to zookeeper cluster");
         service.getCuratorFramework().newNamespaceAwareEnsurePath(PathBuilder.path(service))
                                     .ensure(service.getCuratorFramework().getZookeeperClient());
         updater = new ServiceRegistryUpdater<T>(this);
@@ -54,10 +54,11 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
                     updater.checkForUpdate();
                 } catch (Exception e) {
                     e.printStackTrace();
+                    LOGGER.error("Exception while checking for update " + e.getMessage(), e);
                 }
             }
         }, 0, refreshIntervalMillis, TimeUnit.MILLISECONDS);
-        logger.debug("Service Registry Started");
+        LOGGER.debug("Service Registry Started");
     }
 
     @Override
@@ -68,11 +69,11 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
             }
             updater.stop();
         } catch (Exception e) {
-            logger.error("Error stopping ZK poller: ", e);
+            LOGGER.error("Error stopping ZK poller: ", e);
         }
         getService().getCuratorFramework().close();
         //TODO
-        logger.debug("Service Registry stopped");
+        LOGGER.debug("Service Registry stopped");
     }
 
 }

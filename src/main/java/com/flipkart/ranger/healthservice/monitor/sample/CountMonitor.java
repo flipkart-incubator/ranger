@@ -8,7 +8,7 @@ import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
  * A monitor that can be used as a counting monitor to check if any countable entity breaches a threashhold
  * Eg:
  * 1. this could be used to check the heap of your java service, if heap goes beyond a threshold,
- * after which, you would want your service to be marked as unhealthy
+ * after which, you would want your service to be marked as UNHEALTHY
  * Just extend this class and implement {@link #getCount()},
  * where you could connect to the {@link javax.management.MBeanServer}and return the current heap space being consumed
  * 2. this could be used to keep track of the active thread count of the service
@@ -45,27 +45,27 @@ public abstract class CountMonitor extends IsolatedHealthMonitor {
         switch (checkSign) {
             case LESSER_THAN:
                 if (count < threshold) {
-                    return HealthcheckStatus.healthy;
+                    return HealthcheckStatus.HEALTHY;
                 } else {
-                    return HealthcheckStatus.unhealthy;
+                    return HealthcheckStatus.UNHEALTHY;
                 }
             case LESSER_THAN_EQUALTO:
                 if (count <= threshold) {
-                    return HealthcheckStatus.healthy;
+                    return HealthcheckStatus.HEALTHY;
                 } else {
-                    return HealthcheckStatus.unhealthy;
+                    return HealthcheckStatus.UNHEALTHY;
                 }
             case GREATER_THAN:
                 if (count > threshold) {
-                    return HealthcheckStatus.healthy;
+                    return HealthcheckStatus.HEALTHY;
                 } else {
-                    return HealthcheckStatus.unhealthy;
+                    return HealthcheckStatus.UNHEALTHY;
                 }
             default:
                 if (count >= threshold) {
-                    return HealthcheckStatus.healthy;
+                    return HealthcheckStatus.HEALTHY;
                 } else {
-                    return HealthcheckStatus.unhealthy;
+                    return HealthcheckStatus.UNHEALTHY;
                 }
         }
     }

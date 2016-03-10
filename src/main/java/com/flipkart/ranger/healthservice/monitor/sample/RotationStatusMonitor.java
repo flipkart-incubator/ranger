@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
  * This monitor then:
  * <ul>
  * <li>
- * Marks service as unhealthy when the file does not exist
+ * Marks service as UNHEALTHY when the file does not exist
  * </li>
  * <li>
- * Marks service as healthy when the file exists
+ * Marks service as HEALTHY when the file exists
  * </li>
  * </ul>
  */
@@ -53,15 +53,15 @@ public class RotationStatusMonitor extends IsolatedHealthMonitor {
     /**
      * checks if the rotation file exists or not
      *
-     * @return {@link HealthcheckStatus#healthy} if file exists else {@link HealthcheckStatus#unhealthy} when file doesnt exist
+     * @return {@link HealthcheckStatus#HEALTHY} if file exists else {@link HealthcheckStatus#UNHEALTHY} when file doesnt exist
      */
     @Override
     public HealthcheckStatus monitor() {
         File file = new File(filePath);
         if (file.exists()) {
-            return HealthcheckStatus.healthy;
+            return HealthcheckStatus.HEALTHY;
         } else {
-            return HealthcheckStatus.unhealthy;
+            return HealthcheckStatus.UNHEALTHY;
         }
     }
 }

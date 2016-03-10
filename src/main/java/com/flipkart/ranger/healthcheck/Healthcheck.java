@@ -22,7 +22,7 @@ package com.flipkart.ranger.healthcheck;
 public interface Healthcheck {
 
     /**
-     * return healthy/unhealthy status of the service
+     * return HEALTHY/UNHEALTHY status of the service
      *
      * @return health status
      */
