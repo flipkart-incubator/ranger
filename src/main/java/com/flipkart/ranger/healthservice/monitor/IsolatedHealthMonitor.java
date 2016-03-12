@@ -15,13 +15,13 @@ import java.util.concurrent.atomic.AtomicReference;
  * @see com.flipkart.ranger.healthservice.monitor.sample.RotationStatusMonitor
  * @see com.flipkart.ranger.healthservice.monitor.sample.CountMonitor
  */
-public abstract class IsolatedHealthMonitor implements Runnable, Monitor<HealthcheckStatus> {
+public abstract class IsolatedHealthMonitor<T> implements Runnable, Monitor<T> {
 
     /* name of the monitor */
     protected String name;
 
     /* reference of the health that this monitor tracks */
-    private AtomicReference<HealthcheckStatus> healthStatus;
+    private AtomicReference<T> healthStatus;
 
     /* reference to when this monitor ran successfully */
     private Date lastStatusUpdateTime;
@@ -53,7 +53,7 @@ public abstract class IsolatedHealthMonitor implements Runnable, Monitor<Healthc
     public IsolatedHealthMonitor(String name, TimeEntity runInterval, long stalenessAllowedInMillis) {
         this.name = name;
         this.stalenessAllowedInMillis = stalenessAllowedInMillis;
-        this.healthStatus = new AtomicReference<>(HealthcheckStatus.healthy);
+        this.healthStatus = new AtomicReference<>();
         this.runInterval = runInterval;
         this.disabled.set(false);
     }
@@ -88,7 +88,7 @@ public abstract class IsolatedHealthMonitor implements Runnable, Monitor<Healthc
         return runInterval;
     }
 
-    public HealthcheckStatus getHealthStatus() {
+    public T getHealthStatus() {
         return healthStatus.get();
     }
 

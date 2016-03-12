@@ -10,7 +10,7 @@ import com.flipkart.ranger.healthservice.monitor.Monitor;
  *
  * @see ServiceHealthAggregator
  */
-public interface HealthService {
+public interface HealthService<T> {
 
     /**
      * Register a monitor to the service, to setup a continuous monitoring on the monitor
@@ -21,7 +21,7 @@ public interface HealthService {
      *
      * @param monitor an implementation of the {@link IsolatedHealthMonitor}
      */
-    void addIsolatedMonitor(IsolatedHealthMonitor monitor);
+    void addIsolatedMonitor(IsolatedHealthMonitor<T> monitor);
 
     /**
      * Add a monitor which will be run in the same thread.
@@ -32,7 +32,7 @@ public interface HealthService {
      *
      * @param monitor an implementation of line {@link Monitor<HealthcheckStatus>}
      */
-    void addInlineMonitor(Monitor<HealthcheckStatus> monitor);
+    void addInlineMonitor(Monitor<T> monitor);
 
     /**
      * Start monitoring all registered monitors.
@@ -50,5 +50,5 @@ public interface HealthService {
      *
      * @return the aggregated health of the service
      */
-    HealthcheckStatus getServiceHealth();
+    T getServiceHealth();
 }
