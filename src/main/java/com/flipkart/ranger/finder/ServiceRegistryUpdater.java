@@ -123,7 +123,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 if(null == curatorFramework.checkExists().forPath(path)) {
                     continue;
                 }
-                byte data[] = curatorFramework.getData().forPath(path);
+                byte[] data = curatorFramework.getData().forPath(path);
                 if(null == data) {
                     logger.warn("Not data present for node: " + path);
                     continue;

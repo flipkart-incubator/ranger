@@ -15,7 +15,7 @@ public class ServiceHealthAggregatorTest {
     TestMonitor testMonitor;
     @Before
     public void setUp() throws Exception {
-        testMonitor = new TestMonitor("TestHealthMonitor", TimeEntity.EverySecond(), 1000);
+        testMonitor = new TestMonitor("TestHealthMonitor", TimeEntity.everySecond(), 1000);
         serviceHealthAggregator.addIsolatedMonitor(testMonitor);
         serviceHealthAggregator.addInlineMonitor(new Monitor<HealthcheckStatus>() {
             @Override

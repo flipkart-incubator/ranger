@@ -9,34 +9,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeEntity {
 
-    /**
-     * @return a TimeEntity with time interval of every second
-     */
-    public static TimeEntity EverySecond() {
-        return new TimeEntity(0, 1, TimeUnit.SECONDS);
-    }
-
-    /**
-     * @return a TimeEntity with time interval of every minute
-     */
-    public static TimeEntity EveryMinute() {
-        return new TimeEntity(0, 1, TimeUnit.MINUTES);
-    }
-
-    /**
-     * @return a TimeEntity with time interval of every hour
-     */
-    public static TimeEntity EveryHour() {
-        return new TimeEntity(0, 1, TimeUnit.HOURS);
-    }
-
-    /**
-     * @return a TimeEntity with time interval of every day
-     */
-    public static TimeEntity EveryDay() {
-        return new TimeEntity(0, 1, TimeUnit.DAYS);
-    }
-
     private long initialDelay;
     private long timeInterval;
     private TimeUnit timeUnit;
@@ -50,7 +22,7 @@ public class TimeEntity {
     public TimeEntity(long timeInterval, TimeUnit timeUnit) {
         this(0, timeInterval, timeUnit);
     }
-
+    
     /**
      * @param initialDelay initial delay for triggering the task
      * @param timeInterval repeat time interval of task
@@ -60,6 +32,34 @@ public class TimeEntity {
         this.initialDelay = initialDelay;
         this.timeInterval = timeInterval;
         this.timeUnit = timeUnit;
+    }
+    
+    /**
+     * @return a TimeEntity with time interval of every second
+     */
+    public static TimeEntity everySecond() {
+        return new TimeEntity(0, 1, TimeUnit.SECONDS);
+    }
+
+    /**
+     * @return a TimeEntity with time interval of every minute
+     */
+    public static TimeEntity everyMinute() {
+        return new TimeEntity(0, 1, TimeUnit.MINUTES);
+    }
+
+    /**
+     * @return a TimeEntity with time interval of every hour
+     */
+    public static TimeEntity everyHour() {
+        return new TimeEntity(0, 1, TimeUnit.HOURS);
+    }
+
+    /**
+     * @return a TimeEntity with time interval of every day
+     */
+    public static TimeEntity everyDay() {
+        return new TimeEntity(0, 1, TimeUnit.DAYS);
     }
 
     public long getTimeInterval() {
