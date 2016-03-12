@@ -23,8 +23,7 @@ import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
-import com.flipkart.ranger.healthcheck.Healthcheck;
-import com.flipkart.ranger.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.healthservice.monitor.Monitors;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.google.common.collect.Lists;
 import org.apache.curator.test.TestingCluster;
@@ -249,12 +248,7 @@ public class ServiceProviderTest {
                 .withHostname(host)
                 .withPort(port)
                 .withNodeData(new TestShardInfo(shardId))
-                .withHealthcheck(new Healthcheck() {
-                    @Override
-                    public HealthcheckStatus check() {
-                        return HealthcheckStatus.healthy;
-                    }
-                })
+                .withInlineHealthMonitor(Monitors.defaultHealthyMonitor())
                 .buildServiceDiscovery();
         serviceProvider.start();
         serviceProviders.add(serviceProvider);

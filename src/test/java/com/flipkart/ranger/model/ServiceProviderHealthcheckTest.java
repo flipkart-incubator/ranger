@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
-import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.healthservice.monitor.Monitor;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.google.common.collect.Maps;
 import org.apache.curator.test.TestingCluster;
@@ -53,7 +53,7 @@ public class ServiceProviderHealthcheckTest {
 
     @After
     public void stopTestCluster() throws Exception {
-        if(null != testingCluster) {
+        if (null != testingCluster) {
             testingCluster.close();
         }
     }
@@ -126,19 +126,26 @@ public class ServiceProviderHealthcheckTest {
         serviceFinder.stop();
     }
 
-    private static final class CustomHealthcheck implements Healthcheck {
+    private static final class CustomHealthcheckMonitor implements Monitor<HealthcheckStatus> {
         private HealthcheckStatus status = HealthcheckStatus.healthy;
+
         public void setStatus(HealthcheckStatus status) {
             this.status = status;
         }
+
         @Override
-        public HealthcheckStatus check() {
+        public HealthcheckStatus monitor() {
             return status;
+        }
+
+        @Override
+        public boolean isDisabled() {
+            return false;
         }
     }
 
     private static final class TestServiceProvider {
-        private CustomHealthcheck healthcheck = new CustomHealthcheck();
+        private CustomHealthcheckMonitor healthcheck = new CustomHealthcheckMonitor();
         private final ObjectMapper objectMapper;
         private final String connectionString;
         private final String host;
@@ -160,6 +167,7 @@ public class ServiceProviderHealthcheckTest {
         public void bir() {
             healthcheck.setStatus(HealthcheckStatus.healthy);
         }
+
         public void oor() {
             healthcheck.setStatus(HealthcheckStatus.unhealthy);
         }
@@ -183,7 +191,7 @@ public class ServiceProviderHealthcheckTest {
                     .withHostname(host)
                     .withPort(port)
                     .withNodeData(new TestShardInfo(shardId))
-                    .withHealthcheck(healthcheck)
+                    .withInlineHealthMonitor(healthcheck)
                     .withRefreshIntervalMillis(10)
                     .buildServiceDiscovery();
             serviceProvider.start();

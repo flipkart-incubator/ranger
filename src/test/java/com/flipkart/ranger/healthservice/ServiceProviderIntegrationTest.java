@@ -7,8 +7,7 @@ import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
-import com.flipkart.ranger.healthcheck.Healthcheck;
-import com.flipkart.ranger.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.healthservice.monitor.Monitors;
 import com.flipkart.ranger.healthservice.monitor.sample.RotationStatusMonitor;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.Serializer;
@@ -133,12 +132,7 @@ public class ServiceProviderIntegrationTest {
                 })
                 .withHostname(host)
                 .withPort(port)
-                .withHealthcheck(new Healthcheck() {
-                    @Override
-                    public HealthcheckStatus check() {
-                        return HealthcheckStatus.healthy;
-                    }
-                })
+                .withInlineHealthMonitor(Monitors.defaultHealthyMonitor())
                 .withIsolatedHealthMonitor(new RotationStatusMonitor(TimeEntity.everySecond(), file.getAbsolutePath()))
                 .buildServiceDiscovery();
         serviceProvider.start();

@@ -14,7 +14,7 @@ public class Monitors {
     private Monitors() {
         throw new InstantiationError("Must not instantiate this class");
     }
-    
+
     public static Monitor<HealthcheckStatus> fileExistanceCheckMonitor(final String filePath) {
         return new Monitor<HealthcheckStatus>() {
             @Override
@@ -25,6 +25,20 @@ public class Monitors {
                 } else {
                     return HealthcheckStatus.unhealthy;
                 }
+            }
+
+            @Override
+            public boolean isDisabled() {
+                return false;
+            }
+        };
+    }
+
+    public static Monitor<HealthcheckStatus> defaultHealthyMonitor() {
+        return new Monitor<HealthcheckStatus>() {
+            @Override
+            public HealthcheckStatus monitor() {
+                return HealthcheckStatus.healthy;
             }
 
             @Override

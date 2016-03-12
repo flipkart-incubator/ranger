@@ -23,8 +23,7 @@ import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
-import com.flipkart.ranger.healthcheck.Healthcheck;
-import com.flipkart.ranger.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.healthservice.monitor.Monitors;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -115,12 +114,7 @@ public class SimpleServiceProviderTest {
                 })
                 .withHostname(host)
                 .withPort(port)
-                .withHealthcheck(new Healthcheck() {
-                    @Override
-                    public HealthcheckStatus check() {
-                        return HealthcheckStatus.healthy;
-                    }
-                })
+                .withInlineHealthMonitor(Monitors.defaultHealthyMonitor())
                 .buildServiceDiscovery();
         serviceProvider.start();
     }

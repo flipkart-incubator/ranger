@@ -17,7 +17,6 @@
 package com.flipkart.ranger.serviceprovider;
 
 import com.flipkart.ranger.healthcheck.HealthChecker;
-import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
@@ -28,7 +27,6 @@ import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.concurrent.*;
 
 public class ServiceProvider<T> {
@@ -38,7 +36,6 @@ public class ServiceProvider<T> {
     private Serializer<T> serializer;
     private CuratorFramework curatorFramework;
     private ServiceNode<T> serviceNode;
-    private List<Healthcheck> healthchecks;
     private final int refreshInterval;
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> future;
@@ -48,14 +45,12 @@ public class ServiceProvider<T> {
     public ServiceProvider(String serviceName, Serializer<T> serializer,
                            CuratorFramework curatorFramework,
                            ServiceNode<T> serviceNode,
-                           List<Healthcheck> healthchecks,
                            int refreshInterval,
                            ServiceHealthAggregator serviceHealthAggregator) {
         this.serviceName = serviceName;
         this.serializer = serializer;
         this.curatorFramework = curatorFramework;
         this.serviceNode = serviceNode;
-        this.healthchecks = healthchecks;
         this.refreshInterval = refreshInterval;
         this.serviceHealthAggregator = serviceHealthAggregator;
     }
@@ -77,7 +72,7 @@ public class ServiceProvider<T> {
         logger.debug("Connected to zookeeper");
         createPath();
         logger.debug("Set initial node data on zookeeper.");
-        future = executorService.scheduleWithFixedDelay(new HealthChecker<T>(healthchecks, this), 0, refreshInterval, TimeUnit.MILLISECONDS);
+        future = executorService.scheduleWithFixedDelay(new HealthChecker<T>(serviceHealthAggregator, this), 0, refreshInterval, TimeUnit.MILLISECONDS);
     }
 
     public void stop() throws Exception {

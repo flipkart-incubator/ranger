@@ -1,6 +1,5 @@
 package com.flipkart.ranger.healthservice;
 
-import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.healthservice.monitor.Monitor;
 
@@ -30,7 +29,7 @@ public interface HealthService<T> {
      * this monitor will not be scheduled in a separate isolated thread,
      * but instead its execution will happen inline, in a single thread, along with other inline monitors
      *
-     * @param monitor an implementation of line {@link Monitor<HealthcheckStatus>}
+     * @param monitor an implementation of line {@link Monitor<T>}
      */
     void addInlineMonitor(Monitor<T> monitor);
 

@@ -16,7 +16,6 @@
 
 package com.flipkart.ranger.serviceprovider;
 
-import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
@@ -41,7 +40,6 @@ public class ServiceProviderBuilder<T> {
     private int port;
     private T nodeData;
     private int refreshIntervalMillis;
-    private List<Healthcheck> healthchecks = Lists.newArrayList();
 
     /* list of inline monitors */
     private List<Monitor<HealthcheckStatus>> inlineMonitors = Lists.newArrayList();
@@ -89,11 +87,6 @@ public class ServiceProviderBuilder<T> {
         return this;
     }
 
-    public ServiceProviderBuilder<T> withHealthcheck(Healthcheck healthcheck) {
-        this.healthchecks.add(healthcheck);
-        return this;
-    }
-
     public ServiceProviderBuilder<T> withRefreshIntervalMillis(int refreshIntervalMillis) {
         this.refreshIntervalMillis = refreshIntervalMillis;
         return this;
@@ -133,7 +126,7 @@ public class ServiceProviderBuilder<T> {
         Preconditions.checkNotNull(serializer);
         Preconditions.checkNotNull(hostname);
         Preconditions.checkArgument(port > 0);
-        Preconditions.checkArgument(!healthchecks.isEmpty());
+        Preconditions.checkArgument(!inlineMonitors.isEmpty() || !isolatedMonitors.isEmpty());
         if (null == curatorFramework) {
             Preconditions.checkNotNull(connectionString);
             curatorFramework = CuratorFrameworkFactory.builder()
@@ -152,9 +145,8 @@ public class ServiceProviderBuilder<T> {
         for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
             serviceHealthAggregator.addIsolatedMonitor(isolatedMonitor);
         }
-        healthchecks.add(serviceHealthAggregator);
-        return new ServiceProvider<T>(serviceName, serializer, curatorFramework,
-                new ServiceNode<T>(hostname, port, nodeData), healthchecks, refreshIntervalMillis, serviceHealthAggregator);
+        return new ServiceProvider<>(serviceName, serializer, curatorFramework,
+                new ServiceNode<>(hostname, port, nodeData), refreshIntervalMillis, serviceHealthAggregator);
     }
 
 }
