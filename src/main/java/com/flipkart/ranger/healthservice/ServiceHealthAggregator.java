@@ -16,6 +16,7 @@
 
 package com.flipkart.ranger.healthservice;
 
+import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.healthservice.monitor.Monitor;
@@ -36,7 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * which can be used to register a set of {@link IsolatedHealthMonitor}s and get an aggregated health of the service.
  * The aggregated health is maintained by scheduling and running the set of registered (enabled) monitors at regular intervals.
  */
-public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>{
+public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>, Healthcheck {
 
     /* Logger */
     private static final Logger logger = LoggerFactory.getLogger(ServiceHealthAggregator.class.getSimpleName());
@@ -182,5 +183,10 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
         }
 
         return healthcheckStatusAtomicReference.get();
+    }
+
+    @Override
+    public HealthcheckStatus check() {
+        return getServiceHealth();
     }
 }

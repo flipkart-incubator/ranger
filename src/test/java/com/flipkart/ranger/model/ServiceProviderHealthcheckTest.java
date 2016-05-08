@@ -22,8 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
+import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
-import com.flipkart.ranger.healthservice.monitor.Monitor;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.google.common.collect.Maps;
 import org.apache.curator.test.TestingCluster;
@@ -126,7 +126,7 @@ public class ServiceProviderHealthcheckTest {
         serviceFinder.stop();
     }
 
-    private static final class CustomHealthcheckMonitor implements Monitor<HealthcheckStatus> {
+    private static final class CustomHealthcheck implements Healthcheck {
         private HealthcheckStatus status = HealthcheckStatus.healthy;
 
         public void setStatus(HealthcheckStatus status) {
@@ -134,18 +134,14 @@ public class ServiceProviderHealthcheckTest {
         }
 
         @Override
-        public HealthcheckStatus monitor() {
+        public HealthcheckStatus check() {
             return status;
         }
 
-        @Override
-        public boolean isDisabled() {
-            return false;
-        }
     }
 
     private static final class TestServiceProvider {
-        private CustomHealthcheckMonitor healthcheck = new CustomHealthcheckMonitor();
+        private CustomHealthcheck healthcheck = new CustomHealthcheck();
         private final ObjectMapper objectMapper;
         private final String connectionString;
         private final String host;
@@ -191,7 +187,7 @@ public class ServiceProviderHealthcheckTest {
                     .withHostname(host)
                     .withPort(port)
                     .withNodeData(new TestShardInfo(shardId))
-                    .withInlineHealthMonitor(healthcheck)
+                    .withHealthcheck(healthcheck)
                     .withRefreshIntervalMillis(10)
                     .buildServiceDiscovery();
             serviceProvider.start();

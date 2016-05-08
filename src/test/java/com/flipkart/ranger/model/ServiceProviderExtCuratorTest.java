@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
-import com.flipkart.ranger.healthservice.monitor.Monitors;
+import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.google.common.collect.Lists;
 import org.apache.curator.framework.CuratorFramework;
@@ -175,7 +175,7 @@ public class ServiceProviderExtCuratorTest {
                 .withHostname(host)
                 .withPort(port)
                 .withNodeData(new TestShardInfo(shardId))
-                .withInlineHealthMonitor(Monitors.defaultHealthyMonitor())
+                .withHealthcheck(Healthchecks.defaultHealthyCheck())
                 .buildServiceDiscovery();
         serviceProvider.start();
         serviceProviders.add(serviceProvider);

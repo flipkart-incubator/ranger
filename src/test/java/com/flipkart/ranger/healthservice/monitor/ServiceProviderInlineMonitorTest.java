@@ -23,6 +23,7 @@ import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
+import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
@@ -151,8 +152,8 @@ public class ServiceProviderInlineMonitorTest {
                 })
                 .withHostname(host)
                 .withPort(port)
-                .withInlineHealthMonitor(Monitors.defaultHealthyMonitor())
-                .withInlineHealthMonitor(Monitors.fileExistanceCheckMonitor(file.getAbsolutePath()))
+                .withHealthcheck(Healthchecks.defaultHealthyCheck())
+                .withHealthcheck(Healthchecks.fileExistanceCheck(file.getAbsolutePath()))
                 .buildServiceDiscovery();
         serviceProvider.start();
     }

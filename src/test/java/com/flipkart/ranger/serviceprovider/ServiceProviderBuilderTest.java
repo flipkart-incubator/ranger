@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
-import com.flipkart.ranger.healthservice.monitor.Monitors;
+import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
 import org.apache.curator.test.TestingCluster;
@@ -82,7 +82,7 @@ public class ServiceProviderBuilderTest {
                     }
                 })
                 .withHostname(host)
-                .withInlineHealthMonitor(Monitors.defaultHealthyMonitor()   )
+                .withHealthcheck(Healthchecks.defaultHealthyCheck())
                 .withPort(port)
                 .buildServiceDiscovery();
     }

@@ -16,11 +16,12 @@
 
 package com.flipkart.ranger.healthcheck;
 
-import com.flipkart.ranger.healthservice.HealthService;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * A Runnable which maintains the health state of the ServiceProvider
@@ -29,17 +30,28 @@ import org.slf4j.LoggerFactory;
 public class HealthChecker<T> implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(HealthChecker.class);
 
-    private HealthService<HealthcheckStatus> healthService;
+    private List<Healthcheck> healthchecks;
     private ServiceProvider<T> serviceProvider;
 
-    public HealthChecker(HealthService<HealthcheckStatus> healthService, ServiceProvider<T> serviceProvider) {
-        this.healthService = healthService;
+    public HealthChecker(List<Healthcheck> healthchecks, ServiceProvider<T> serviceProvider) {
+        this.healthchecks = healthchecks;
         this.serviceProvider = serviceProvider;
     }
 
     @Override
     public void run() {
-        HealthcheckStatus healthcheckStatus = healthService.getServiceHealth();
+        HealthcheckStatus healthcheckStatus = HealthcheckStatus.unhealthy;
+        for(Healthcheck healthcheck : healthchecks) {
+            try {
+                healthcheckStatus = healthcheck.check();
+            } catch (Throwable t) {
+                logger.error("Error running healthcheck. Setting node to unhealthy", t);
+                healthcheckStatus = HealthcheckStatus.unhealthy;
+            }
+            if(HealthcheckStatus.unhealthy == healthcheckStatus) {
+                break;
+            }
+        }
         ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
         serviceNode.setHealthcheckStatus(healthcheckStatus);
         serviceNode.setLastUpdatedTimeStamp(System.currentTimeMillis());

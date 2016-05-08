@@ -56,13 +56,12 @@ Service providers register to the Ranger system by building and starting a Servi
 - _Host_ - Hostname for the service.
 - _Port_ - Port on which this service is running.
 - _Serializer_ - A serializer implementation that will be used to serialize and store the shard information on ZooKeeper
-- _Monitors_ : The health state of your service is decided by a list of monitors. They are either inline or isolated. Register a list of monitors. These monitors will be monitored at regular intervals and an aggregated status is updated on Zookeeper
-  - _Inline Monitors_ - These monitors will be triggered one after the other. Register its implementation to perform any kind of regular health checks on your service.
+- _Healthcheck_ - The healthcheck function is called every second and the status is updated on Zookeeper. 
+- _Monitors_ : The health state of your service is also decided by a list of monitors. Register a list of monitors. These monitors will be monitored at regular intervals and an aggregated status is updated on Zookeeper
   - _Isolated Monitors_ - Each of these monitors will be running continuously on separate isolated threads. Each thread holds an independent state of the isolated monitor. The state of all Monitors will be aggregated an updated on Zookeeper at regular intervals. 
 
 A node will be marked unhealthy iff:
   - The service is stopped.
-  - If any inline monitor's _Monitor.monitor()_ function returns _HealthcheckStatus.unhealthy_. This signifies, the service is unhealthy or out of rotation.
   - If any isolated monitor's state is _HealthcheckStatus.unhealthy_
   - If _Healthcheck.check()_ has not been updated for over a minute. This signifies that the process is probably zombified.
 
@@ -87,17 +86,13 @@ ServiceProvider<UnshardedClusterInfo> serviceProvider
                 })
                 .withHostname(host)                            //Service hostname
                 .withPort(port)                                //Service port
-                .withInlineHealthMonitor(new Monitor<HealthcheckStatus>() {  //Monitor implementation
-                                    @Override
-                                    public HealthcheckStatus monitor() {
-                                        return HealthcheckStatus.healthy;    // OOR stuff should be put here
-                                    }
-                
-                                    @Override
-                                    public boolean isDisabled() {
-                                        return false;
-                                    }
-                                })
+                .withHealthcheck(new Healthcheck() {           //Healthcheck implementation.
+                    @Override
+                    public HealthcheckStatus check() {
+                        return HealthcheckStatus.healthy;      // OOR stuff should be put here
+                    }
+                })
+                .withIsolatedHealthMonitor(new RotationStatusMonitor(TimeEntity.everySecond(), "/var/rotation.html"))
                 .buildServiceDiscovery();
         serviceProvider.start();                               //Start the instance
 ```
@@ -168,7 +163,12 @@ final ServiceProvider<TestShardInfo> serviceProvider
                 .withHostname(host)
                 .withPort(port)
                 .withNodeData(new TestShardInfo(shardId)) //Set the shard info for this shard
-                .withInlineHealthMonitor(Monitors.defaultHealthyMonitor())
+                .withHealthcheck(new Healthcheck() {
+                    @Override
+                    public HealthcheckStatus check() {
+                        return HealthcheckStatus.healthy;
+                    }
+                })
                 .buildServiceDiscovery();
         serviceProvider.start();
 ```
@@ -194,18 +194,15 @@ You may register any kind of _Monitor_, which could be monitoring any serivce/sy
 
 If any of the above are breached, the service will automatically be marked as unhealthy.
 
-There are 2 kinds of monitors that can be registered:
-- _Inline Monitors_ - Any implementation of _Monitor_ is a condidate inline monitor. These monitors will be triggered one after the other. If any monitor's _monitor()_ returns unhealthy, the unhealthy status will be updated on zookeeper
-  - _fileExistanceCheckMonitor_: which checks for the existance of a registered file. This could be used to monitor the rotation status of the service. Use the following while building the Service Provider
-    ```
-        .withInlineHealthMonitor(Monitors.fileExistanceCheckMonitor(fileToBeRegistered))
-    ```
 - _Isolated Monitors_ - Any extention of _IsolatedHealthMonitor_ may be used to register an isolated monitor. Each of these monitors will be running continuously on separate isolated threads. Each thread holds an independent state of the isolated monitor. The state of all Monitors will be aggregated an updated on Zookeeper at regular intervals.
   - _PingCheckMonitor_ - This monitor can be used to ping a url at regular intervals. It could be a self localhost ping too. You can also add minimum failure counts, to ensure that there are no fluctuations
     ```
-        .withIsolatedHealthMonitor(new PingCheckMonitor(new TimeEntity(2, TimeUnit.SECONDS), httpRequest, 5000, 5, 3, "google.com", 80);)  // put in the url here
+        .withIsolatedHealthMonitor(new PingCheckMonitor(new TimeEntity(2, TimeUnit.SECONDS), httpRequest, 5000, 5, 3, "google.com", 80));  // put in the url here
     ```
-
+  - _RotationStatusMonitor_ - This monitor can be used check the rotation status of your server, which decides if the host can serve traffic at the moment or not. Removing the file, will automatically prevent this host from getting discovered.
+    ```
+        ..withIsolatedHealthMonitor(new RotationStatusMonitor(TimeEntity.everySecond(), "/var/rotation.html"));  // path of file to be checked 
+    ```
 At regular intervals, all of the above monitors will be aggregated into a single Health state of the service, which
 
 

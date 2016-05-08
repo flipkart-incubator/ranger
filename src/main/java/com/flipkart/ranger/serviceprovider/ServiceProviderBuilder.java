@@ -16,10 +16,9 @@
 
 package com.flipkart.ranger.serviceprovider;
 
-import com.flipkart.ranger.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
-import com.flipkart.ranger.healthservice.monitor.Monitor;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
 import com.google.common.base.Preconditions;
@@ -40,9 +39,10 @@ public class ServiceProviderBuilder<T> {
     private int port;
     private T nodeData;
     private int refreshIntervalMillis;
+    private List<Healthcheck> healthchecks = Lists.newArrayList();
 
     /* list of inline monitors */
-    private List<Monitor<HealthcheckStatus>> inlineMonitors = Lists.newArrayList();
+//    private List<Monitor<HealthcheckStatus>> inlineMonitors = Lists.newArrayList();
 
     /* list of isolated monitors */
     private List<IsolatedHealthMonitor> isolatedMonitors = Lists.newArrayList();
@@ -87,24 +87,29 @@ public class ServiceProviderBuilder<T> {
         return this;
     }
 
+    public ServiceProviderBuilder<T> withHealthcheck(Healthcheck healthcheck) {
+        this.healthchecks.add(healthcheck);
+        return this;
+    }
+
     public ServiceProviderBuilder<T> withRefreshIntervalMillis(int refreshIntervalMillis) {
         this.refreshIntervalMillis = refreshIntervalMillis;
         return this;
     }
 
-    /**
-     * Add a monitor which will be run in the same thread.
-     * <p/>
-     * this method can be used to add a {@link Monitor}
-     * this monitor will not be scheduled in a separate isolated thread,
-     * but instead its execution will happen inline, in a single thread, along with other inline monitors
-     *
-     * @param monitor an implementation of line {@link Monitor<HealthcheckStatus>}
-     */
-    public ServiceProviderBuilder<T> withInlineHealthMonitor(Monitor<HealthcheckStatus> monitor) {
-        this.inlineMonitors.add(monitor);
-        return this;
-    }
+//    /**
+//     * Add a monitor which will be run in the same thread.
+//     * <p/>
+//     * this method can be used to add a {@link Monitor}
+//     * this monitor will not be scheduled in a separate isolated thread,
+//     * but instead its execution will happen inline, in a single thread, along with other inline monitors
+//     *
+//     * @param monitor an implementation of line {@link Monitor<HealthcheckStatus>}
+//     */
+//    public ServiceProviderBuilder<T> withInlineHealthMonitor(Monitor<HealthcheckStatus> monitor) {
+//        this.inlineMonitors.add(monitor);
+//        return this;
+//    }
 
     /**
      * Register a monitor to the service, to setup a continuous monitoring on the monitor
@@ -126,7 +131,7 @@ public class ServiceProviderBuilder<T> {
         Preconditions.checkNotNull(serializer);
         Preconditions.checkNotNull(hostname);
         Preconditions.checkArgument(port > 0);
-        Preconditions.checkArgument(!inlineMonitors.isEmpty() || !isolatedMonitors.isEmpty());
+        Preconditions.checkArgument(!healthchecks.isEmpty() || !isolatedMonitors.isEmpty());
         if (null == curatorFramework) {
             Preconditions.checkNotNull(connectionString);
             curatorFramework = CuratorFrameworkFactory.builder()
@@ -139,14 +144,15 @@ public class ServiceProviderBuilder<T> {
             refreshIntervalMillis = 1000;
         }
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
-        for (Monitor<HealthcheckStatus> inlineMonitor : inlineMonitors) {
-            serviceHealthAggregator.addInlineMonitor(inlineMonitor);
-        }
+//        for (Monitor<HealthcheckStatus> inlineMonitor : inlineMonitors) {
+//            serviceHealthAggregator.addInlineMonitor(inlineMonitor);
+//        }
         for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
             serviceHealthAggregator.addIsolatedMonitor(isolatedMonitor);
         }
+        healthchecks.add(serviceHealthAggregator);
         return new ServiceProvider<>(serviceName, serializer, curatorFramework,
-                new ServiceNode<>(hostname, port, nodeData), refreshIntervalMillis, serviceHealthAggregator);
+                new ServiceNode<>(hostname, port, nodeData), healthchecks, refreshIntervalMillis, serviceHealthAggregator);
     }
 
 }
