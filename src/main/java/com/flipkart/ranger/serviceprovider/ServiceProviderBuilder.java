@@ -41,9 +41,6 @@ public class ServiceProviderBuilder<T> {
     private int refreshIntervalMillis;
     private List<Healthcheck> healthchecks = Lists.newArrayList();
 
-    /* list of inline monitors */
-//    private List<Monitor<HealthcheckStatus>> inlineMonitors = Lists.newArrayList();
-
     /* list of isolated monitors */
     private List<IsolatedHealthMonitor> isolatedMonitors = Lists.newArrayList();
 
@@ -97,20 +94,6 @@ public class ServiceProviderBuilder<T> {
         return this;
     }
 
-//    /**
-//     * Add a monitor which will be run in the same thread.
-//     * <p/>
-//     * this method can be used to add a {@link Monitor}
-//     * this monitor will not be scheduled in a separate isolated thread,
-//     * but instead its execution will happen inline, in a single thread, along with other inline monitors
-//     *
-//     * @param monitor an implementation of line {@link Monitor<HealthcheckStatus>}
-//     */
-//    public ServiceProviderBuilder<T> withInlineHealthMonitor(Monitor<HealthcheckStatus> monitor) {
-//        this.inlineMonitors.add(monitor);
-//        return this;
-//    }
-
     /**
      * Register a monitor to the service, to setup a continuous monitoring on the monitor
      * <p/>
@@ -144,9 +127,6 @@ public class ServiceProviderBuilder<T> {
             refreshIntervalMillis = 1000;
         }
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
-//        for (Monitor<HealthcheckStatus> inlineMonitor : inlineMonitors) {
-//            serviceHealthAggregator.addInlineMonitor(inlineMonitor);
-//        }
         for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
             serviceHealthAggregator.addIsolatedMonitor(isolatedMonitor);
         }
