@@ -48,8 +48,7 @@ public class ServiceProvider<T> {
     public ServiceProvider(String serviceName, Serializer<T> serializer,
                            CuratorFramework curatorFramework,
                            ServiceNode<T> serviceNode,
-                           List<Healthcheck> healthchecks,
-                           int refreshInterval,
+                           List<Healthcheck> healthchecks, int refreshInterval,
                            ServiceHealthAggregator serviceHealthAggregator) {
         this.serviceName = serviceName;
         this.serializer = serializer;

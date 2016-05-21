@@ -1,6 +1,21 @@
+/**
+ * Copyright 2016 Flipkart Internet Pvt. Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.flipkart.ranger.healthservice;
 
-import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.healthservice.monitor.Monitor;
 
@@ -10,7 +25,7 @@ import com.flipkart.ranger.healthservice.monitor.Monitor;
  *
  * @see ServiceHealthAggregator
  */
-public interface HealthService {
+public interface HealthService<T> {
 
     /**
      * Register a monitor to the service, to setup a continuous monitoring on the monitor
@@ -21,7 +36,7 @@ public interface HealthService {
      *
      * @param monitor an implementation of the {@link IsolatedHealthMonitor}
      */
-    void addIsolatedMonitor(IsolatedHealthMonitor monitor);
+    void addIsolatedMonitor(IsolatedHealthMonitor<T> monitor);
 
     /**
      * Add a monitor which will be run in the same thread.
@@ -30,9 +45,9 @@ public interface HealthService {
      * this monitor will not be scheduled in a separate isolated thread,
      * but instead its execution will happen inline, in a single thread, along with other inline monitors
      *
-     * @param monitor an implementation of line {@link Monitor<HealthcheckStatus>}
+     * @param monitor an implementation of line {@link Monitor<T>}
      */
-    void addInlineMonitor(Monitor<HealthcheckStatus> monitor);
+    void addInlineMonitor(Monitor<T> monitor);
 
     /**
      * Start monitoring all registered monitors.
@@ -50,5 +65,5 @@ public interface HealthService {
      *
      * @return the aggregated health of the service
      */
-    HealthcheckStatus getServiceHealth();
+    T getServiceHealth();
 }

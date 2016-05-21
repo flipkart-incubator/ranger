@@ -23,8 +23,7 @@ import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.sharded.MapBasedServiceRegistry;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
-import com.flipkart.ranger.healthcheck.Healthcheck;
-import com.flipkart.ranger.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.google.common.collect.Lists;
 import org.apache.curator.test.TestingCluster;
@@ -181,12 +180,7 @@ public class CustomShardSelectorTest {
                 .withHostname(host)
                 .withPort(port)
                 .withNodeData(new TestShardInfo(a,b))
-                .withHealthcheck(new Healthcheck() {
-                    @Override
-                    public HealthcheckStatus check() {
-                        return HealthcheckStatus.healthy;
-                    }
-                })
+                .withHealthcheck(Healthchecks.defaultHealthyCheck())
                 .buildServiceDiscovery();
         serviceProvider.start();
         serviceProviders.add(serviceProvider);

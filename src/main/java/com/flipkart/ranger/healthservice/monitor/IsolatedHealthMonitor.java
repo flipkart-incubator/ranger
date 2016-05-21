@@ -1,6 +1,21 @@
+/**
+ * Copyright 2016 Flipkart Internet Pvt. Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.flipkart.ranger.healthservice.monitor;
 
-import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.TimeEntity;
 
 import java.util.Date;
@@ -8,20 +23,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * A health monitor that implements a {@link Monitor<HealthcheckStatus>} and {@link Runnable}
+ * A health monitor that implements a {@link Monitor<T>} and {@link Runnable}
  * Maintains the latest state of the Monitor, and its latest updated timestamp
  *
  * @see com.flipkart.ranger.healthservice.monitor.sample.PingCheckMonitor
  * @see com.flipkart.ranger.healthservice.monitor.sample.RotationStatusMonitor
  * @see com.flipkart.ranger.healthservice.monitor.sample.CountMonitor
  */
-public abstract class IsolatedHealthMonitor implements Runnable, Monitor<HealthcheckStatus> {
+public abstract class IsolatedHealthMonitor<T> implements Runnable, Monitor<T> {
 
     /* name of the monitor */
     protected String name;
 
     /* reference of the health that this monitor tracks */
-    private AtomicReference<HealthcheckStatus> healthStatus;
+    private AtomicReference<T> healthStatus;
 
     /* reference to when this monitor ran successfully */
     private Date lastStatusUpdateTime;
@@ -53,7 +68,7 @@ public abstract class IsolatedHealthMonitor implements Runnable, Monitor<Healthc
     public IsolatedHealthMonitor(String name, TimeEntity runInterval, long stalenessAllowedInMillis) {
         this.name = name;
         this.stalenessAllowedInMillis = stalenessAllowedInMillis;
-        this.healthStatus = new AtomicReference<>(HealthcheckStatus.healthy);
+        this.healthStatus = new AtomicReference<>();
         this.runInterval = runInterval;
         this.disabled.set(false);
     }
@@ -88,7 +103,7 @@ public abstract class IsolatedHealthMonitor implements Runnable, Monitor<Healthc
         return runInterval;
     }
 
-    public HealthcheckStatus getHealthStatus() {
+    public T getHealthStatus() {
         return healthStatus.get();
     }
 
