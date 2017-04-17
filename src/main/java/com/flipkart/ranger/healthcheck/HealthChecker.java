@@ -40,16 +40,19 @@ public class HealthChecker<T> implements Runnable {
 
     @Override
     public void run() {
-        HealthcheckStatus healthcheckStatus = HealthcheckStatus.unhealthy;
-        for(Healthcheck healthcheck : healthchecks) {
+
+        HealthcheckStatus healthcheckStatus = HealthcheckStatus.healthy;
+        for (Healthcheck healthcheck : healthchecks) {
             try {
-                healthcheckStatus = healthcheck.check();
+                if (HealthcheckStatus.unhealthy == healthcheck.check()) {
+                    healthcheckStatus = HealthcheckStatus.unhealthy;
+                } else if (HealthcheckStatus.down == healthcheck.check()) {
+                    healthcheckStatus = HealthcheckStatus.down;
+                    break;
+                }
             } catch (Throwable t) {
                 logger.error("Error running healthcheck. Setting node to unhealthy", t);
                 healthcheckStatus = HealthcheckStatus.unhealthy;
-            }
-            if(HealthcheckStatus.unhealthy == healthcheckStatus) {
-                break;
             }
         }
         ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
@@ -58,9 +61,9 @@ public class HealthChecker<T> implements Runnable {
         try {
             serviceProvider.updateState(serviceNode);
             logger.debug(String.format("Node is %s for (%s, %d)",
-                                        healthcheckStatus, serviceNode.getHost(), serviceNode.getPort()));
-        } catch (Exception e) {
-            logger.error("Error updating health state in zookeeper: ", e);
+                    healthcheckStatus, serviceNode.getHost(), serviceNode.getPort()));
+        } catch (Throwable t) {
+            logger.error("Error updating health state in zookeeper: ", t);
         }
     }
 }

@@ -32,6 +32,6 @@ public class UnshardedFinderBuilder extends BaseServiceFinderBuilder<UnshardedCl
                                                  int healthcheckRefreshTimeMillis) {
         UnshardedClusterServiceRegistry unshardedClusterServiceRegistry
                 = new UnshardedClusterServiceRegistry(service, deserializer, healthcheckRefreshTimeMillis);
-        return new UnshardedClusterFinder(unshardedClusterServiceRegistry, new NoOpShardSelector(), nodeSelector);
+        return new UnshardedClusterFinder(unshardedClusterServiceRegistry, shardSelector, nodeSelector);
     }
 }

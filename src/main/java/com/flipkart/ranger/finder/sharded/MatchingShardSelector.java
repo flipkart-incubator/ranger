@@ -21,10 +21,15 @@ import com.flipkart.ranger.model.ShardSelector;
 
 import java.util.List;
 
-public class MatchingShardSelector<T> implements ShardSelector<T, MapBasedServiceRegistry<T>> {
+public class MatchingShardSelector<T> extends ShardSelector<T, MapBasedServiceRegistry<T>> {
+
+    public MatchingShardSelector(int minNodesAvailability) {
+        super(minNodesAvailability);
+    }
 
     @Override
     public List<ServiceNode<T>> nodes(T criteria, MapBasedServiceRegistry<T> serviceRegistry) {
-        return serviceRegistry.nodes().get(criteria);
+        List<ServiceNode<T>> nodes = serviceRegistry.nodes().get(criteria);
+        return getServiceableNodes(nodes);
     }
 }

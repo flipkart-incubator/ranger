@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.finder.RoundRobinServiceNodeSelector;
+import com.flipkart.ranger.finder.sharded.MatchingShardSelector;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
@@ -93,6 +94,7 @@ public class ServiceNoProviderTest {
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
+                .withShardSelector(new MatchingShardSelector<TestShardInfo>(70))
                 .withDeserializer(new Deserializer<TestShardInfo>() {
                     @Override
                     public ServiceNode<TestShardInfo> deserialize(byte[] data) {
@@ -121,6 +123,7 @@ public class ServiceNoProviderTest {
                                                                         .withNamespace("test")
                                                                         .withServiceName("test-service")
                                                                         .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
+                                                                        .withShardSelector(new MatchingShardSelector<TestShardInfo>(70))
                                                                         .withDeserializer(new Deserializer<TestShardInfo>() {
                                                                             @Override
                                                                             public ServiceNode<TestShardInfo> deserialize(byte[] data) {

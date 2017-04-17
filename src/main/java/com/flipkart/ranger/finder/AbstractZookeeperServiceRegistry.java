@@ -74,5 +74,4 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
         //TODO
         logger.debug("Service Registry stopped");
     }
-
 }

@@ -21,10 +21,16 @@ import com.flipkart.ranger.model.ShardSelector;
 
 import java.util.List;
 
-public class NoOpShardSelector implements ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry> {
+public class NoOpShardSelector extends ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry> {
+
+    public NoOpShardSelector(int minNodesAvailability) {
+        super(minNodesAvailability);
+    }
+
     @Override
     public List<ServiceNode<UnshardedClusterInfo>> nodes(UnshardedClusterInfo criteria,
                                                          UnshardedClusterServiceRegistry serviceRegistry) {
-        return serviceRegistry.nodes();
+        List<ServiceNode<UnshardedClusterInfo>> nodes = serviceRegistry.nodes();
+        return getServiceableNodes(nodes);
     }
 }

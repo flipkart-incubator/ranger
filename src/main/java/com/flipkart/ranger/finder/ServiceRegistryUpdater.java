@@ -16,7 +16,6 @@
 
 package com.flipkart.ranger.finder;
 
-import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.PathBuilder;
 import com.flipkart.ranger.model.ServiceNode;
@@ -89,7 +88,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 else {
                     logger.warn("No service shards/nodes found. We are disconnected from zookeeper. Keeping old list.");
                 }
-                checkForUpdate =false;
+                checkForUpdate = false;
             } finally {
                 checkLock.unlock();
             }
@@ -108,7 +107,6 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
 
     private List<ServiceNode<T>> checkForUpdateOnZookeeper() {
         try {
-            final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
             final Service service = serviceRegistry.getService();
             if(!service.isRunning()) {
                 return null;
@@ -129,11 +127,9 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                     continue;
                 }
                 ServiceNode<T> key = deserializer.deserialize(data);
-                if(HealthcheckStatus.healthy == key.getHealthcheckStatus()
-                        && key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime) {
-                    nodes.add(key);
-                }
+                nodes.add(key);
             }
+
             return nodes;
         } catch (Exception e) {
             logger.error("Error getting service data from zookeeper: ", e);

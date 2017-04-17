@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.RoundRobinServiceNodeSelector;
+import com.flipkart.ranger.finder.sharded.MapBasedServiceRegistry;
+import com.flipkart.ranger.finder.sharded.MatchingShardSelector;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
@@ -107,6 +109,7 @@ public class ServiceProviderTest {
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
+                .withShardSelector(new MatchingShardSelector<TestShardInfo>(70))
                 .withDeserializer(new Deserializer<TestShardInfo>() {
                     @Override
                     public ServiceNode<TestShardInfo> deserialize(byte[] data) {
@@ -155,6 +158,7 @@ public class ServiceProviderTest {
                                                                         .withNamespace("test")
                                                                         .withServiceName("test-service")
                                                                         .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
+                                                                        .withShardSelector(new MatchingShardSelector<TestShardInfo>(70))
                                                                         .withDeserializer(new Deserializer<TestShardInfo>() {
                                                                             @Override
                                                                             public ServiceNode<TestShardInfo> deserialize(byte[] data) {
@@ -205,6 +209,7 @@ public class ServiceProviderTest {
                 .withNamespace("test")
                 .withServiceName("test-service")
                 .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
+                .withShardSelector(new MatchingShardSelector<TestShardInfo>(70))
                 .withDeserializer(new Deserializer<TestShardInfo>() {
                     @Override
                     public ServiceNode<TestShardInfo> deserialize(byte[] data) {

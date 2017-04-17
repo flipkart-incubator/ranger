@@ -81,6 +81,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         Preconditions.checkNotNull(namespace);
         Preconditions.checkNotNull(serviceName);
         Preconditions.checkNotNull(deserializer);
+        Preconditions.checkNotNull(shardSelector);
         if( null == curatorFramework) {
             Preconditions.checkNotNull(connectionString);
             curatorFramework = CuratorFrameworkFactory.builder()

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
+import com.flipkart.ranger.finder.sharded.MatchingShardSelector;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
@@ -100,6 +101,7 @@ public class ServiceProviderHealthcheckTest {
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
+                .withShardSelector(new MatchingShardSelector<TestShardInfo>(1))
                 .withDeserializer(new Deserializer<TestShardInfo>() {
                     @Override
                     public ServiceNode<TestShardInfo> deserialize(byte[] data) {
@@ -113,6 +115,7 @@ public class ServiceProviderHealthcheckTest {
                         return null;
                     }
                 })
+
                 .witHhealthcheckRefreshTimeMillis(10)
                 .build();
         serviceFinder.start();
@@ -165,7 +168,7 @@ public class ServiceProviderHealthcheckTest {
         }
 
         public void oor() {
-            healthcheck.setStatus(HealthcheckStatus.unhealthy);
+            healthcheck.setStatus(HealthcheckStatus.down);
         }
 
         public void start() throws Exception {
@@ -199,5 +202,4 @@ public class ServiceProviderHealthcheckTest {
         serviceProvider.start();
         serviceProviders.put(host, serviceProvider);
     }
-
 }
