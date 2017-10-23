@@ -150,7 +150,7 @@ public class ServiceProviderTest {
 
     @Test
     public void testBasicDiscoveryRR() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+        final SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                                                                         .withConnectionString(testingCluster.getConnectString())
                                                                         .withNamespace("test")
                                                                         .withServiceName("test-service")
@@ -183,12 +183,18 @@ public class ServiceProviderTest {
             System.out.println(node.getHost());
         }
         long startTime = System.currentTimeMillis();
-        for(long i = 0; i <1000000; i++)
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(2));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(2, node.getNodeData().getShardId());
-        }
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                for(long i = 0; i <1000000; i++) {
+                    ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(2));
+                    Assert.assertNotNull(node);
+                    Assert.assertEquals(2, node.getNodeData().getShardId());
+                }
+            }
+        };
+        Thread t = new Thread(runnable);
+        t.start();
         logger.info("PERF::RoundRobinSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
             ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(99));

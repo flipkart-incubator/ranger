@@ -7,7 +7,7 @@
     <groupId>com.flipkart.ranger</groupId>
     <artifactId>ranger</artifactId>
     <packaging>jar</packaging>
-    <version>0.3.0</version>
+    <version>0.3.1.16-connections</version>
 
     <distributionManagement>
         <repository>
@@ -44,11 +44,16 @@
             <name>Tushar Naik</name>
             <email>tushar.naik@flipkart.com</email>
         </developer>
+        <developer>
+            <id>asp0585</id>
+            <name>Anand Pandey</name>
+            <email>anand.pandey@flipkart.com</email>
+        </developer>
     </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <curator.version>3.1.0</curator.version>
+        <curator.version>2.12.0</curator.version>
     </properties>
 
     <dependencies>
@@ -100,10 +105,24 @@
             <artifactId>guava-retrying</artifactId>
             <version>2.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.7.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>1.7.3</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
