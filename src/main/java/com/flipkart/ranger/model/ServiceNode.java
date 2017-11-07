@@ -22,6 +22,7 @@ public class ServiceNode<T> {
     private String host;
     private int port;
     private T nodeData;
+
     private HealthcheckStatus healthcheckStatus = HealthcheckStatus.healthy;
     private long lastUpdatedTimeStamp = Long.MIN_VALUE;
 
@@ -77,4 +78,32 @@ public class ServiceNode<T> {
     public void setLastUpdatedTimeStamp(long lastUpdatedTimeStamp) {
         this.lastUpdatedTimeStamp = lastUpdatedTimeStamp;
     }
+
+    @Override
+    public String toString() {
+        return "ServiceNode{" +
+                "host='" + host + '\'' +
+                ", port=" + port +
+                ", nodeData=" + nodeData +
+                ", healthcheckStatus=" + healthcheckStatus +
+                ", lastUpdatedTimeStamp=" + lastUpdatedTimeStamp +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ServiceNode<?> that = (ServiceNode<?>) o;
+        if (getPort() != that.getPort()) return false;
+        return getHost().equals(that.getHost());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getHost().hashCode();
+        result = 31 * result + getPort();
+        return result;
+    }
+
 }
