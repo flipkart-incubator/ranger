@@ -31,10 +31,12 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
     private ExecutorService executorService = Executors.newFixedThreadPool(1);
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> scheduledFuture;
+    private int zombieCheckTimewindow;
 
-    protected AbstractZookeeperServiceRegistry(Service service, Deserializer<T> deserializer, int refreshIntervalMillis) {
+    protected AbstractZookeeperServiceRegistry(Service service, Deserializer<T> deserializer, int refreshIntervalMillis, int zombieCheckTimewindow) {
         super(service, deserializer);
         this.refreshIntervalMillis = refreshIntervalMillis;
+        this.zombieCheckTimewindow = zombieCheckTimewindow;
     }
 
     @Override
@@ -44,7 +46,7 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
         logger.debug("Connected to zookeeper cluster");
         service.getCuratorFramework().newNamespaceAwareEnsurePath(PathBuilder.path(service))
                                     .ensure(service.getCuratorFramework().getZookeeperClient());
-        updater = new ServiceRegistryUpdater<T>(this);
+        updater = new ServiceRegistryUpdater<>(this, zombieCheckTimewindow);
         updater.start();
         executorService.submit(updater);
         scheduledFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
@@ -53,7 +55,7 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
                 try {
                     updater.checkForUpdate();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Error while checking for update", e);
                 }
             }
         }, 0, refreshIntervalMillis, TimeUnit.MILLISECONDS);

@@ -113,7 +113,7 @@ public class ServiceProviderHealthcheckTest {
                         return null;
                     }
                 })
-                .witHhealthcheckRefreshTimeMillis(10)
+                .withHealthcheckRefreshTimeMillis(10)
                 .build();
         serviceFinder.start();
         ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));

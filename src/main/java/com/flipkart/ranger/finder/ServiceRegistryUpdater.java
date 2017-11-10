@@ -42,9 +42,11 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
     private Lock checkLock = new ReentrantLock();
     private Condition checkCondition = checkLock.newCondition();
     private boolean checkForUpdate = false;
+    private int zombieCheckTimewindow;
 
-    public ServiceRegistryUpdater(ServiceRegistry<T> serviceRegistry) {
+    public ServiceRegistryUpdater(ServiceRegistry<T> serviceRegistry, int zombieCheckTimewindow) {
         this.serviceRegistry = serviceRegistry;
+        this.zombieCheckTimewindow = zombieCheckTimewindow;
     }
 
     public void start() throws Exception {
@@ -108,7 +110,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
 
     private List<ServiceNode<T>> checkForUpdateOnZookeeper() {
         try {
-            final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
+            final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - zombieCheckTimewindow;
             final Service service = serviceRegistry.getService();
             if(!service.isRunning()) {
                 return null;
@@ -125,7 +127,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 }
                 byte[] data = curatorFramework.getData().forPath(path);
                 if(null == data) {
-                    logger.warn("Not data present for node: " + path);
+                    logger.warn("No data present for node: " + path);
                     continue;
                 }
                 ServiceNode<T> key = deserializer.deserialize(data);
