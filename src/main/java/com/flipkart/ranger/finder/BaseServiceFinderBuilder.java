@@ -26,14 +26,22 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
 public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
+
+    /* static constants for defaults */
+    private static final int DEFAULT_ZOMBIE_CHECK_TIMEWINDOW = 60000;
+    private static final int DEFAULT_HEALTHCHECK_REFRESH_TIME_MILLIS = 1000;
+    private static final int DEFAULT_BASE_SLEEP_TIME_MS = 1000;
+    private static final int DEFAULT_MAX_RETRIES = 100;
+
     private String namespace;
     private String serviceName;
     private CuratorFramework curatorFramework;
     private String connectionString;
     private int healthcheckRefreshTimeMillis;
+    private int zombieCheckTimewindow;
     private Deserializer<T> deserializer;
     private ShardSelector<T, RegistryType> shardSelector;
-    private ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<T>();
+    private ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<>();
 
     public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNamespace(final String namespace) {
         this.namespace = namespace;
@@ -70,14 +78,18 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         return this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> witHhealthcheckRefreshTimeMillis(int healthcheckRefreshTimeMillis) {
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withHealthcheckRefreshTimeMillis(int healthcheckRefreshTimeMillis) {
         this.healthcheckRefreshTimeMillis = healthcheckRefreshTimeMillis;
         return this;
     }
 
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withZombieCheckTimewindow(int zombieCheckTimewindow) {
+        this.zombieCheckTimewindow = zombieCheckTimewindow;
+        return this;
+    }
 
 
-    public FinderType build() throws Exception {
+    public FinderType build() {
         Preconditions.checkNotNull(namespace);
         Preconditions.checkNotNull(serviceName);
         Preconditions.checkNotNull(deserializer);
@@ -86,20 +98,27 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
             curatorFramework = CuratorFrameworkFactory.builder()
                     .namespace(namespace)
                     .connectString(connectionString)
-                    .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
+                    .retryPolicy(new ExponentialBackoffRetry(DEFAULT_BASE_SLEEP_TIME_MS, DEFAULT_MAX_RETRIES))
+                    .build();
             curatorFramework.start();
         }
         if( 0 == healthcheckRefreshTimeMillis) {
-            healthcheckRefreshTimeMillis = 1000;
+            healthcheckRefreshTimeMillis = DEFAULT_HEALTHCHECK_REFRESH_TIME_MILLIS;
         }
+
+        if (0 == zombieCheckTimewindow) {
+            zombieCheckTimewindow = DEFAULT_ZOMBIE_CHECK_TIMEWINDOW;
+        }
+
         Service service = new Service(curatorFramework, namespace, serviceName);
-        return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+        return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis, zombieCheckTimewindow);
     }
 
     protected abstract FinderType buildFinder(Service service,
                                               Deserializer<T> deserializer,
                                               ShardSelector<T, RegistryType> shardSelector,
                                               ServiceNodeSelector<T> nodeSelector,
-                                              int healthcheckRefreshTimeMillis);
+                                              int healthcheckRefreshTimeMillis,
+                                              int zombieCheckTimewindow);
 
 }

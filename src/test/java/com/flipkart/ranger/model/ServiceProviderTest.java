@@ -115,7 +115,7 @@ public class ServiceProviderTest {
                                     new TypeReference<ServiceNode<TestShardInfo>>() {
                                     });
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            logger.error("Error reading data as value", e);
                         }
                         return null;
                     }
@@ -163,7 +163,7 @@ public class ServiceProviderTest {
                                                                                             new TypeReference<ServiceNode<TestShardInfo>>() {
                                                                                             });
                                                                                 } catch (IOException e) {
-                                                                                    e.printStackTrace();
+                                                                                    logger.error("Error reading data as value", e);
                                                                                 }
                                                                                 return null;
                                                                             }
@@ -213,7 +213,7 @@ public class ServiceProviderTest {
                                     new TypeReference<ServiceNode<TestShardInfo>>() {
                                     });
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            logger.error("Error reading data as value", e);
                         }
                         return null;
                     }
@@ -240,7 +240,7 @@ public class ServiceProviderTest {
                         try {
                             return objectMapper.writeValueAsBytes(data);
                         } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                            logger.error("Error writing data as bytes", e);
                         }
                         return null;
                     }
