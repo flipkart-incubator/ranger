@@ -31,7 +31,7 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
     private ExecutorService executorService = Executors.newFixedThreadPool(1);
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> scheduledFuture;
-    private int zombieCheckTimewindow;
+    private final int zombieCheckTimewindow;
 
     protected AbstractZookeeperServiceRegistry(Service service, Deserializer<T> deserializer, int refreshIntervalMillis, int zombieCheckTimewindow) {
         super(service, deserializer);
