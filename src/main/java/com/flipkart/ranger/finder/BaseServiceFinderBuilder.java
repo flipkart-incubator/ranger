@@ -26,6 +26,13 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
 public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
+
+    /* static constants for defaults */
+    private static final int DEFAULT_ZOMBIE_CHECK_TIMEWINDOW = 60000;
+    private static final int DEFAULT_HEALTHCHECK_REFRESH_TIME_MILLIS = 1000;
+    private static final int DEFAULT_BASE_SLEEP_TIME_MS = 1000;
+    private static final int DEFAULT_MAX_RETRIES = 100;
+
     private String namespace;
     private String serviceName;
     private CuratorFramework curatorFramework;
@@ -91,15 +98,16 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
             curatorFramework = CuratorFrameworkFactory.builder()
                     .namespace(namespace)
                     .connectString(connectionString)
-                    .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
+                    .retryPolicy(new ExponentialBackoffRetry(DEFAULT_BASE_SLEEP_TIME_MS, DEFAULT_MAX_RETRIES))
+                    .build();
             curatorFramework.start();
         }
         if( 0 == healthcheckRefreshTimeMillis) {
-            healthcheckRefreshTimeMillis = 1000;
+            healthcheckRefreshTimeMillis = DEFAULT_HEALTHCHECK_REFRESH_TIME_MILLIS;
         }
 
         if (0 == zombieCheckTimewindow) {
-            zombieCheckTimewindow = 60000;
+            zombieCheckTimewindow = DEFAULT_ZOMBIE_CHECK_TIMEWINDOW;
         }
 
         Service service = new Service(curatorFramework, namespace, serviceName);

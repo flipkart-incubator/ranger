@@ -31,15 +31,20 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
 
 public class ServiceProviderHealthcheckTest {
 
+    /* Logger for logging */
+    private Map<String, TestServiceProvider> serviceProviders = Maps.newHashMap();
+
+    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderHealthcheckTest.class.getSimpleName());
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
-    private Map<String, TestServiceProvider> serviceProviders = Maps.newHashMap();
 
     @Before
     public void startTestCluster() throws Exception {
@@ -108,7 +113,7 @@ public class ServiceProviderHealthcheckTest {
                                     new TypeReference<ServiceNode<TestShardInfo>>() {
                                     });
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            logger.error("Error reading data as value", e);
                         }
                         return null;
                     }
@@ -179,7 +184,7 @@ public class ServiceProviderHealthcheckTest {
                             try {
                                 return objectMapper.writeValueAsBytes(data);
                             } catch (JsonProcessingException e) {
-                                e.printStackTrace();
+                                logger.error("Error writing data as bytes", e);
                             }
                             return null;
                         }

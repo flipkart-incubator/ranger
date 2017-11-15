@@ -34,12 +34,16 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public class ServiceProviderIntegrationTest {
+    /* Logger for logging */
+    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderIntegrationTest.class.getSimpleName());
 
     final String filePath = "/tmp/rangerRotationFile.html";
     File file = new File(filePath);
@@ -76,7 +80,7 @@ public class ServiceProviderIntegrationTest {
                                     new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
                                     });
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            logger.error("Error reading value from data", e);
                         }
                         return null;
                     }
@@ -141,7 +145,7 @@ public class ServiceProviderIntegrationTest {
                         try {
                             return objectMapper.writeValueAsBytes(data);
                         } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                            logger.error("Error writing data as bytes", e);
                         }
                         return null;
                     }

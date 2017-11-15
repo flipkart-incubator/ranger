@@ -28,6 +28,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tushar.naik
@@ -38,6 +40,8 @@ public class ServiceProviderBuilderTest {
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
+    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderBuilderTest.class.getSimpleName());
+
 
     @Before
     public void startTestCluster() throws Exception {
@@ -69,7 +73,7 @@ public class ServiceProviderBuilderTest {
                             try {
                                 return objectMapper.writeValueAsBytes(data);
                             } catch (JsonProcessingException e) {
-                                e.printStackTrace();
+                                logger.error("Error reading data as value", e);
                             }
                             return null;
                         }
@@ -92,7 +96,7 @@ public class ServiceProviderBuilderTest {
                         try {
                             return objectMapper.writeValueAsBytes(data);
                         } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                            logger.error("Error writing data as bytes", e);
                         }
                         return null;
                     }

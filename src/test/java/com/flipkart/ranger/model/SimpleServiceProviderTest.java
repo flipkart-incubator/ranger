@@ -32,10 +32,15 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class SimpleServiceProviderTest {
+
+    /* Logger for logging */
+    private static final Logger logger = LoggerFactory.getLogger(SimpleServiceProviderTest.class.getSimpleName());
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
@@ -71,7 +76,7 @@ public class SimpleServiceProviderTest {
                                     new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
                                     });
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            logger.error("Error reading value from data", e);
                         }
                         return null;
                     }
@@ -107,7 +112,7 @@ public class SimpleServiceProviderTest {
                         try {
                             return objectMapper.writeValueAsBytes(data);
                         } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                            logger.error("error reading value from data", e);
                         }
                         return null;
                     }

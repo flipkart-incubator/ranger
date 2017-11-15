@@ -42,7 +42,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
     private Lock checkLock = new ReentrantLock();
     private Condition checkCondition = checkLock.newCondition();
     private boolean checkForUpdate = false;
-    private int zombieCheckTimewindow;
+    private final int zombieCheckTimewindow;
 
     public ServiceRegistryUpdater(ServiceRegistry<T> serviceRegistry, int zombieCheckTimewindow) {
         this.serviceRegistry = serviceRegistry;
