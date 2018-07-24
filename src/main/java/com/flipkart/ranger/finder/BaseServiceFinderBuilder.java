@@ -114,14 +114,13 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
             service = buildHttpService(host, port, path);
             return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
         }
-        if(null != curatorFramework){
+        if (null != curatorFramework){
             curatorFramework.start();
             service = new CuratorService(curatorFramework, namespace, serviceName);
             return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
         }
         //TODO: what should be the default case?
-        service = new CuratorService(curatorFramework, namespace, serviceName);
-        return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+        return buildFinder(null, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
     }
 
     private Service buildCuratorFrameworkService(String connectionString, String namespace, String serviceName) throws Exception {
@@ -130,8 +129,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
                 .connectString(connectionString)
                 .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
         curatorFramework.start();
-        CuratorService curatorService = new CuratorService(curatorFramework, namespace, serviceName);
-        return curatorService;
+        return new CuratorService(curatorFramework, namespace, serviceName);
     }
 
     private Service buildHttpService(String host, int port, String path) throws Exception{

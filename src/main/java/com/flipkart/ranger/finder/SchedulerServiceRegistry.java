@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.*;
 
-public abstract class AbstractServiceRegistry<T> extends ServiceRegistry<T> {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractServiceRegistry.class);
+public abstract class SchedulerServiceRegistry<T> extends ServiceRegistry<T> {
+    private static final Logger logger = LoggerFactory.getLogger(SchedulerServiceRegistry.class);
     private int refreshIntervalMillis;
     private AbstractServiceRegistryUpdater<T> updater;
     private ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -16,7 +16,7 @@ public abstract class AbstractServiceRegistry<T> extends ServiceRegistry<T> {
     private ScheduledFuture<?> scheduledFuture;
     private Service service;
 
-    protected AbstractServiceRegistry(Service service, Deserializer<T> deserializer, int refreshIntervalMillis) {
+    protected SchedulerServiceRegistry(Service service, Deserializer<T> deserializer, int refreshIntervalMillis) {
         super(deserializer);
         this.service = service;
         this.refreshIntervalMillis = refreshIntervalMillis;
