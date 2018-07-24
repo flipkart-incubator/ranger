@@ -16,7 +16,7 @@
 
 package com.flipkart.ranger.finder.unsharded;
 
-import com.flipkart.ranger.finder.AbstractZookeeperServiceRegistry;
+import com.flipkart.ranger.finder.AbstractServiceRegistry;
 import com.flipkart.ranger.finder.Service;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNode;
@@ -25,7 +25,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class UnshardedClusterServiceRegistry extends AbstractZookeeperServiceRegistry<UnshardedClusterInfo> {
+public class UnshardedClusterServiceRegistry extends AbstractServiceRegistry<UnshardedClusterInfo> {
     private AtomicReference<List<ServiceNode<UnshardedClusterInfo>>> nodes
                                         = new AtomicReference<List<ServiceNode<UnshardedClusterInfo>>>();
 

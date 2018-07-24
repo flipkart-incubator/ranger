@@ -16,34 +16,26 @@
 
 package com.flipkart.ranger.finder;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.imps.CuratorFrameworkState;
+public abstract class Service  {
 
-public class Service {
-    private CuratorFramework curatorFramework;
-    private String namespace;
-    private String serviceName;
-
-    public Service(CuratorFramework curatorFramework, String namespace, String serviceName) {
-        this.curatorFramework = curatorFramework;
-        this.namespace = namespace;
-        this.serviceName = serviceName;
+    public enum ServiceType {
+        CURATOR,
+        HTTP
     }
 
-    public CuratorFramework getCuratorFramework() {
-        return curatorFramework;
+    private ServiceType serviceType;
+
+    public Service(ServiceType serviceType) {
+        this.serviceType = serviceType;
     }
 
-    public String getNamespace() {
-        return namespace;
-    }
+    public abstract <T> T accept(ServiceVisitor<T> serviceVisitor);
 
-    public String getServiceName() {
-        return serviceName;
-    }
+    public abstract void start() throws Exception;
 
-    public boolean isRunning() {
-        return curatorFramework != null
-                && (curatorFramework.getState() == CuratorFrameworkState.STARTED);
+    public abstract void stop() throws Exception;
+
+    public ServiceType getServiceType() {
+        return serviceType;
     }
 }
