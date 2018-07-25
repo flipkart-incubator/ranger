@@ -91,7 +91,7 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
     }
 
     @Override
-    public void stop() {
+    public void stop() throws Exception {
         logger.debug("Stopped updater");
     }
 

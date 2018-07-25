@@ -23,24 +23,26 @@ public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdate
 
     private ServiceRegistry<T> serviceRegistry;
     private HttpService service;
+    private CloseableHttpClient httpclient;
 
     protected HttpServiceRegistryUpdater(ServiceRegistry<T> serviceRegistry, HttpService service){
         super(serviceRegistry);
-        //TODO: think of a better way to assign serviceRegistry
         this.serviceRegistry = serviceRegistry;
         this.service = service;
     }
 
     @Override
     public void start() throws Exception {
-        //TODO
+        //TODO: where to have this HttpClient
+        httpclient = HttpClients.createDefault();
 
         serviceRegistry.nodes(getServiceNodes());
         logger.info("Started polling zookeeper for changes");
     }
 
     @Override
-    public void stop() {
+    public void stop() throws Exception{
+        httpclient.close();
         logger.debug("Stopped updater");
     }
 
@@ -55,8 +57,6 @@ public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdate
             //send the get request and get the data
             final URI uri = service.getURI();
 
-            //TODO: where to have this HttpClient
-            CloseableHttpClient httpclient = HttpClients.createDefault();
             HttpGet httpget = new HttpGet(uri);
             CloseableHttpResponse response = httpclient.execute(httpget);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {

@@ -16,7 +16,7 @@ public abstract class AbstractServiceRegistryUpdater<T> implements Callable<Void
     private ServiceRegistry<T> serviceRegistry;
 
     public abstract void start() throws Exception;
-    public abstract void stop();
+    public abstract void stop() throws Exception;
 
     private Lock checkLock = new ReentrantLock();
     private Condition checkCondition = checkLock.newCondition();

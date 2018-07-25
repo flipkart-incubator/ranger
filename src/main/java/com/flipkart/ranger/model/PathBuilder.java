@@ -25,7 +25,6 @@ public class PathBuilder {
     }
     
     public static String path(final CuratorService service) {
-        //TODO: verify
         return String.format("/%s", service.getServiceName());
     }
 }
