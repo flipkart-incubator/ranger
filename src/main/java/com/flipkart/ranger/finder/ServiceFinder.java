@@ -62,6 +62,7 @@ public class ServiceFinder<T, ServiceRegistryType extends AbstractServiceRegistr
     public void start() throws Exception {
         //TODO: verify
         updater.setServiceRegistry(serviceRegistry);
+
         updater.start();
 
         executorService.submit(updater);

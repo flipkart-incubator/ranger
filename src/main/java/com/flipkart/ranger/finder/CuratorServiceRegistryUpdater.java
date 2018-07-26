@@ -4,7 +4,6 @@ import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.PathBuilder;
 import com.flipkart.ranger.model.ServiceNode;
-import com.flipkart.ranger.model.ServiceRegistry;
 import com.google.common.collect.Lists;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.api.CuratorWatcher;
@@ -19,6 +18,7 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
 
     private CuratorSourceConfig config;
     private Deserializer<T> deserializer;
+    private CuratorFramework curatorFramework;
 
     protected CuratorServiceRegistryUpdater(CuratorSourceConfig config, Deserializer<T> deserializer){
         this.config = config;
@@ -27,7 +27,14 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
 
     @Override
     public void start() throws Exception {
-        CuratorFramework curatorFramework = config.getCuratorFramework();
+        curatorFramework = config.getCuratorFramework();
+
+        //zookeeper cluster connection
+        curatorFramework.blockUntilConnected();
+        logger.debug("Connected to zookeeper cluster");
+        curatorFramework.newNamespaceAwareEnsurePath(PathBuilder.path(config))
+                .ensure(curatorFramework.getZookeeperClient());
+
         //CuratorFramework curatorFramework = serviceRegistry.getService().getCuratorFramework();
         curatorFramework.getChildren().usingWatcher(new CuratorWatcher() {
             @Override
@@ -91,6 +98,7 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
 
     @Override
     public void stop() throws Exception {
+        curatorFramework.close();
         logger.debug("Stopped updater");
     }
 
