@@ -23,48 +23,46 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
-public abstract class BaseServiceFinderBuilder<T, RegistryType extends AbstractServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
-    private String namespace;
-    private String serviceName;
+public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
     private CuratorFramework curatorFramework;
-    private String host;
-    private Integer port;
-    private String path;
-    private String connectionString;
+    private CuratorSourceConfig curatorConfig;
+    private HttpSourceConfig httpConfig;
+
     private int healthcheckRefreshTimeMillis;
     private Deserializer<T> deserializer;
     private ShardSelector<T, RegistryType> shardSelector;
     private ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<T>();
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNamespace(final String namespace) {
-        this.namespace = namespace;
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withHttpSourceConfig(final String host, final Integer port, final String path) {
+        Preconditions.checkNotNull(host);
+        Preconditions.checkNotNull(port);
+        Preconditions.checkNotNull(path);
+        httpConfig = new HttpSourceConfig(host, port, path);
         return this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withServiceName(final String serviceName) {
-        this.serviceName = serviceName;
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withCuratorSourceConfig(final String connectionString, final String namespace, final String serviceName) {
+        Preconditions.checkNotNull(connectionString);
+        Preconditions.checkNotNull(namespace);
+        Preconditions.checkNotNull(serviceName);
+        curatorConfig = new CuratorSourceConfig(connectionString, namespace, serviceName);
         return this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withHost(final String host) {
-        this.host = host;
-        return this;
-    }
-
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withPort(final int port) {
-        this.port = port;
-        return this;
-    }
-
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withPath(final String path) {
-        this.path = path;
-        return this;
-    }
-
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withConnectionString(final String connectionString) {
-        this.connectionString = connectionString;
-        return this;
-    }
+//    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNamespace(final String namespace) {
+//        this.namespace = namespace;
+//        return this;
+//    }
+//
+//    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withServiceName(final String serviceName) {
+//        this.serviceName = serviceName;
+//        return this;
+//    }
+//
+//    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withConnectionString(final String connectionString) {
+//        this.connectionString = connectionString;
+//        return this;
+//    }
 
     public BaseServiceFinderBuilder<T, RegistryType, FinderType> withDeserializer(Deserializer<T> deserializer) {
         this.deserializer = deserializer;
@@ -87,49 +85,35 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends AbstractS
     }
 
     public FinderType build() throws Exception {
-        //TODO: check conditions properly
         if( 0 == healthcheckRefreshTimeMillis) {
             healthcheckRefreshTimeMillis = 1000;
         }
-        if (null == curatorFramework && !Strings.isNullOrEmpty(connectionString)) {
-            Preconditions.checkNotNull(namespace);
-            Preconditions.checkNotNull(serviceName);
+        if (null != httpConfig){
             Preconditions.checkNotNull(deserializer);
-            CuratorSourceConfig config = buildCuratorFrameworkService(connectionString, namespace, serviceName);
-            CuratorServiceRegistryUpdater<T> registryUpdater = new CuratorServiceRegistryUpdater<T>(config, deserializer);
-            return buildFinder(config, registryUpdater, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+            HttpServiceRegistryUpdater<T> registryUpdater = new HttpServiceRegistryUpdater<T>(httpConfig, deserializer);
+            return buildFinder(httpConfig, registryUpdater, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
         }
-        if ((!Strings.isNullOrEmpty(host))){
-            Preconditions.checkNotNull(port);
-            Preconditions.checkNotNull(path);
-            HttpSourceConfig config = buildHttpService(host, port, path);
-            HttpServiceRegistryUpdater<T> registryUpdater = new HttpServiceRegistryUpdater<T>(config, deserializer);
-            return buildFinder(config, registryUpdater, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
-        }
-        if (null != curatorFramework) {
-            CuratorSourceConfig config = new CuratorSourceConfig(curatorFramework);
-            CuratorServiceRegistryUpdater<T> registryUpdater = new CuratorServiceRegistryUpdater<T>(config, deserializer);
-            return buildFinder(config, registryUpdater, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+        if (null != curatorConfig) {
+            Preconditions.checkNotNull(deserializer);
+            CuratorFramework curatorFramework = buildCuratorFramework(curatorConfig);
+            CuratorServiceRegistryUpdater<T> registryUpdater = new CuratorServiceRegistryUpdater<T>(curatorConfig, deserializer, curatorFramework);
+            return buildFinder(curatorConfig, registryUpdater, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
         }
         //TODO: what should be the default case?
         return buildFinder(null, null, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
     }
 
-    private CuratorSourceConfig buildCuratorFrameworkService(String connectionString, String namespace, String serviceName) {
+    private CuratorFramework buildCuratorFramework(CuratorSourceConfig curatorConfig) {
         curatorFramework = CuratorFrameworkFactory.builder()
-                .namespace(namespace)
-                .connectString(connectionString)
+                .namespace(curatorConfig.getNamespace())
+                .connectString(curatorConfig.getConnectionString())
                 .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
-        curatorFramework.start();
-        CuratorSourceConfig config = new CuratorSourceConfig(curatorFramework);
-        config.setConnectionString(connectionString);
-        config.setNamespace(namespace);
-        config.setServiceName(serviceName);
-        return config;
-    }
 
-    private HttpSourceConfig buildHttpService(String host, int port, String path) {
-        return new HttpSourceConfig(host, port, path);
+//        CuratorSourceConfig config = new CuratorSourceConfig(connectionString, namespace, serviceName);
+//        config.setConnectionString(connectionString);
+//        config.setNamespace(namespace);
+//        config.setServiceName(serviceName);
+        return curatorFramework;
     }
 
     protected abstract FinderType buildFinder(SourceConfig config,

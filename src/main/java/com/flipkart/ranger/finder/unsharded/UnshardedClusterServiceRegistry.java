@@ -16,16 +16,14 @@
 
 package com.flipkart.ranger.finder.unsharded;
 
-import com.flipkart.ranger.finder.AbstractServiceRegistry;
-import com.flipkart.ranger.finder.SourceConfig;
-import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNode;
+import com.flipkart.ranger.model.ServiceRegistry;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class UnshardedClusterServiceRegistry extends AbstractServiceRegistry<UnshardedClusterInfo> {
+public class UnshardedClusterServiceRegistry implements ServiceRegistry<UnshardedClusterInfo> {
     private AtomicReference<List<ServiceNode<UnshardedClusterInfo>>> nodes
                                         = new AtomicReference<List<ServiceNode<UnshardedClusterInfo>>>();
 
@@ -39,7 +37,6 @@ public class UnshardedClusterServiceRegistry extends AbstractServiceRegistry<Uns
         return nodes.get();
     }
 
-    @Override
     public void nodes(List<ServiceNode<UnshardedClusterInfo>> serviceNodes) {
         nodes.set(ImmutableList.copyOf(serviceNodes));
     }

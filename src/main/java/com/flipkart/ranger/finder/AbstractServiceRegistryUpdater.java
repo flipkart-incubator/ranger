@@ -17,13 +17,13 @@ public abstract class AbstractServiceRegistryUpdater<T> implements Callable<Void
     public abstract void start() throws Exception;
     public abstract void stop() throws Exception;
 
-    protected AbstractServiceRegistry<T> serviceRegistry;
+    protected ServiceRegistry<T> serviceRegistry;
 
     private Lock checkLock = new ReentrantLock();
     private Condition checkCondition = checkLock.newCondition();
     private boolean checkForUpdate = false;
 
-    public void setServiceRegistry(AbstractServiceRegistry<T> serviceRegistry) {
+    public void setServiceRegistry(ServiceRegistry<T> serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
     }
 
@@ -36,7 +36,7 @@ public abstract class AbstractServiceRegistryUpdater<T> implements Callable<Void
                 while (!checkForUpdate) {
                     checkCondition.await();
                 }
-                List<ServiceNode<T>> nodes = getServiceNodes();
+                List<ServiceNode<T>> nodes = getHealthyServiceNodes();
                 if(null != nodes) {
                     logger.debug("Setting nodelist of size: " + nodes.size());
                     serviceRegistry.nodes(nodes);
@@ -51,7 +51,8 @@ public abstract class AbstractServiceRegistryUpdater<T> implements Callable<Void
         }
     }
 
-    protected abstract List<ServiceNode<T>> getServiceNodes();
+    //TODO: rename this method
+    protected abstract List<ServiceNode<T>> getHealthyServiceNodes();
 
     public void checkForUpdate() {
         try {

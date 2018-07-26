@@ -7,6 +7,7 @@ import com.flipkart.ranger.model.ServiceNode;
 import com.google.common.collect.Lists;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.api.CuratorWatcher;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.zookeeper.WatchedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,14 +21,15 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
     private Deserializer<T> deserializer;
     private CuratorFramework curatorFramework;
 
-    protected CuratorServiceRegistryUpdater(CuratorSourceConfig config, Deserializer<T> deserializer){
+    protected CuratorServiceRegistryUpdater(CuratorSourceConfig config, Deserializer<T> deserializer, CuratorFramework curatorFramework){
         this.config = config;
         this.deserializer = deserializer;
+        this.curatorFramework = curatorFramework;
     }
 
     @Override
     public void start() throws Exception {
-        curatorFramework = config.getCuratorFramework();
+        curatorFramework.start();
 
         //zookeeper cluster connection
         curatorFramework.blockUntilConnected();
@@ -55,21 +57,26 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
                 }
             }
         }).forPath(PathBuilder.path(config)); //Start watcher on service node
-        serviceRegistry.nodes(getServiceNodes());
+        serviceRegistry.nodes(getHealthyServiceNodes());
         logger.info("Started polling zookeeper for changes");
     }
 
+    public boolean isRunning() {
+        return curatorFramework != null
+                && (curatorFramework.getState() == CuratorFrameworkState.STARTED);
+    }
+
     @Override
-    protected List<ServiceNode<T>> getServiceNodes() {
+    protected List<ServiceNode<T>> getHealthyServiceNodes() {
         try {
             final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
             //final Service service = serviceRegistry.getService();
-            if(!config.isRunning()) {
+            if(!isRunning()) {
                 return null;
             }
 
 //            final Deserializer<T> deserializer = serviceRegistry.getDeserializer();
-            final CuratorFramework curatorFramework = config.getCuratorFramework();
+//            final CuratorFramework curatorFramework = config.getCuratorFramework();
             final String parentPath = PathBuilder.path(config);
             List<String> children = curatorFramework.getChildren().forPath(parentPath);
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());

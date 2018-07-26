@@ -36,7 +36,7 @@ public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdate
         //TODO: where to have this HttpClient
         httpclient = HttpClients.createDefault();
 
-        serviceRegistry.nodes(getServiceNodes());
+        serviceRegistry.nodes(getHealthyServiceNodes());
         logger.info("Started polling zookeeper for changes");
     }
 
@@ -47,7 +47,7 @@ public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdate
     }
 
     @Override
-    protected List<ServiceNode<T>> getServiceNodes() {
+    protected List<ServiceNode<T>> getHealthyServiceNodes() {
         try{
             final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
             //final Service service = serviceRegistry.getService();

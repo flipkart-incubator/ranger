@@ -16,10 +16,8 @@
 
 package com.flipkart.ranger.finder.sharded;
 
-import com.flipkart.ranger.finder.AbstractServiceRegistry;
-import com.flipkart.ranger.finder.SourceConfig;
-import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNode;
+import com.flipkart.ranger.model.ServiceRegistry;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -27,7 +25,7 @@ import com.google.common.collect.ListMultimap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class MapBasedServiceRegistry<T> extends AbstractServiceRegistry<T> {
+public class MapBasedServiceRegistry<T> implements ServiceRegistry<T> {
     private AtomicReference<ListMultimap<T,ServiceNode<T>>> nodes = new AtomicReference<ListMultimap<T, ServiceNode<T>>>();
 
 //    public MapBasedServiceRegistry(SourceConfig config, Deserializer<T> deserializer, int refreshInterval) {

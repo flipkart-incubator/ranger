@@ -29,8 +29,6 @@ public abstract class SourceConfig  {
         this.serviceType = serviceType;
     }
 
-    public abstract <T> T accept(ServiceVisitor<T> serviceVisitor);
-
     //public abstract void start() throws Exception;
 
     //public abstract void stop() throws Exception;

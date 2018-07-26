@@ -16,8 +16,6 @@
 
 package com.flipkart.ranger.finder;
 
-import com.flipkart.ranger.model.PathBuilder;
-import jdk.internal.joptsimple.internal.Strings;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.slf4j.Logger;
@@ -26,19 +24,15 @@ import org.slf4j.LoggerFactory;
 public class CuratorSourceConfig extends SourceConfig{
     private static final Logger logger = LoggerFactory.getLogger(CuratorSourceConfig.class);
 
-    private CuratorFramework curatorFramework;
-
     private String connectionString;
     private String namespace;
     private String serviceName;
 
-    public CuratorSourceConfig(CuratorFramework curatorFramework) {
+    public CuratorSourceConfig(String connectionString, String namespace, String serviceName) {
         super(ServiceType.CURATOR);
-        this.curatorFramework = curatorFramework;
-    }
-
-    public CuratorFramework getCuratorFramework() {
-        return curatorFramework;
+        this.connectionString = connectionString;
+        this.namespace = namespace;
+        this.serviceName = serviceName;
     }
 
     public String getNamespace() {
@@ -53,26 +47,17 @@ public class CuratorSourceConfig extends SourceConfig{
         return connectionString;
     }
 
-    public void setConnectionString(String connectionString) {
-        this.connectionString = connectionString;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
-    public boolean isRunning() {
-        return curatorFramework != null
-                && (curatorFramework.getState() == CuratorFrameworkState.STARTED);
-    }
-
-    public <T> T accept(ServiceVisitor<T> serviceVisitor) {
-        return serviceVisitor.visit(this);
-    }
+//    public void setConnectionString(String connectionString) {
+//        this.connectionString = connectionString;
+//    }
+//
+//    public void setNamespace(String namespace) {
+//        this.namespace = namespace;
+//    }
+//
+//    public void setServiceName(String serviceName) {
+//        this.serviceName = serviceName;
+//    }
 
 //    public void start() throws Exception{
 //        curatorFramework.blockUntilConnected();

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class ServiceFinder<T, ServiceRegistryType extends AbstractServiceRegistry<T>> {
+public class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
     private static final Logger logger = LoggerFactory.getLogger(ServiceFinder.class);
 
     private final ServiceRegistryType serviceRegistry;

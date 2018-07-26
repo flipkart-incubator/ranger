@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HttpSourceConfig extends SourceConfig{
-    private static final Logger logger = LoggerFactory.getLogger(CuratorSourceConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpSourceConfig.class);
     private String host;
     private Integer port;
     private String path;
@@ -42,10 +42,6 @@ public class HttpSourceConfig extends SourceConfig{
 
     public String getPath() {
         return path;
-    }
-
-    public <T> T accept(ServiceVisitor<T> serviceVisitor) {
-        return serviceVisitor.visit(this);
     }
 
 //    public void start() throws Exception{
