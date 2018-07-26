@@ -27,12 +27,6 @@ public class UnshardedClusterServiceRegistry implements ServiceRegistry<Unsharde
     private AtomicReference<List<ServiceNode<UnshardedClusterInfo>>> nodes
                                         = new AtomicReference<List<ServiceNode<UnshardedClusterInfo>>>();
 
-//    protected UnshardedClusterServiceRegistry(SourceConfig config,
-//                                              Deserializer<UnshardedClusterInfo> deserializer,
-//                                              int refreshInterval) {
-//        super(config, deserializer, refreshInterval);
-//    }
-
     public List<ServiceNode<UnshardedClusterInfo>> nodes() {
         return nodes.get();
     }

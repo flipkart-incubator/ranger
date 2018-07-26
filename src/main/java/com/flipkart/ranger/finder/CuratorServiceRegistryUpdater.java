@@ -20,11 +20,13 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
     private CuratorSourceConfig config;
     private Deserializer<T> deserializer;
     private CuratorFramework curatorFramework;
+    private String serviceName;
 
-    protected CuratorServiceRegistryUpdater(CuratorSourceConfig config, Deserializer<T> deserializer, CuratorFramework curatorFramework){
+    protected CuratorServiceRegistryUpdater(CuratorSourceConfig config, Deserializer<T> deserializer, CuratorFramework curatorFramework, String serviceName){
         this.config = config;
         this.deserializer = deserializer;
         this.curatorFramework = curatorFramework;
+        this.serviceName = serviceName;
     }
 
     @Override
@@ -34,10 +36,9 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
         //zookeeper cluster connection
         curatorFramework.blockUntilConnected();
         logger.debug("Connected to zookeeper cluster");
-        curatorFramework.newNamespaceAwareEnsurePath(PathBuilder.path(config))
+        curatorFramework.newNamespaceAwareEnsurePath(PathBuilder.path(serviceName))
                 .ensure(curatorFramework.getZookeeperClient());
 
-        //CuratorFramework curatorFramework = serviceRegistry.getService().getCuratorFramework();
         curatorFramework.getChildren().usingWatcher(new CuratorWatcher() {
             @Override
             public void process(WatchedEvent event) throws Exception {
@@ -56,7 +57,7 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
                         break;
                 }
             }
-        }).forPath(PathBuilder.path(config)); //Start watcher on service node
+        }).forPath(PathBuilder.path(serviceName)); //Start watcher on service node
         serviceRegistry.nodes(getHealthyServiceNodes());
         logger.info("Started polling zookeeper for changes");
     }
@@ -70,14 +71,12 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
     protected List<ServiceNode<T>> getHealthyServiceNodes() {
         try {
             final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
-            //final Service service = serviceRegistry.getService();
+
             if(!isRunning()) {
                 return null;
             }
 
-//            final Deserializer<T> deserializer = serviceRegistry.getDeserializer();
-//            final CuratorFramework curatorFramework = config.getCuratorFramework();
-            final String parentPath = PathBuilder.path(config);
+            final String parentPath = PathBuilder.path(serviceName);
             List<String> children = curatorFramework.getChildren().forPath(parentPath);
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());
             for(String child : children) {

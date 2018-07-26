@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
+import com.flipkart.ranger.finder.CuratorSourceConfig;
 import com.flipkart.ranger.finder.sharded.MapBasedServiceRegistry;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthchecks;
@@ -128,9 +129,9 @@ public class CustomShardSelectorTest {
     }
     @Test
     public void testBasicDiscovery() throws Exception {
+        CuratorSourceConfig curatorSourceConfig = new CuratorSourceConfig(testingCluster.getConnectString(), "test");
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                .withConnectionString(testingCluster.getConnectString())
-                .withNamespace("test")
+                .withCuratorSourceConfig(curatorSourceConfig)
                 .withServiceName("test-service")
                 .withShardSelector(new TestShardSelector())
                 .withDeserializer(new Deserializer<TestShardInfo>() {

@@ -16,15 +16,13 @@
 
 package com.flipkart.ranger.model;
 
-import com.flipkart.ranger.finder.CuratorSourceConfig;
-
 public class PathBuilder {
     
     private PathBuilder() {
         throw new InstantiationError("Must not instantiate this class");
     }
     
-    public static String path(final CuratorSourceConfig config) {
-        return String.format("/%s", config.getServiceName());
+    public static String path(final String serviceName) {
+        return String.format("/%s", serviceName);
     }
 }

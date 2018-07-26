@@ -16,11 +16,7 @@
 
 package com.flipkart.ranger.finder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class HttpSourceConfig extends SourceConfig{
-    private static final Logger logger = LoggerFactory.getLogger(HttpSourceConfig.class);
     private String host;
     private Integer port;
     private String path;
@@ -43,13 +39,4 @@ public class HttpSourceConfig extends SourceConfig{
     public String getPath() {
         return path;
     }
-
-//    public void start() throws Exception{
-//        logger.debug("Starting Http Service");
-//    }
-
-//    public void stop() throws Exception{
-//        logger.debug("Stopping Curator Service");
-//    }
-
 }

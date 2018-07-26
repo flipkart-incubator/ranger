@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
+import com.flipkart.ranger.finder.CuratorSourceConfig;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.healthcheck.Healthchecks;
@@ -59,9 +60,9 @@ public class SimpleServiceProviderTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
+        CuratorSourceConfig curatorSourceConfig = new CuratorSourceConfig(testingCluster.getConnectString(), "test");
         UnshardedClusterFinder serviceFinder = ServiceFinderBuilders.unshardedFinderBuilder()
-                .withConnectionString(testingCluster.getConnectString())
-                .withNamespace("test")
+                .withCuratorSourceConfig(curatorSourceConfig)
                 .withServiceName("test-service")
                 .withDeserializer(new Deserializer<UnshardedClusterInfo>() {
                     @Override

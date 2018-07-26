@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
+import com.flipkart.ranger.finder.CuratorSourceConfig;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
@@ -111,9 +112,10 @@ public class ServiceProviderExtCuratorTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
+        CuratorSourceConfig curatorSourceConfig = new CuratorSourceConfig(null, "test");
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withCuratorFramework(curatorFramework)
-                .withNamespace("test")
+                .withCuratorSourceConfig(curatorSourceConfig)
                 .withServiceName("test-service")
                 .withDeserializer(new Deserializer<TestShardInfo>() {
                     @Override

@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.List;
 
 public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdater<T> {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpServiceRegistryUpdater.class);
 
     private HttpSourceConfig config;
     private CloseableHttpClient httpclient;
@@ -50,8 +50,6 @@ public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdate
     protected List<ServiceNode<T>> getHealthyServiceNodes() {
         try{
             final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
-            //final Service service = serviceRegistry.getService();
-//            final Deserializer<T> deserializer = serviceRegistry.getDeserializer();
 
             //my understanding =>
             //send the get request and get the data

@@ -28,10 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MapBasedServiceRegistry<T> implements ServiceRegistry<T> {
     private AtomicReference<ListMultimap<T,ServiceNode<T>>> nodes = new AtomicReference<ListMultimap<T, ServiceNode<T>>>();
 
-//    public MapBasedServiceRegistry(SourceConfig config, Deserializer<T> deserializer, int refreshInterval) {
-//        super(config, deserializer, refreshInterval);
-//    }
-
     public ListMultimap<T, ServiceNode<T>> nodes() {
         return nodes.get();
     }

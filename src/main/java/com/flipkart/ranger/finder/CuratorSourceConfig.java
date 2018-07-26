@@ -16,59 +16,22 @@
 
 package com.flipkart.ranger.finder;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.imps.CuratorFrameworkState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class CuratorSourceConfig extends SourceConfig{
-    private static final Logger logger = LoggerFactory.getLogger(CuratorSourceConfig.class);
-
     private String connectionString;
     private String namespace;
-    private String serviceName;
 
-    public CuratorSourceConfig(String connectionString, String namespace, String serviceName) {
+    public CuratorSourceConfig(String connectionString, String namespace) {
         super(ServiceType.CURATOR);
         this.connectionString = connectionString;
         this.namespace = namespace;
-        this.serviceName = serviceName;
     }
 
     public String getNamespace() {
         return namespace;
     }
 
-    public String getServiceName() {
-        return serviceName;
-    }
-
     public String getConnectionString() {
         return connectionString;
     }
-
-//    public void setConnectionString(String connectionString) {
-//        this.connectionString = connectionString;
-//    }
-//
-//    public void setNamespace(String namespace) {
-//        this.namespace = namespace;
-//    }
-//
-//    public void setServiceName(String serviceName) {
-//        this.serviceName = serviceName;
-//    }
-
-//    public void start() throws Exception{
-//        curatorFramework.blockUntilConnected();
-//        logger.debug("Connected to zookeeper cluster");
-//        curatorFramework.newNamespaceAwareEnsurePath(PathBuilder.path(this))
-//                .ensure(curatorFramework.getZookeeperClient());
-//    }
-
-//    public void stop() throws Exception{
-//        curatorFramework.close();
-//        logger.debug("Stopping Curator Service");
-//    }
 
 }

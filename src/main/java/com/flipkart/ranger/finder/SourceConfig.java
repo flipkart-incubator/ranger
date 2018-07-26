@@ -29,10 +29,6 @@ public abstract class SourceConfig  {
         this.serviceType = serviceType;
     }
 
-    //public abstract void start() throws Exception;
-
-    //public abstract void stop() throws Exception;
-
     public ServiceType getServiceType() {
         return serviceType;
     }
