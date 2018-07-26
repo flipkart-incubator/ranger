@@ -19,42 +19,41 @@ package com.flipkart.ranger.finder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
+public class HttpSourceConfig extends SourceConfig{
+    private static final Logger logger = LoggerFactory.getLogger(CuratorSourceConfig.class);
+    private String host;
+    private Integer port;
+    private String path;
 
-public class HttpService extends Service{
-    private static final Logger logger = LoggerFactory.getLogger(CuratorService.class);
-    //private String urlPath;
-    private URI uri;
-
-    public HttpService(URI uri) {
+    public HttpSourceConfig(String host, int port, String path) {
         super(ServiceType.HTTP);
-        //this.urlPath = urlPath;
-        this.uri = uri;
+        this.host = host;
+        this.port = port;
+        this.path = path;
     }
 
-//    public String getUrlPath() {
-//        return urlPath;
-//    }
-
-    public URI getURI(){
-        return uri;
+    public String getHost(){
+        return host;
     }
 
-    //TODO: verify if we need the setter as we are setting urlPath via constructor
-//    public void setUrlPath(String urlPath) {
-//        this.urlPath = urlPath;
-//    }
+    public Integer getPort() {
+        return port;
+    }
+
+    public String getPath() {
+        return path;
+    }
 
     public <T> T accept(ServiceVisitor<T> serviceVisitor) {
         return serviceVisitor.visit(this);
     }
 
-    public void start() throws Exception{
-        logger.debug("Starting Http Service");
-    }
+//    public void start() throws Exception{
+//        logger.debug("Starting Http Service");
+//    }
 
-    public void stop() throws Exception{
-        logger.debug("Stopping Curator Service");
-    }
+//    public void stop() throws Exception{
+//        logger.debug("Stopping Curator Service");
+//    }
 
 }

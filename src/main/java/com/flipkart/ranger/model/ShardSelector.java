@@ -16,8 +16,10 @@
 
 package com.flipkart.ranger.model;
 
+import com.flipkart.ranger.finder.AbstractServiceRegistry;
+
 import java.util.List;
 
-public interface ShardSelector<T, ServiceRegistryType extends ServiceRegistry<T>> {
+public interface ShardSelector<T, ServiceRegistryType extends AbstractServiceRegistry<T>> {
     public List<ServiceNode<T>> nodes(T criteria, ServiceRegistryType serviceRegistry);
 }

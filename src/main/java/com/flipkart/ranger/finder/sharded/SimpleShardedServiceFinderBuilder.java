@@ -16,15 +16,17 @@
 
 package com.flipkart.ranger.finder.sharded;
 
+import com.flipkart.ranger.finder.AbstractServiceRegistryUpdater;
 import com.flipkart.ranger.finder.BaseServiceFinderBuilder;
-import com.flipkart.ranger.finder.Service;
+import com.flipkart.ranger.finder.SourceConfig;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNodeSelector;
 import com.flipkart.ranger.model.ShardSelector;
 
 public class SimpleShardedServiceFinderBuilder<T> extends BaseServiceFinderBuilder<T, MapBasedServiceRegistry<T>, SimpleShardedServiceFinder<T>> {
     @Override
-    protected SimpleShardedServiceFinder<T> buildFinder(Service service,
+    protected SimpleShardedServiceFinder<T> buildFinder(SourceConfig config,
+                                                        AbstractServiceRegistryUpdater<T> registryUpdater,
                                                         Deserializer<T> deserializer,
                                                         ShardSelector<T, MapBasedServiceRegistry<T>> shardSelector,
                                                         ServiceNodeSelector<T> nodeSelector,
@@ -32,7 +34,7 @@ public class SimpleShardedServiceFinderBuilder<T> extends BaseServiceFinderBuild
         if(null == shardSelector) {
             shardSelector = new MatchingShardSelector<T>();
         }
-        MapBasedServiceRegistry<T> serviceRegistry = new MapBasedServiceRegistry<T>(service, deserializer, healthcheckRefreshTimeMillis);
-        return new SimpleShardedServiceFinder<T>(serviceRegistry, shardSelector, nodeSelector);
+        MapBasedServiceRegistry<T> serviceRegistry = new MapBasedServiceRegistry<T>();
+        return new SimpleShardedServiceFinder<T>(serviceRegistry, registryUpdater, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
     }
 }

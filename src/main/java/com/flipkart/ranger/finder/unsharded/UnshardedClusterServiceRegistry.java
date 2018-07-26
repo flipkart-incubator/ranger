@@ -16,8 +16,8 @@
 
 package com.flipkart.ranger.finder.unsharded;
 
-import com.flipkart.ranger.finder.SchedulerServiceRegistry;
-import com.flipkart.ranger.finder.Service;
+import com.flipkart.ranger.finder.AbstractServiceRegistry;
+import com.flipkart.ranger.finder.SourceConfig;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNode;
 import com.google.common.collect.ImmutableList;
@@ -25,15 +25,15 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class UnshardedClusterServiceRegistry extends SchedulerServiceRegistry<UnshardedClusterInfo> {
+public class UnshardedClusterServiceRegistry extends AbstractServiceRegistry<UnshardedClusterInfo> {
     private AtomicReference<List<ServiceNode<UnshardedClusterInfo>>> nodes
                                         = new AtomicReference<List<ServiceNode<UnshardedClusterInfo>>>();
 
-    protected UnshardedClusterServiceRegistry(Service service,
-                                              Deserializer<UnshardedClusterInfo> deserializer,
-                                              int refreshInterval) {
-        super(service, deserializer, refreshInterval);
-    }
+//    protected UnshardedClusterServiceRegistry(SourceConfig config,
+//                                              Deserializer<UnshardedClusterInfo> deserializer,
+//                                              int refreshInterval) {
+//        super(config, deserializer, refreshInterval);
+//    }
 
     public List<ServiceNode<UnshardedClusterInfo>> nodes() {
         return nodes.get();

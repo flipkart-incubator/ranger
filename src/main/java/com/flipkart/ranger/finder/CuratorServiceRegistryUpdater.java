@@ -15,20 +15,19 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdater<T> {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractServiceRegistryUpdater.class);
 
-    private ServiceRegistry<T> serviceRegistry;
-    private CuratorService service;
+    private CuratorSourceConfig config;
+    private Deserializer<T> deserializer;
 
-    protected CuratorServiceRegistryUpdater(ServiceRegistry<T> serviceRegistry, CuratorService service){
-        super(serviceRegistry);
-        this.serviceRegistry = serviceRegistry;
-        this.service = service;
+    protected CuratorServiceRegistryUpdater(CuratorSourceConfig config, Deserializer<T> deserializer){
+        this.config = config;
+        this.deserializer = deserializer;
     }
 
     @Override
     public void start() throws Exception {
-        CuratorFramework curatorFramework = service.getCuratorFramework();
+        CuratorFramework curatorFramework = config.getCuratorFramework();
         //CuratorFramework curatorFramework = serviceRegistry.getService().getCuratorFramework();
         curatorFramework.getChildren().usingWatcher(new CuratorWatcher() {
             @Override
@@ -48,7 +47,7 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
                         break;
                 }
             }
-        }).forPath(PathBuilder.path(service)); //Start watcher on service node
+        }).forPath(PathBuilder.path(config)); //Start watcher on service node
         serviceRegistry.nodes(getServiceNodes());
         logger.info("Started polling zookeeper for changes");
     }
@@ -58,13 +57,13 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
         try {
             final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
             //final Service service = serviceRegistry.getService();
-            if(!service.isRunning()) {
+            if(!config.isRunning()) {
                 return null;
             }
 
-            final Deserializer<T> deserializer = serviceRegistry.getDeserializer();
-            final CuratorFramework curatorFramework = service.getCuratorFramework();
-            final String parentPath = PathBuilder.path(service);
+//            final Deserializer<T> deserializer = serviceRegistry.getDeserializer();
+            final CuratorFramework curatorFramework = config.getCuratorFramework();
+            final String parentPath = PathBuilder.path(config);
             List<String> children = curatorFramework.getChildren().forPath(parentPath);
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());
             for(String child : children) {

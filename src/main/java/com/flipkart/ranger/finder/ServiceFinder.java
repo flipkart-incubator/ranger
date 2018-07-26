@@ -20,18 +20,31 @@ import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ServiceNodeSelector;
 import com.flipkart.ranger.model.ServiceRegistry;
 import com.flipkart.ranger.model.ShardSelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.*;
 
-public class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
+public class ServiceFinder<T, ServiceRegistryType extends AbstractServiceRegistry<T>> {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceFinder.class);
+
     private final ServiceRegistryType serviceRegistry;
     private final ShardSelector<T, ServiceRegistryType> shardSelector;
+    private AbstractServiceRegistryUpdater<T> updater;
     private final ServiceNodeSelector<T> nodeSelector;
+    private int refreshIntervalMillis;
 
-    public ServiceFinder(ServiceRegistryType serviceRegistry, ShardSelector<T, ServiceRegistryType> shardSelector, ServiceNodeSelector<T> nodeSelector) {
+    private ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> scheduledFuture;
+
+    public ServiceFinder(ServiceRegistryType serviceRegistry, AbstractServiceRegistryUpdater<T> updater, ShardSelector<T, ServiceRegistryType> shardSelector, ServiceNodeSelector<T> nodeSelector, int refreshIntervalMillis) {
         this.serviceRegistry = serviceRegistry;
         this.shardSelector = shardSelector;
         this.nodeSelector = nodeSelector;
+        this.updater = updater;
+        this.refreshIntervalMillis = refreshIntervalMillis;
     }
 
     public ServiceNode<T> get(T criteria) {
@@ -47,10 +60,34 @@ public class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
     }
 
     public void start() throws Exception {
-        serviceRegistry.start();
+        //TODO: verify
+        updater.setServiceRegistry(serviceRegistry);
+        updater.start();
+
+        executorService.submit(updater);
+        scheduledFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    updater.checkForUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 0, refreshIntervalMillis, TimeUnit.MILLISECONDS);
+        logger.debug("ServiceFinder Scheduler Started");
     }
 
     public void stop() throws Exception {
-        serviceRegistry.stop();
+        updater.stop();
+        try {
+            if( null != scheduledFuture ) {
+                scheduledFuture.cancel(true);
+            }
+            updater.stop();
+        } catch (Exception e) {
+            logger.error("Error stopping ZK poller: ", e);
+        }
+        logger.debug("ServiceFinder Scheduler stopped");
     }
 }

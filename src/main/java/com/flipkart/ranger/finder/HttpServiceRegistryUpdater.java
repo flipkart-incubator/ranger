@@ -9,6 +9,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
@@ -21,14 +22,13 @@ import java.util.List;
 public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdater<T> {
     private static final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
 
-    private ServiceRegistry<T> serviceRegistry;
-    private HttpService service;
+    private HttpSourceConfig config;
     private CloseableHttpClient httpclient;
+    private Deserializer<T> deserializer;
 
-    protected HttpServiceRegistryUpdater(ServiceRegistry<T> serviceRegistry, HttpService service){
-        super(serviceRegistry);
-        this.serviceRegistry = serviceRegistry;
-        this.service = service;
+    protected HttpServiceRegistryUpdater(HttpSourceConfig config, Deserializer<T> deserializer){
+        this.config = config;
+        this.deserializer = deserializer;
     }
 
     @Override
@@ -51,11 +51,19 @@ public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdate
         try{
             final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
             //final Service service = serviceRegistry.getService();
-            final Deserializer<T> deserializer = serviceRegistry.getDeserializer();
+//            final Deserializer<T> deserializer = serviceRegistry.getDeserializer();
 
             //my understanding =>
             //send the get request and get the data
-            final URI uri = service.getURI();
+            final String host = config.getHost();
+            final Integer port = config.getPort();
+            final String path = config.getPath();
+            final URI uri = new URIBuilder()
+                .setScheme("http")
+                .setHost(host)
+                .setPort(port)
+                .setPath(path)
+                .build();
 
             HttpGet httpget = new HttpGet(uri);
             CloseableHttpResponse response = httpclient.execute(httpget);

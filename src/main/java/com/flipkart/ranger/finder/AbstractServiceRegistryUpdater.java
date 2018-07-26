@@ -12,17 +12,18 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class AbstractServiceRegistryUpdater<T> implements Callable<Void> {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
-    private ServiceRegistry<T> serviceRegistry;
+    private static final Logger logger = LoggerFactory.getLogger(AbstractServiceRegistryUpdater.class);
 
     public abstract void start() throws Exception;
     public abstract void stop() throws Exception;
+
+    protected AbstractServiceRegistry<T> serviceRegistry;
 
     private Lock checkLock = new ReentrantLock();
     private Condition checkCondition = checkLock.newCondition();
     private boolean checkForUpdate = false;
 
-    public AbstractServiceRegistryUpdater(ServiceRegistry<T> serviceRegistry) {
+    public void setServiceRegistry(AbstractServiceRegistry<T> serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
     }
 

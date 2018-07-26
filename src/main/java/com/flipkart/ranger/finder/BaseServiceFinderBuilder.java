@@ -22,11 +22,8 @@ import com.google.common.base.Strings;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.http.client.utils.URIBuilder;
 
-import java.net.URI;
-
-public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
+public abstract class BaseServiceFinderBuilder<T, RegistryType extends AbstractServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
     private String namespace;
     private String serviceName;
     private CuratorFramework curatorFramework;
@@ -46,11 +43,6 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
 
     public BaseServiceFinderBuilder<T, RegistryType, FinderType> withServiceName(final String serviceName) {
         this.serviceName = serviceName;
-        return this;
-    }
-
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withCuratorFramework(CuratorFramework curatorFramework) {
-        this.curatorFramework = curatorFramework;
         return this;
     }
 
@@ -99,50 +91,49 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         if( 0 == healthcheckRefreshTimeMillis) {
             healthcheckRefreshTimeMillis = 1000;
         }
-        Service service;
         if (null == curatorFramework && !Strings.isNullOrEmpty(connectionString)) {
             Preconditions.checkNotNull(namespace);
             Preconditions.checkNotNull(serviceName);
             Preconditions.checkNotNull(deserializer);
-            service = buildCuratorFrameworkService(connectionString, namespace, serviceName);
-            return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+            CuratorSourceConfig config = buildCuratorFrameworkService(connectionString, namespace, serviceName);
+            CuratorServiceRegistryUpdater<T> registryUpdater = new CuratorServiceRegistryUpdater<T>(config, deserializer);
+            return buildFinder(config, registryUpdater, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
         }
         if ((!Strings.isNullOrEmpty(host))){
-            Preconditions.checkNotNull(host);
             Preconditions.checkNotNull(port);
             Preconditions.checkNotNull(path);
-            service = buildHttpService(host, port, path);
-            return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+            HttpSourceConfig config = buildHttpService(host, port, path);
+            HttpServiceRegistryUpdater<T> registryUpdater = new HttpServiceRegistryUpdater<T>(config, deserializer);
+            return buildFinder(config, registryUpdater, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
         }
-        if (null != curatorFramework){
-            curatorFramework.start();
-            service = new CuratorService(curatorFramework, namespace, serviceName);
-            return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+        if (null != curatorFramework) {
+            CuratorSourceConfig config = new CuratorSourceConfig(curatorFramework);
+            CuratorServiceRegistryUpdater<T> registryUpdater = new CuratorServiceRegistryUpdater<T>(config, deserializer);
+            return buildFinder(config, registryUpdater, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
         }
         //TODO: what should be the default case?
-        return buildFinder(null, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+        return buildFinder(null, null, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
     }
 
-    private Service buildCuratorFrameworkService(String connectionString, String namespace, String serviceName) throws Exception {
+    private CuratorSourceConfig buildCuratorFrameworkService(String connectionString, String namespace, String serviceName) {
         curatorFramework = CuratorFrameworkFactory.builder()
                 .namespace(namespace)
                 .connectString(connectionString)
                 .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
         curatorFramework.start();
-        return new CuratorService(curatorFramework, namespace, serviceName);
+        CuratorSourceConfig config = new CuratorSourceConfig(curatorFramework);
+        config.setConnectionString(connectionString);
+        config.setNamespace(namespace);
+        config.setServiceName(serviceName);
+        return config;
     }
 
-    private Service buildHttpService(String host, int port, String path) throws Exception{
-        URI uri = new URIBuilder()
-                .setScheme("http")
-                .setHost(host)
-                .setPort(port)
-                .setPath(path)
-                .build();
-        return new HttpService(uri);
+    private HttpSourceConfig buildHttpService(String host, int port, String path) {
+        return new HttpSourceConfig(host, port, path);
     }
 
-    protected abstract FinderType buildFinder(Service service,
+    protected abstract FinderType buildFinder(SourceConfig config,
+                                              AbstractServiceRegistryUpdater<T> registryUpdater,
                                               Deserializer<T> deserializer,
                                               ShardSelector<T, RegistryType> shardSelector,
                                               ServiceNodeSelector<T> nodeSelector,

@@ -17,23 +17,24 @@
 package com.flipkart.ranger.finder;
 
 import com.flipkart.ranger.model.PathBuilder;
+import jdk.internal.joptsimple.internal.Strings;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CuratorService extends Service{
-    private static final Logger logger = LoggerFactory.getLogger(CuratorService.class);
+public class CuratorSourceConfig extends SourceConfig{
+    private static final Logger logger = LoggerFactory.getLogger(CuratorSourceConfig.class);
 
     private CuratorFramework curatorFramework;
+
+    private String connectionString;
     private String namespace;
     private String serviceName;
 
-    public CuratorService(CuratorFramework curatorFramework, String namespace, String serviceName) {
+    public CuratorSourceConfig(CuratorFramework curatorFramework) {
         super(ServiceType.CURATOR);
         this.curatorFramework = curatorFramework;
-        this.namespace = namespace;
-        this.serviceName = serviceName;
     }
 
     public CuratorFramework getCuratorFramework() {
@@ -48,6 +49,22 @@ public class CuratorService extends Service{
         return serviceName;
     }
 
+    public String getConnectionString() {
+        return connectionString;
+    }
+
+    public void setConnectionString(String connectionString) {
+        this.connectionString = connectionString;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
     public boolean isRunning() {
         return curatorFramework != null
                 && (curatorFramework.getState() == CuratorFrameworkState.STARTED);
@@ -57,16 +74,16 @@ public class CuratorService extends Service{
         return serviceVisitor.visit(this);
     }
 
-    public void start() throws Exception{
-        curatorFramework.blockUntilConnected();
-        logger.debug("Connected to zookeeper cluster");
-        curatorFramework.newNamespaceAwareEnsurePath(PathBuilder.path(this))
-                .ensure(curatorFramework.getZookeeperClient());
-    }
+//    public void start() throws Exception{
+//        curatorFramework.blockUntilConnected();
+//        logger.debug("Connected to zookeeper cluster");
+//        curatorFramework.newNamespaceAwareEnsurePath(PathBuilder.path(this))
+//                .ensure(curatorFramework.getZookeeperClient());
+//    }
 
-    public void stop() throws Exception{
-        curatorFramework.close();
-        logger.debug("Stopping Curator Service");
-    }
+//    public void stop() throws Exception{
+//        curatorFramework.close();
+//        logger.debug("Stopping Curator Service");
+//    }
 
 }
