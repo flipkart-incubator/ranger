@@ -1,3 +1,19 @@
+/**
+ * Copyright 2015 Flipkart Internet Pvt. Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.flipkart.ranger.finder;
 
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
@@ -17,13 +33,11 @@ import java.util.List;
 public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdater<T> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractServiceRegistryUpdater.class);
 
-    private CuratorSourceConfig config;
     private Deserializer<T> deserializer;
     private CuratorFramework curatorFramework;
     private String serviceName;
 
-    protected CuratorServiceRegistryUpdater(CuratorSourceConfig config, Deserializer<T> deserializer, CuratorFramework curatorFramework, String serviceName){
-        this.config = config;
+    protected CuratorServiceRegistryUpdater(Deserializer<T> deserializer, CuratorFramework curatorFramework, String serviceName){
         this.deserializer = deserializer;
         this.curatorFramework = curatorFramework;
         this.serviceName = serviceName;
@@ -31,7 +45,7 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
 
     @Override
     public void start() throws Exception {
-        curatorFramework.start();
+        logger.info("Starting curator framework...");
 
         //zookeeper cluster connection
         curatorFramework.blockUntilConnected();

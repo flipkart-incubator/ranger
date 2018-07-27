@@ -65,23 +65,23 @@ public class ServiceProviderIntegrationTest {
 
         registerService("localhost-4", 9000, 2, anotherFile);
 
-        CuratorSourceConfig curatorSourceConfig = new CuratorSourceConfig(testingCluster.getConnectString(), "test");
+        Deserializer<UnshardedClusterInfo> deserializer = new Deserializer<UnshardedClusterInfo>() {
+            @Override
+            public ServiceNode<UnshardedClusterInfo> deserialize(byte[] data) {
+                try {
+                    return objectMapper.readValue(data,
+                            new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        CuratorSourceConfig<UnshardedClusterInfo> curatorSourceConfig = new CuratorSourceConfig<UnshardedClusterInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+
         serviceFinder = ServiceFinderBuilders.unshardedFinderBuilder()
                 .withCuratorSourceConfig(curatorSourceConfig)
-                .withServiceName("test-service")
-                .withDeserializer(new Deserializer<UnshardedClusterInfo>() {
-                    @Override
-                    public ServiceNode<UnshardedClusterInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
                 .build();
         serviceFinder.start();
     }

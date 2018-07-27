@@ -104,23 +104,23 @@ public class ServiceProviderTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
-        CuratorSourceConfig curatorSourceConfig = new CuratorSourceConfig(testingCluster.getConnectString(), "test");
+        Deserializer<TestShardInfo> deserializer = new Deserializer<TestShardInfo>() {
+            @Override
+            public ServiceNode<TestShardInfo> deserialize(byte[] data) {
+                try {
+                    return objectMapper.readValue(data,
+                            new TypeReference<ServiceNode<TestShardInfo>>() {
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        CuratorSourceConfig<TestShardInfo> curatorSourceConfig = new CuratorSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withCuratorSourceConfig(curatorSourceConfig)
-                .withServiceName("test-service")
-                .withDeserializer(new Deserializer<TestShardInfo>() {
-                    @Override
-                    public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<TestShardInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
                 .build();
         serviceFinder.start();
         {
@@ -151,24 +151,24 @@ public class ServiceProviderTest {
 
     @Test
     public void testBasicDiscoveryRR() throws Exception {
-        CuratorSourceConfig curatorSourceConfig = new CuratorSourceConfig(testingCluster.getConnectString(), "test");
+        Deserializer<TestShardInfo> deserializer = new Deserializer<TestShardInfo>() {
+            @Override
+            public ServiceNode<TestShardInfo> deserialize(byte[] data) {
+                try {
+                    return objectMapper.readValue(data,
+                            new TypeReference<ServiceNode<TestShardInfo>>() {
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        CuratorSourceConfig<TestShardInfo> curatorSourceConfig = new CuratorSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                                                                         .withCuratorSourceConfig(curatorSourceConfig)
-                                                                        .withServiceName("test-service")
                                                                         .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
-                                                                        .withDeserializer(new Deserializer<TestShardInfo>() {
-                                                                            @Override
-                                                                            public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                                                                                try {
-                                                                                    return objectMapper.readValue(data,
-                                                                                            new TypeReference<ServiceNode<TestShardInfo>>() {
-                                                                                            });
-                                                                                } catch (IOException e) {
-                                                                                    e.printStackTrace();
-                                                                                }
-                                                                                return null;
-                                                                            }
-                                                                        })
                                                                         .build();
         serviceFinder.start();
         {
@@ -201,24 +201,24 @@ public class ServiceProviderTest {
 
     @Test
     public void testVisibility() throws Exception {
-        CuratorSourceConfig curatorSourceConfig = new CuratorSourceConfig(testingCluster.getConnectString(), "test");
+        Deserializer<TestShardInfo> deserializer = new Deserializer<TestShardInfo>() {
+            @Override
+            public ServiceNode<TestShardInfo> deserialize(byte[] data) {
+                try {
+                    return objectMapper.readValue(data,
+                            new TypeReference<ServiceNode<TestShardInfo>>() {
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        CuratorSourceConfig<TestShardInfo> curatorSourceConfig = new CuratorSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withCuratorSourceConfig(curatorSourceConfig)
-                .withServiceName("test-service")
                 .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
-                .withDeserializer(new Deserializer<TestShardInfo>() {
-                    @Override
-                    public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<TestShardInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
                 .build();
         serviceFinder.start();
         List<ServiceNode<TestShardInfo>> all = serviceFinder.getAll(new TestShardInfo(1));

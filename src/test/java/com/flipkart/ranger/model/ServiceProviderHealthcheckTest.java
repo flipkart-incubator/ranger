@@ -97,23 +97,23 @@ public class ServiceProviderHealthcheckTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
-        CuratorSourceConfig curatorSourceConfig = new CuratorSourceConfig(testingCluster.getConnectString(), "test");
+        Deserializer<TestShardInfo> deserializer = new Deserializer<TestShardInfo>() {
+            @Override
+            public ServiceNode<TestShardInfo> deserialize(byte[] data) {
+                try {
+                    return objectMapper.readValue(data,
+                            new TypeReference<ServiceNode<TestShardInfo>>() {
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        CuratorSourceConfig<TestShardInfo> curatorSourceConfig = new CuratorSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withCuratorSourceConfig(curatorSourceConfig)
-                .withServiceName("test-service")
-                .withDeserializer(new Deserializer<TestShardInfo>() {
-                    @Override
-                    public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<TestShardInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
                 .witHhealthcheckRefreshTimeMillis(10)
                 .build();
         serviceFinder.start();

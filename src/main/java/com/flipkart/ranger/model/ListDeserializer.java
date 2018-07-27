@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.finder;
-
-import com.flipkart.ranger.model.ServiceNode;
-import com.flipkart.ranger.model.ServiceNodeSelector;
+package com.flipkart.ranger.model;
 
 import java.util.List;
 
-public class RoundRobinServiceNodeSelector<T> implements ServiceNodeSelector<T> {
-    private static final ThreadLocal<Integer> index =
-            new ThreadLocal<Integer>() {
-                @Override protected Integer initialValue() {
-                    return 0;
-                }
-            };
-
-    @Override
-    public ServiceNode<T> select(List<ServiceNode<T>> serviceNodes) {
-        index.set((index.get() + 1) % serviceNodes.size());
-        return serviceNodes.get(index.get());
-    }
+public interface ListDeserializer<T> {
+    List<ServiceNode<T>> deserialize(final byte[] data);
 }

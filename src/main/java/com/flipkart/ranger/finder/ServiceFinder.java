@@ -60,7 +60,6 @@ public class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
     }
 
     public void start() throws Exception {
-        //TODO: verify
         updater.setServiceRegistry(serviceRegistry);
 
         updater.start();

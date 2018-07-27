@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
+import com.flipkart.ranger.finder.CuratorFrameworkConfig;
 import com.flipkart.ranger.finder.CuratorSourceConfig;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthchecks;
@@ -112,24 +113,23 @@ public class ServiceProviderExtCuratorTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
-        CuratorSourceConfig curatorSourceConfig = new CuratorSourceConfig(null, "test");
+        Deserializer<TestShardInfo> deserializer = new Deserializer<TestShardInfo>() {
+            @Override
+            public ServiceNode<TestShardInfo> deserialize(byte[] data) {
+                try {
+                    return objectMapper.readValue(data,
+                            new TypeReference<ServiceNode<TestShardInfo>>() {
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        CuratorFrameworkConfig<TestShardInfo> curatorFrameworkConfig = new CuratorFrameworkConfig<TestShardInfo>(curatorFramework, "test-service", deserializer);
+
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                .withCuratorFramework(curatorFramework)
-                .withCuratorSourceConfig(curatorSourceConfig)
-                .withServiceName("test-service")
-                .withDeserializer(new Deserializer<TestShardInfo>() {
-                    @Override
-                    public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<TestShardInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
+                .withCuratorFrameworkConfig(curatorFrameworkConfig)
                 .build();
         serviceFinder.start();
         {

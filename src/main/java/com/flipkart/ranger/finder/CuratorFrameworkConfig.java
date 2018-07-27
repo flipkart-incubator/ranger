@@ -17,17 +17,16 @@
 package com.flipkart.ranger.finder;
 
 import com.flipkart.ranger.model.Deserializer;
+import org.apache.curator.framework.CuratorFramework;
 
-public class CuratorSourceConfig<T> extends SourceConfig{
-    private String connectionString;
-    private String namespace;
+public class CuratorFrameworkConfig<T> extends SourceConfig {
+    private CuratorFramework curatorFramework;
     private Deserializer<T> deserializer;
     private String serviceName;
 
-    public CuratorSourceConfig(String connectionString, String namespace, String serviceName, Deserializer<T> deserializer) {
-        super(ServiceType.CURATOR);
-        this.connectionString = connectionString;
-        this.namespace = namespace;
+    public CuratorFrameworkConfig(CuratorFramework curatorFramework, String serviceName, Deserializer<T> deserializer) {
+        super(SourceConfig.ServiceType.CURATOR);
+        this.curatorFramework = curatorFramework;
         this.deserializer = deserializer;
         this.serviceName = serviceName;
     }
@@ -40,12 +39,7 @@ public class CuratorSourceConfig<T> extends SourceConfig{
         return deserializer;
     }
 
-    public String getNamespace() {
-        return namespace;
+    public CuratorFramework getCuratorFramework() {
+        return curatorFramework;
     }
-
-    public String getConnectionString() {
-        return connectionString;
-    }
-
 }
