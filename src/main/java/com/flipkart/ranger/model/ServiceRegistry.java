@@ -19,25 +19,5 @@ package com.flipkart.ranger.model;
 import java.util.List;
 
 public interface ServiceRegistry<T> {
-//    private final Service service;
-//    public Deserializer<T> deserializer;
-
-//    protected ServiceRegistry(Deserializer<T> deserializer) {
-////        this.service = service;
-//        this.deserializer = deserializer;
-//    }
-
-//    public abstract void start() throws Exception;
-
-//    public abstract void stop() throws Exception;
-
     public void nodes(List<ServiceNode<T>> nodes);
-
-//    public Service getService() {
-//        return service;
-//    }
-
-//    public Deserializer<T> getDeserializer() {
-//        return deserializer;
-//    }
 }

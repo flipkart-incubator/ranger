@@ -78,23 +78,21 @@ public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdate
                     logger.error("Error in Http get");
                     return null;
                 }
+
                 byte[] data = EntityUtils.toByteArray(response.getEntity());
                 if (null == data) {
                     logger.warn("No data present");
                     return null;
                 }
+
                 List<ServiceNode<T>> serviceNodes = config.getListDeserializer().deserialize(data);
                 return serviceNodes.stream()
-                        .filter(node -> node.getHealthcheckStatus() == HealthcheckStatus.healthy && node.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime)
+                        .filter(node -> (node.getHealthcheckStatus() == HealthcheckStatus.healthy && node.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime))
                         .collect(Collectors.toList());
             }
         } catch (Exception e) {
             logger.error("Error getting service data from http: ", e);
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-
     }
 }

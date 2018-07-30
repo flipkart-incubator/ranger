@@ -58,7 +58,7 @@ public abstract class AbstractServiceRegistryUpdater<T> implements Callable<Void
                     serviceRegistry.nodes(nodes);
                 }
                 else {
-                    logger.warn("No service shards/nodes found. We are disconnected from zookeeper. Keeping old list.");
+                    logger.warn("No service shards/nodes found. We are disconnected from zookeeper/http server. Keeping old list.");
                 }
                 checkForUpdate =false;
             } finally {
