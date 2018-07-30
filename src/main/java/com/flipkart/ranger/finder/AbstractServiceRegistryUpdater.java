@@ -45,7 +45,6 @@ public abstract class AbstractServiceRegistryUpdater<T> implements Callable<Void
 
     @Override
     public Void call() throws Exception {
-        //Start checking for updates
         while (true) {
             try {
                 checkLock.lock();

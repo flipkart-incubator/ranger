@@ -47,7 +47,6 @@ public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpd
     public void start() throws Exception {
         logger.info("Starting curator framework...");
 
-        //zookeeper cluster connection
         curatorFramework.blockUntilConnected();
         logger.debug("Connected to zookeeper cluster");
         curatorFramework.newNamespaceAwareEnsurePath(PathBuilder.path(serviceName))
