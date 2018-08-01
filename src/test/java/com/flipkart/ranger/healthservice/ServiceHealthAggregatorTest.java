@@ -69,7 +69,7 @@ public class ServiceHealthAggregatorTest {
 
 
         testMonitor.setThreadSleep(10);
-        Thread.sleep(2000);
+        Thread.sleep(4000);
 
         /* in the TestMonitor, thread is sleeping only for 10 milliseconds, */
         /* so its state is supposed to be NOT stale (>1 second) and service has to be healthy */
