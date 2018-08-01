@@ -23,15 +23,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ServiceHealthAggregatorTest {
-    /* Logger */
-    private static final Logger logger = LoggerFactory.getLogger(ServiceHealthAggregatorTest.class);
-
     ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
     TestMonitor testMonitor;
     @Before
@@ -66,11 +61,9 @@ public class ServiceHealthAggregatorTest {
 
         Thread.sleep(4000);
 
-        /* in the TestMonitor, thread was sleeping for 5 seconds, */
+        /* in the TestMonitor, thread was sleeping for 6 seconds, */
         /* so its state is supposed to be stale (>1 second) and service has to be unhealthy */
         Assert.assertEquals(HealthcheckStatus.unhealthy, serviceHealthAggregator.getServiceHealth());
-
-//        Thread.sleep(4000);
 
         testMonitor.setThreadSleep(10);
         Thread.sleep(4000);
