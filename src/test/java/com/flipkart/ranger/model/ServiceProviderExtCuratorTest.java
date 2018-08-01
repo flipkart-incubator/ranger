@@ -62,6 +62,7 @@ public class ServiceProviderExtCuratorTest {
         registerService("localhost-1", 9000, 1);
         registerService("localhost-2", 9000, 1);
         registerService("localhost-3", 9000, 2);
+        Thread.sleep(1000);
     }
 
     @After
@@ -159,6 +160,7 @@ public class ServiceProviderExtCuratorTest {
     }
 
     private void registerService(String host, int port, int shardId) throws Exception {
+        logger.debug("Registering Service: " + host + ", " + port + ". ShardId: " + shardId);
         final ServiceProvider<TestShardInfo> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
@@ -181,5 +183,6 @@ public class ServiceProviderExtCuratorTest {
                 .buildServiceDiscovery();
         serviceProvider.start();
         serviceProviders.add(serviceProvider);
+        logger.debug("Service registered: " + host + ", " + port + ". ShardId: " + shardId);
     }
 }
