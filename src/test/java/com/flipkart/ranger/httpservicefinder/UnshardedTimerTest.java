@@ -75,6 +75,7 @@ public class UnshardedTimerTest {
                             objectMapper.readValue(data,
                                     new TypeReference<List<ServiceNode<EnvNodeData>>>() {
                                     });
+                    //marking all the ServiceNodes unhealthy after few calls to deserialize
                     if (integer.incrementAndGet() > 2) {
                         for (ServiceNode<UnshardedClusterInfo> serviceNode : serviceNodes) {
                             serviceNode.setHealthcheckStatus(HealthcheckStatus.unhealthy);
@@ -101,6 +102,7 @@ public class UnshardedTimerTest {
 
         Thread.sleep(3000);
 
+        //NodesList must be empty as all the ServiceNodes are marked unhealthy
         List<ServiceNode<UnshardedClusterInfo>> secondNodesList = serviceFinder.getAll(null);
         Assert.assertEquals(0, secondNodesList.size());
 

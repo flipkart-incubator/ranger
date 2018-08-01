@@ -109,6 +109,7 @@ public class ShardedTimerTest {
                             objectMapper.readValue(data,
                                     new TypeReference<List<ServiceNode<TestShardInfo>>>() {
                                     });
+                    //marking all the ServiceNodes unhealthy after few calls to deserialize
                     if (integer.incrementAndGet() > 2) {
                         for (ServiceNode<TestShardInfo> serviceNode : serviceNodes) {
                             serviceNode.setHealthcheckStatus(HealthcheckStatus.unhealthy);
@@ -135,6 +136,7 @@ public class ShardedTimerTest {
 
         Thread.sleep(3000);
 
+        //NodesList must be empty as all the ServiceNodes are marked unhealthy
         List<ServiceNode<TestShardInfo>> secondNodesList = serviceFinder.getAll(new TestShardInfo(1));
         Assert.assertEquals(0, secondNodesList.size());
     }
