@@ -1,4 +1,4 @@
-package com.flipkart.ranger.finder;
+package com.flipkart.ranger.finder.HttpVerb;
 
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;

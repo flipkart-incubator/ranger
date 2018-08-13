@@ -1,4 +1,4 @@
-package com.flipkart.ranger.finder;
+package com.flipkart.ranger.finder.HttpVerb;
 
 public abstract class HttpVerb {
     public enum HttpVerbType {

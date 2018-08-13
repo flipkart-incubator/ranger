@@ -18,7 +18,7 @@ package com.flipkart.ranger.httpservicefinder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
-import com.flipkart.ranger.finder.GetHttpVerb;
+import com.flipkart.ranger.finder.HttpVerb.GetHttpVerb;
 import com.flipkart.ranger.finder.HttpSourceConfig;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
@@ -124,7 +124,7 @@ public class ShardedTimerTest {
             }
         };
 
-        HttpSourceConfig<TestShardInfo> httpSourceConfig = new HttpSourceConfig<TestShardInfo>("localhost", 8080, "/testsharded", deserializer, false, new GetHttpVerb());
+        HttpSourceConfig<TestShardInfo> httpSourceConfig = new HttpSourceConfig<TestShardInfo>("localhost", 8080, "/testsharded", deserializer, false, false,  new GetHttpVerb());
 
         SimpleShardedServiceFinder serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withSourceConfig(httpSourceConfig)

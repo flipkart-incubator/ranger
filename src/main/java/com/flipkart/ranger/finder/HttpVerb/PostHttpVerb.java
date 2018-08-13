@@ -1,4 +1,4 @@
-package com.flipkart.ranger.finder;
+package com.flipkart.ranger.finder.HttpVerb;
 
 import java.util.List;
 

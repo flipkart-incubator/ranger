@@ -18,7 +18,7 @@ package com.flipkart.ranger.httpservicefinder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
-import com.flipkart.ranger.finder.GetHttpVerb;
+import com.flipkart.ranger.finder.HttpVerb.GetHttpVerb;
 import com.flipkart.ranger.finder.HttpSourceConfig;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
@@ -92,7 +92,7 @@ public class UnshardedBasicTest {
             }
         };
 
-        HttpSourceConfig<UnshardedClusterInfo> httpSourceConfig = new HttpSourceConfig<UnshardedClusterInfo>("localhost", 8080, "/test", deserializer, false, new GetHttpVerb());
+        HttpSourceConfig<UnshardedClusterInfo> httpSourceConfig = new HttpSourceConfig<UnshardedClusterInfo>("localhost", 8080, "/test", deserializer, false, false, new GetHttpVerb());
 
         UnshardedClusterFinder serviceFinder = ServiceFinderBuilders.unshardedFinderBuilder()
                 .withSourceConfig(httpSourceConfig)

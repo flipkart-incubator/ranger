@@ -7,10 +7,10 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 
 public class ServiceRegistryUpdaterFactory<T> {
 
-    public ServiceRegistryUpdater<T> getServiceRegistryUpdater(SourceConfig sourceConfig) throws Exception{
-        return sourceConfig.accept(new SourceConfigVisitor<ServiceRegistryUpdater<T>>() {
+    public ServiceRegistryUpdater<T> getServiceRegistryUpdater(SourceConfig<T> sourceConfig) throws Exception{
+        return sourceConfig.accept(new SourceConfigVisitor<T>() {
             @Override
-            public ServiceRegistryUpdater<T> visit(CuratorFrameworkConfig curatorFrameworkConfig) throws Exception{
+            public ServiceRegistryUpdater<T> visit(CuratorFrameworkConfig<T> curatorFrameworkConfig) throws Exception{
                 Preconditions.checkNotNull(curatorFrameworkConfig.getCuratorFramework());
                 Preconditions.checkNotNull(curatorFrameworkConfig.getDeserializer());
                 Preconditions.checkNotNull(curatorFrameworkConfig.getServiceName());
@@ -19,7 +19,7 @@ public class ServiceRegistryUpdaterFactory<T> {
             }
 
             @Override
-            public ServiceRegistryUpdater<T> visit(HttpSourceConfig httpSourceConfig) throws Exception{
+            public ServiceRegistryUpdater<T> visit(HttpSourceConfig<T> httpSourceConfig) throws Exception{
                 Preconditions.checkNotNull(httpSourceConfig.getHost());
                 Preconditions.checkNotNull(httpSourceConfig.getPort());
                 Preconditions.checkNotNull(httpSourceConfig.getHttpResponseDecoder());
@@ -28,7 +28,7 @@ public class ServiceRegistryUpdaterFactory<T> {
             }
 
             @Override
-            public ServiceRegistryUpdater<T> visit(ZookeeperSourceConfig zookeeperSourceConfig) throws Exception{
+            public ServiceRegistryUpdater<T> visit(ZookeeperSourceConfig<T> zookeeperSourceConfig) throws Exception{
                 Preconditions.checkNotNull(zookeeperSourceConfig.getNamespace());
                 Preconditions.checkNotNull(zookeeperSourceConfig.getConnectionString());
                 Preconditions.checkNotNull(zookeeperSourceConfig.getZookeeperNodeDataDecoder());

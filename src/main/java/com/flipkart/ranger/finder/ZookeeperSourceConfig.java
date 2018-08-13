@@ -18,7 +18,7 @@ package com.flipkart.ranger.finder;
 
 import com.flipkart.ranger.model.Deserializer;
 
-public class ZookeeperSourceConfig<T> extends SourceConfig{
+public class ZookeeperSourceConfig<T> extends SourceConfig<T>{
     private String connectionString;
     private String namespace;
     private Deserializer<T> zookeeperNodeDataDecoder;
@@ -48,7 +48,7 @@ public class ZookeeperSourceConfig<T> extends SourceConfig{
         return connectionString;
     }
 
-    public <T> T accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception{
+    public ServiceRegistryUpdater<T> accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception{
         return sourceConfigVisitor.visit(this);
     }
 }

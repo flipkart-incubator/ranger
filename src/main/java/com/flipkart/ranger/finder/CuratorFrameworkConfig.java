@@ -19,7 +19,7 @@ package com.flipkart.ranger.finder;
 import com.flipkart.ranger.model.Deserializer;
 import org.apache.curator.framework.CuratorFramework;
 
-public class CuratorFrameworkConfig<T> extends SourceConfig {
+public class CuratorFrameworkConfig<T> extends SourceConfig<T> {
     private CuratorFramework curatorFramework;
     private Deserializer<T> deserializer;
     private String serviceName;
@@ -43,7 +43,7 @@ public class CuratorFrameworkConfig<T> extends SourceConfig {
         return curatorFramework;
     }
 
-    public <T> T accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception {
+    public ServiceRegistryUpdater<T> accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception {
         return sourceConfigVisitor.visit(this);
     }
 }

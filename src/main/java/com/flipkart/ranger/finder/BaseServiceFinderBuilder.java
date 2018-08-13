@@ -19,14 +19,14 @@ package com.flipkart.ranger.finder;
 import com.flipkart.ranger.model.*;
 
 public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
-    private SourceConfig sourceConfig;
+    private SourceConfig<T> sourceConfig;
     private ServiceRegistryUpdater<T> serviceRegistryUpdater;
 
     private int healthcheckRefreshTimeMillis;
     private ShardSelector<T, RegistryType> shardSelector;
     private ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<T>();
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withSourceConfig(SourceConfig sourceConfig) {
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withSourceConfig(SourceConfig<T> sourceConfig) {
         this.sourceConfig = sourceConfig;
         return this;
     }
@@ -63,7 +63,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         return buildFinder(sourceConfig, serviceRegistryUpdater, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
     }
 
-    protected abstract FinderType buildFinder(SourceConfig config,
+    protected abstract FinderType buildFinder(SourceConfig<T> config,
                                               ServiceRegistryUpdater<T> registryUpdater,
                                               ShardSelector<T, RegistryType> shardSelector,
                                               ServiceNodeSelector<T> nodeSelector,

@@ -16,6 +16,7 @@
 
 package com.flipkart.ranger.finder;
 
+import com.flipkart.ranger.finder.HttpVerb.HttpVerbFactory;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.model.ServiceNode;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -26,6 +27,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,21 +35,22 @@ import java.util.stream.Collectors;
 public class HttpServiceRegistryUpdater<T> extends ServiceRegistryUpdater<T> {
     private static final Logger logger = LoggerFactory.getLogger(HttpServiceRegistryUpdater.class);
 
-    private HttpSourceConfig httpSourceConfig;
+    private HttpSourceConfig<T> httpSourceConfig;
     private CloseableHttpClient httpclient;
     private URI uri;
     private HttpVerbFactory httpVerbFactory;
+    private String scheme;
 
-    protected HttpServiceRegistryUpdater(HttpSourceConfig httpSourceConfig) throws Exception {
+    protected HttpServiceRegistryUpdater(HttpSourceConfig<T> httpSourceConfig) throws Exception {
         this.httpSourceConfig = httpSourceConfig;
         final String host = this.httpSourceConfig.getHost();
         final int port = this.httpSourceConfig.getPort();
         final String path = this.httpSourceConfig.getPath();
-        String scheme;
+
         if(httpSourceConfig.isSecure()) {
-            scheme = "https";
+            this.scheme = "https";
         } else {
-            scheme = "http";
+            this.scheme = "http";
         }
         this.uri = new URIBuilder()
                 .setScheme(scheme)
@@ -60,7 +63,12 @@ public class HttpServiceRegistryUpdater<T> extends ServiceRegistryUpdater<T> {
 
     @Override
     public void start() throws Exception {
-        httpclient = HttpClients.createDefault();
+        if(this.scheme == "https" && this.httpSourceConfig.isSuppressHostCheck()){
+            httpclient = HttpClients.custom().setSSLHostnameVerifier((s, sslSession) -> true).build();
+        } else {
+            httpclient = HttpClients.createDefault();
+        }
+        httpclient = HttpClients.custom().setSSLHostnameVerifier((s, sslSession) -> true).build();
 
         serviceRegistry.nodes(getHealthyServiceNodes());
         logger.info("Started http updater");
@@ -82,7 +90,7 @@ public class HttpServiceRegistryUpdater<T> extends ServiceRegistryUpdater<T> {
             try (CloseableHttpResponse response = httpclient.execute(httpRequestBase)) {
                 int status = response.getStatusLine().getStatusCode();
                 if (status < 200 && status >= 300) {
-                    logger.error("Error in Http get, Status Code: " + response.getStatusLine().getStatusCode() + " recieved Response: " + response);
+                    logger.error("Error in Http get, Status Code: " + response.getStatusLine().getStatusCode() + " received Response: " + response);
                     return null;
                 }
 

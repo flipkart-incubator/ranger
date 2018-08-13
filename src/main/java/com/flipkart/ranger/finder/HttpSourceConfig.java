@@ -16,18 +16,21 @@
 
 package com.flipkart.ranger.finder;
 
+import com.flipkart.ranger.finder.HttpVerb.HttpVerb;
 import com.flipkart.ranger.model.HttpResponseDecoder;
 
-public class HttpSourceConfig<T> extends SourceConfig {
+public class HttpSourceConfig<T> extends SourceConfig<T> {
     private String host;
-    private int port;
+    private int port = 80;
     private String path;
-    private boolean secure;
+    private boolean secure = false;
+
+    private boolean suppressHostCheck = false;
     private HttpVerb httpVerb;
 
     private HttpResponseDecoder<T> httpResponseDecoder;
 
-    public HttpSourceConfig(String host, int port, String path, HttpResponseDecoder<T> httpResponseDecoder, boolean secure, HttpVerb httpVerb) {
+    public HttpSourceConfig(String host, int port, String path, HttpResponseDecoder<T> httpResponseDecoder, boolean secure, boolean suppressHostCheck, HttpVerb httpVerb) {
         super(ServiceType.HTTPSOURCE);
         this.host = host;
         this.port = port;
@@ -35,6 +38,7 @@ public class HttpSourceConfig<T> extends SourceConfig {
         this.httpResponseDecoder = httpResponseDecoder;
         this.secure = secure;
         this.httpVerb = httpVerb;
+        this.suppressHostCheck = suppressHostCheck;
     }
 
     public HttpResponseDecoder<T> getHttpResponseDecoder() {
@@ -57,11 +61,15 @@ public class HttpSourceConfig<T> extends SourceConfig {
         return secure;
     }
 
+    public boolean isSuppressHostCheck() {
+        return suppressHostCheck;
+    }
+
     public HttpVerb getHttpVerb() {
         return httpVerb;
     }
 
-    public <T> T accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception {
+    public ServiceRegistryUpdater<T> accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception {
         return sourceConfigVisitor.visit(this);
     }
 }
