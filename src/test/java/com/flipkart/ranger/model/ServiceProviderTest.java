@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
-import com.flipkart.ranger.finder.CuratorSourceConfig;
+import com.flipkart.ranger.finder.ZookeeperSourceConfig;
 import com.flipkart.ranger.finder.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthchecks;
@@ -117,10 +117,10 @@ public class ServiceProviderTest {
                 return null;
             }
         };
-        CuratorSourceConfig<TestShardInfo> curatorSourceConfig = new CuratorSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+        ZookeeperSourceConfig<TestShardInfo> curatorSourceConfig = new ZookeeperSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
 
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                .withCuratorSourceConfig(curatorSourceConfig)
+                .withSourceConfig(curatorSourceConfig)
                 .build();
         serviceFinder.start();
         {
@@ -164,10 +164,10 @@ public class ServiceProviderTest {
                 return null;
             }
         };
-        CuratorSourceConfig<TestShardInfo> curatorSourceConfig = new CuratorSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+        ZookeeperSourceConfig<TestShardInfo> curatorSourceConfig = new ZookeeperSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
 
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                                                                        .withCuratorSourceConfig(curatorSourceConfig)
+                                                                        .withSourceConfig(curatorSourceConfig)
                                                                         .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
                                                                         .build();
         serviceFinder.start();
@@ -214,10 +214,10 @@ public class ServiceProviderTest {
                 return null;
             }
         };
-        CuratorSourceConfig<TestShardInfo> curatorSourceConfig = new CuratorSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+        ZookeeperSourceConfig<TestShardInfo> curatorSourceConfig = new ZookeeperSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
 
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                .withCuratorSourceConfig(curatorSourceConfig)
+                .withSourceConfig(curatorSourceConfig)
                 .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
                 .build();
         serviceFinder.start();

@@ -18,9 +18,8 @@ package com.flipkart.ranger.finder;
 
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.model.ServiceNode;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -31,25 +30,32 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdater<T> {
+public class HttpServiceRegistryUpdater<T> extends ServiceRegistryUpdater<T> {
     private static final Logger logger = LoggerFactory.getLogger(HttpServiceRegistryUpdater.class);
 
-    private HttpSourceConfig config;
+    private HttpSourceConfig httpSourceConfig;
     private CloseableHttpClient httpclient;
     private URI uri;
+    private HttpVerbFactory httpVerbFactory;
 
-    protected HttpServiceRegistryUpdater(HttpSourceConfig config) throws Exception {
-        this.config = config;
-
-        final String host = config.getHost();
-        final Integer port = config.getPort();
-        final String path = config.getPath();
+    protected HttpServiceRegistryUpdater(HttpSourceConfig httpSourceConfig) throws Exception {
+        this.httpSourceConfig = httpSourceConfig;
+        final String host = this.httpSourceConfig.getHost();
+        final int port = this.httpSourceConfig.getPort();
+        final String path = this.httpSourceConfig.getPath();
+        String scheme;
+        if(httpSourceConfig.isSecure()) {
+            scheme = "https";
+        } else {
+            scheme = "http";
+        }
         this.uri = new URIBuilder()
-                .setScheme("http")
+                .setScheme(scheme)
                 .setHost(host)
                 .setPort(port)
                 .setPath(path)
                 .build();
+        this.httpVerbFactory = new HttpVerbFactory();
     }
 
     @Override
@@ -71,11 +77,12 @@ public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdate
         try {
             final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
 
-            HttpGet httpget = new HttpGet(uri);
+            HttpRequestBase  httpRequestBase = httpVerbFactory.getHttpVerb(httpSourceConfig.getHttpVerb(), uri);
 
-            try (CloseableHttpResponse response = httpclient.execute(httpget)) {
-                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                    logger.error("Error in Http get");
+            try (CloseableHttpResponse response = httpclient.execute(httpRequestBase)) {
+                int status = response.getStatusLine().getStatusCode();
+                if (status < 200 && status >= 300) {
+                    logger.error("Error in Http get, Status Code: " + response.getStatusLine().getStatusCode() + " recieved Response: " + response);
                     return null;
                 }
 
@@ -85,9 +92,10 @@ public class HttpServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdate
                     return null;
                 }
 
-                List<ServiceNode<T>> serviceNodes = config.getListDeserializer().deserialize(data);
+                List<ServiceNode<T>> serviceNodes = httpSourceConfig.getHttpResponseDecoder().deserialize(data);
                 return serviceNodes.stream()
-                        .filter(node -> (node.getHealthcheckStatus() == HealthcheckStatus.healthy && node.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime))
+                        .filter(node -> (node.getHealthcheckStatus() == HealthcheckStatus.healthy &&
+                                node.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime))
                         .collect(Collectors.toList());
             }
         } catch (Exception e) {

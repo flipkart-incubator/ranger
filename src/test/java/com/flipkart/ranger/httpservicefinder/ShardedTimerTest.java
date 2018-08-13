@@ -18,10 +18,11 @@ package com.flipkart.ranger.httpservicefinder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
+import com.flipkart.ranger.finder.GetHttpVerb;
 import com.flipkart.ranger.finder.HttpSourceConfig;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
-import com.flipkart.ranger.model.ListDeserializer;
+import com.flipkart.ranger.model.HttpResponseDecoder;
 import com.flipkart.ranger.model.ServiceNode;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.After;
@@ -99,7 +100,7 @@ public class ShardedTimerTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
-        ListDeserializer<TestShardInfo> deserializer = new ListDeserializer<TestShardInfo>() {
+        HttpResponseDecoder<TestShardInfo> deserializer = new HttpResponseDecoder<TestShardInfo>() {
             private AtomicInteger integer = new AtomicInteger(0);
 
             @Override
@@ -123,10 +124,10 @@ public class ShardedTimerTest {
             }
         };
 
-        HttpSourceConfig<TestShardInfo> httpSourceConfig = new HttpSourceConfig<TestShardInfo>("localhost", 8080, "/testsharded", deserializer);
+        HttpSourceConfig<TestShardInfo> httpSourceConfig = new HttpSourceConfig<TestShardInfo>("localhost", 8080, "/testsharded", deserializer, false, new GetHttpVerb());
 
         SimpleShardedServiceFinder serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                .withHttpSourceConfig(httpSourceConfig)
+                .withSourceConfig(httpSourceConfig)
                 .build();
 
         serviceFinder.start();

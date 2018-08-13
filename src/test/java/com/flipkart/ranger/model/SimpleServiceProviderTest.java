@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
-import com.flipkart.ranger.finder.CuratorSourceConfig;
+import com.flipkart.ranger.finder.ZookeeperSourceConfig;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.healthcheck.Healthchecks;
@@ -73,10 +73,10 @@ public class SimpleServiceProviderTest {
                 return null;
             }
         };
-        CuratorSourceConfig<UnshardedClusterInfo> curatorSourceConfig = new CuratorSourceConfig<UnshardedClusterInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+        ZookeeperSourceConfig<UnshardedClusterInfo> curatorSourceConfig = new ZookeeperSourceConfig<UnshardedClusterInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
 
         UnshardedClusterFinder serviceFinder = ServiceFinderBuilders.unshardedFinderBuilder()
-                .withCuratorSourceConfig(curatorSourceConfig)
+                .withSourceConfig(curatorSourceConfig)
                 .build();
         serviceFinder.start();
         {

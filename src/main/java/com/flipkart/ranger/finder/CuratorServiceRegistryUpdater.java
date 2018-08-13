@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class CuratorServiceRegistryUpdater<T> extends AbstractServiceRegistryUpdater<T> {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractServiceRegistryUpdater.class);
+public class CuratorServiceRegistryUpdater<T> extends ServiceRegistryUpdater<T> {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceRegistryUpdater.class);
 
     private Deserializer<T> deserializer;
     private CuratorFramework curatorFramework;

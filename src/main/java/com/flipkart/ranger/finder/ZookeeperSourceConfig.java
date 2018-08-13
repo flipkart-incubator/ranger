@@ -18,17 +18,17 @@ package com.flipkart.ranger.finder;
 
 import com.flipkart.ranger.model.Deserializer;
 
-public class CuratorSourceConfig<T> extends SourceConfig{
+public class ZookeeperSourceConfig<T> extends SourceConfig{
     private String connectionString;
     private String namespace;
-    private Deserializer<T> deserializer;
+    private Deserializer<T> zookeeperNodeDataDecoder;
     private String serviceName;
 
-    public CuratorSourceConfig(String connectionString, String namespace, String serviceName, Deserializer<T> deserializer) {
-        super(ServiceType.CURATOR);
+    public ZookeeperSourceConfig(String connectionString, String namespace, String serviceName, Deserializer<T> deserializer) {
+        super(ServiceType.ZOOKEEPERSOURCE);
         this.connectionString = connectionString;
         this.namespace = namespace;
-        this.deserializer = deserializer;
+        this.zookeeperNodeDataDecoder = deserializer;
         this.serviceName = serviceName;
     }
 
@@ -36,8 +36,8 @@ public class CuratorSourceConfig<T> extends SourceConfig{
         return serviceName;
     }
 
-    public Deserializer<T> getDeserializer() {
-        return deserializer;
+    public Deserializer<T> getZookeeperNodeDataDecoder() {
+        return zookeeperNodeDataDecoder;
     }
 
     public String getNamespace() {
@@ -48,4 +48,7 @@ public class CuratorSourceConfig<T> extends SourceConfig{
         return connectionString;
     }
 
+    public <T> T accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception{
+        return sourceConfigVisitor.visit(this);
+    }
 }

@@ -19,8 +19,9 @@ package com.flipkart.ranger.finder;
 public abstract class SourceConfig  {
 
     public enum ServiceType {
-        CURATOR,
-        HTTP
+        CURATORSOURCE,
+        ZOOKEEPERSOURCE,
+        HTTPSOURCE
     }
 
     private ServiceType serviceType;
@@ -32,4 +33,6 @@ public abstract class SourceConfig  {
     public ServiceType getServiceType() {
         return serviceType;
     }
+
+    public abstract <T> T accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception;
 }

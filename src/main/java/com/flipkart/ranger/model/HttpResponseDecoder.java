@@ -18,6 +18,6 @@ package com.flipkart.ranger.model;
 
 import java.util.List;
 
-public interface ListDeserializer<T> {
+public interface HttpResponseDecoder<T> {
     List<ServiceNode<T>> deserialize(final byte[] data);
 }

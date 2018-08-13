@@ -18,10 +18,11 @@ package com.flipkart.ranger.httpservicefinder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
+import com.flipkart.ranger.finder.GetHttpVerb;
 import com.flipkart.ranger.finder.HttpSourceConfig;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
-import com.flipkart.ranger.model.ListDeserializer;
+import com.flipkart.ranger.model.HttpResponseDecoder;
 import com.flipkart.ranger.model.ServiceNode;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.After;
@@ -77,7 +78,7 @@ public class UnshardedBasicTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
-        ListDeserializer<UnshardedClusterInfo> deserializer = new ListDeserializer<UnshardedClusterInfo>() {
+        HttpResponseDecoder<UnshardedClusterInfo> deserializer = new HttpResponseDecoder<UnshardedClusterInfo>() {
             @Override
             public List<ServiceNode<UnshardedClusterInfo>> deserialize(byte[] data) {
                 try {
@@ -91,10 +92,10 @@ public class UnshardedBasicTest {
             }
         };
 
-        HttpSourceConfig<UnshardedClusterInfo> httpSourceConfig = new HttpSourceConfig<UnshardedClusterInfo>("localhost", 8080, "/test", deserializer);
+        HttpSourceConfig<UnshardedClusterInfo> httpSourceConfig = new HttpSourceConfig<UnshardedClusterInfo>("localhost", 8080, "/test", deserializer, false, new GetHttpVerb());
 
         UnshardedClusterFinder serviceFinder = ServiceFinderBuilders.unshardedFinderBuilder()
-                .withHttpSourceConfig(httpSourceConfig)
+                .withSourceConfig(httpSourceConfig)
                 .build();
 
         serviceFinder.start();

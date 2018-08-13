@@ -16,7 +16,7 @@
 
 package com.flipkart.ranger.finder.unsharded;
 
-import com.flipkart.ranger.finder.AbstractServiceRegistryUpdater;
+import com.flipkart.ranger.finder.ServiceRegistryUpdater;
 import com.flipkart.ranger.finder.BaseServiceFinderBuilder;
 import com.flipkart.ranger.finder.SourceConfig;
 import com.flipkart.ranger.model.ServiceNodeSelector;
@@ -25,7 +25,7 @@ import com.flipkart.ranger.model.ShardSelector;
 public class UnshardedFinderBuilder extends BaseServiceFinderBuilder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedClusterFinder> {
     @Override
     protected UnshardedClusterFinder buildFinder(SourceConfig config,
-                                                 AbstractServiceRegistryUpdater<UnshardedClusterInfo> registryUpdater,
+                                                 ServiceRegistryUpdater<UnshardedClusterInfo> registryUpdater,
                                                  ShardSelector<UnshardedClusterInfo,
                                                  UnshardedClusterServiceRegistry> shardSelector,
                                                  ServiceNodeSelector<UnshardedClusterInfo> nodeSelector,

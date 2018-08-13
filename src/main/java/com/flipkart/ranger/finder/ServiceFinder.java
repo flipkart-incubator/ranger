@@ -31,7 +31,7 @@ public class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
 
     private final ServiceRegistryType serviceRegistry;
     private final ShardSelector<T, ServiceRegistryType> shardSelector;
-    private AbstractServiceRegistryUpdater<T> updater;
+    private ServiceRegistryUpdater<T> updater;
     private final ServiceNodeSelector<T> nodeSelector;
     private int refreshIntervalMillis;
 
@@ -39,7 +39,7 @@ public class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> scheduledFuture;
 
-    public ServiceFinder(ServiceRegistryType serviceRegistry, AbstractServiceRegistryUpdater<T> updater, ShardSelector<T, ServiceRegistryType> shardSelector, ServiceNodeSelector<T> nodeSelector, int refreshIntervalMillis) {
+    public ServiceFinder(ServiceRegistryType serviceRegistry, ServiceRegistryUpdater<T> updater, ShardSelector<T, ServiceRegistryType> shardSelector, ServiceNodeSelector<T> nodeSelector, int refreshIntervalMillis) {
         this.serviceRegistry = serviceRegistry;
         this.shardSelector = shardSelector;
         this.nodeSelector = nodeSelector;
@@ -71,7 +71,7 @@ public class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
                 try {
                     updater.checkForUpdate();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.warn("Error checking for update ZK poller: ", e);
                 }
             }
         }, 0, refreshIntervalMillis, TimeUnit.MILLISECONDS);
@@ -79,7 +79,6 @@ public class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
     }
 
     public void stop() throws Exception {
-        updater.stop();
         try {
             if( null != scheduledFuture ) {
                 scheduledFuture.cancel(true);
@@ -88,6 +87,6 @@ public class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
         } catch (Exception e) {
             logger.error("Error stopping ZK poller: ", e);
         }
-        logger.debug("ServiceFinder Scheduler stopped");
+        logger.info("ServiceFinder Scheduler stopped");
     }
 }

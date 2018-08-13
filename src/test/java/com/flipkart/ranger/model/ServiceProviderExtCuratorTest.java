@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
 import com.flipkart.ranger.finder.CuratorFrameworkConfig;
-import com.flipkart.ranger.finder.CuratorSourceConfig;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
@@ -130,7 +129,7 @@ public class ServiceProviderExtCuratorTest {
         CuratorFrameworkConfig<TestShardInfo> curatorFrameworkConfig = new CuratorFrameworkConfig<TestShardInfo>(curatorFramework, "test-service", deserializer);
 
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                .withCuratorFrameworkConfig(curatorFrameworkConfig)
+                .withSourceConfig(curatorFrameworkConfig)
                 .build();
         serviceFinder.start();
         {

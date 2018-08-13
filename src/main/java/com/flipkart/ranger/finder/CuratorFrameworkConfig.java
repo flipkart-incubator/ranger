@@ -25,7 +25,7 @@ public class CuratorFrameworkConfig<T> extends SourceConfig {
     private String serviceName;
 
     public CuratorFrameworkConfig(CuratorFramework curatorFramework, String serviceName, Deserializer<T> deserializer) {
-        super(SourceConfig.ServiceType.CURATOR);
+        super(ServiceType.CURATORSOURCE);
         this.curatorFramework = curatorFramework;
         this.deserializer = deserializer;
         this.serviceName = serviceName;
@@ -41,5 +41,9 @@ public class CuratorFrameworkConfig<T> extends SourceConfig {
 
     public CuratorFramework getCuratorFramework() {
         return curatorFramework;
+    }
+
+    public <T> T accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception {
+        return sourceConfigVisitor.visit(this);
     }
 }

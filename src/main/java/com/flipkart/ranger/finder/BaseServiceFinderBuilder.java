@@ -17,32 +17,17 @@
 package com.flipkart.ranger.finder;
 
 import com.flipkart.ranger.model.*;
-import com.google.common.base.Preconditions;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 
 public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
-    private CuratorSourceConfig<T> curatorSourceConfig;
-    private HttpSourceConfig<T> httpSourceConfig;
-    private CuratorFrameworkConfig<T> curatorFrameworkConfig;
+    private SourceConfig sourceConfig;
+    private ServiceRegistryUpdater<T> serviceRegistryUpdater;
 
     private int healthcheckRefreshTimeMillis;
     private ShardSelector<T, RegistryType> shardSelector;
     private ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<T>();
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withHttpSourceConfig(HttpSourceConfig<T> httpSourceConfig) {
-        this.httpSourceConfig = httpSourceConfig;
-        return this;
-    }
-
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withCuratorSourceConfig(CuratorSourceConfig<T> curatorSourceConfig) {
-        this.curatorSourceConfig = curatorSourceConfig;
-        return this;
-    }
-
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withCuratorFrameworkConfig(CuratorFrameworkConfig<T> curatorFrameworkConfig) {
-        this.curatorFrameworkConfig = curatorFrameworkConfig;
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withSourceConfig(SourceConfig sourceConfig) {
+        this.sourceConfig = sourceConfig;
         return this;
     }
 
@@ -56,8 +41,13 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         return this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> witHhealthcheckRefreshTimeMillis(int healthcheckRefreshTimeMillis) {
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withHealthcheckRefreshTimeMillis(int healthcheckRefreshTimeMillis) {
         this.healthcheckRefreshTimeMillis = healthcheckRefreshTimeMillis;
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withServiceRegistryUpdater(ServiceRegistryUpdater serviceRegistryUpdater) {
+        this.serviceRegistryUpdater = serviceRegistryUpdater;
         return this;
     }
 
@@ -65,36 +55,16 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         if (0 == healthcheckRefreshTimeMillis) {
             healthcheckRefreshTimeMillis = 1000;
         }
-        if (null != httpSourceConfig) {
-            Preconditions.checkNotNull(httpSourceConfig.getHost());
-            Preconditions.checkNotNull(httpSourceConfig.getPort());
-            Preconditions.checkNotNull(httpSourceConfig.getListDeserializer());
-            Preconditions.checkArgument((httpSourceConfig.getPort() > 0 && httpSourceConfig.getPort() < 65535));
-            HttpServiceRegistryUpdater<T> registryUpdater = new HttpServiceRegistryUpdater<T>(httpSourceConfig);
-            return buildFinder(httpSourceConfig, registryUpdater, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+
+        if(serviceRegistryUpdater == null) {
+            ServiceRegistryUpdaterFactory<T> serviceRegistryUpdaterFactory = new ServiceRegistryUpdaterFactory<T>();
+            serviceRegistryUpdater = serviceRegistryUpdaterFactory.getServiceRegistryUpdater(sourceConfig);
         }
-        if (curatorFrameworkConfig == null) {
-            Preconditions.checkNotNull(curatorSourceConfig.getNamespace());
-            Preconditions.checkNotNull(curatorSourceConfig.getConnectionString());
-            Preconditions.checkNotNull(curatorSourceConfig.getDeserializer());
-            Preconditions.checkNotNull(curatorSourceConfig.getServiceName());
-            CuratorFramework curatorFramework = CuratorFrameworkFactory.builder()
-                    .namespace(curatorSourceConfig.getNamespace())
-                    .connectString(curatorSourceConfig.getConnectionString())
-                    .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
-            curatorFramework.start();
-            CuratorServiceRegistryUpdater<T> registryUpdater = new CuratorServiceRegistryUpdater<T>(curatorSourceConfig.getDeserializer(), curatorFramework, curatorSourceConfig.getServiceName());
-            return buildFinder(curatorSourceConfig, registryUpdater, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
-        }
-        Preconditions.checkNotNull(curatorFrameworkConfig.getCuratorFramework());
-        Preconditions.checkNotNull(curatorFrameworkConfig.getDeserializer());
-        Preconditions.checkNotNull(curatorFrameworkConfig.getServiceName());
-        CuratorServiceRegistryUpdater<T> registryUpdater = new CuratorServiceRegistryUpdater<T>(curatorFrameworkConfig.getDeserializer(), curatorFrameworkConfig.getCuratorFramework(), curatorFrameworkConfig.getServiceName());
-        return buildFinder(curatorFrameworkConfig, registryUpdater, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+        return buildFinder(sourceConfig, serviceRegistryUpdater, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
     }
 
     protected abstract FinderType buildFinder(SourceConfig config,
-                                              AbstractServiceRegistryUpdater<T> registryUpdater,
+                                              ServiceRegistryUpdater<T> registryUpdater,
                                               ShardSelector<T, RegistryType> shardSelector,
                                               ServiceNodeSelector<T> nodeSelector,
                                               int healthcheckRefreshTimeMillis);

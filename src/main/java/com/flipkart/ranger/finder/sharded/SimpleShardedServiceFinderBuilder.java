@@ -16,7 +16,7 @@
 
 package com.flipkart.ranger.finder.sharded;
 
-import com.flipkart.ranger.finder.AbstractServiceRegistryUpdater;
+import com.flipkart.ranger.finder.ServiceRegistryUpdater;
 import com.flipkart.ranger.finder.BaseServiceFinderBuilder;
 import com.flipkart.ranger.finder.SourceConfig;
 import com.flipkart.ranger.model.ServiceNodeSelector;
@@ -25,7 +25,7 @@ import com.flipkart.ranger.model.ShardSelector;
 public class SimpleShardedServiceFinderBuilder<T> extends BaseServiceFinderBuilder<T, MapBasedServiceRegistry<T>, SimpleShardedServiceFinder<T>> {
     @Override
     protected SimpleShardedServiceFinder<T> buildFinder(SourceConfig config,
-                                                        AbstractServiceRegistryUpdater<T> registryUpdater,
+                                                        ServiceRegistryUpdater<T> registryUpdater,
                                                         ShardSelector<T, MapBasedServiceRegistry<T>> shardSelector,
                                                         ServiceNodeSelector<T> nodeSelector,
                                                         int healthcheckRefreshTimeMillis) {

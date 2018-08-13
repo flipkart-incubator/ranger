@@ -16,36 +16,52 @@
 
 package com.flipkart.ranger.finder;
 
-import com.flipkart.ranger.model.ListDeserializer;
+import com.flipkart.ranger.model.HttpResponseDecoder;
 
 public class HttpSourceConfig<T> extends SourceConfig {
     private String host;
-    private Integer port;
+    private int port;
     private String path;
+    private boolean secure;
+    private HttpVerb httpVerb;
 
-    private ListDeserializer<T> listDeserializer;
+    private HttpResponseDecoder<T> httpResponseDecoder;
 
-    public HttpSourceConfig(String host, int port, String path, ListDeserializer<T> listDeserializer) {
-        super(ServiceType.HTTP);
+    public HttpSourceConfig(String host, int port, String path, HttpResponseDecoder<T> httpResponseDecoder, boolean secure, HttpVerb httpVerb) {
+        super(ServiceType.HTTPSOURCE);
         this.host = host;
         this.port = port;
         this.path = path;
-        this.listDeserializer = listDeserializer;
+        this.httpResponseDecoder = httpResponseDecoder;
+        this.secure = secure;
+        this.httpVerb = httpVerb;
     }
 
-    public ListDeserializer<T> getListDeserializer() {
-        return listDeserializer;
+    public HttpResponseDecoder<T> getHttpResponseDecoder() {
+        return httpResponseDecoder;
     }
 
     public String getHost() {
         return host;
     }
 
-    public Integer getPort() {
+    public int getPort() {
         return port;
     }
 
     public String getPath() {
         return path;
+    }
+
+    public boolean isSecure() {
+        return secure;
+    }
+
+    public HttpVerb getHttpVerb() {
+        return httpVerb;
+    }
+
+    public <T> T accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception {
+        return sourceConfigVisitor.visit(this);
     }
 }

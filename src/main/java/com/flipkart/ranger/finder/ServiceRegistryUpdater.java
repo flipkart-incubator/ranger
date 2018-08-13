@@ -27,8 +27,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public abstract class AbstractServiceRegistryUpdater<T> implements Callable<Void> {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractServiceRegistryUpdater.class);
+public abstract class ServiceRegistryUpdater<T> implements Callable<Void> {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceRegistryUpdater.class);
 
     public abstract void start() throws Exception;
     public abstract void stop() throws Exception;
