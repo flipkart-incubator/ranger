@@ -24,9 +24,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class ServiceHealthAggregatorTest {
-
-
     ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
     TestMonitor testMonitor;
     @Before
@@ -56,16 +56,14 @@ public class ServiceHealthAggregatorTest {
 
     @Test
     public void testStaleRun() throws Exception {
-
         testMonitor.run();
-        testMonitor.setThreadSleep(2000);
+        testMonitor.setThreadSleep(6000);
 
         Thread.sleep(4000);
 
-        /* in the TestMonitor, thread was sleeping for 2 seconds, */
+        /* in the TestMonitor, thread was sleeping for 6 seconds, */
         /* so its state is supposed to be stale (>1 second) and service has to be unhealthy */
         Assert.assertEquals(HealthcheckStatus.unhealthy, serviceHealthAggregator.getServiceHealth());
-
 
         testMonitor.setThreadSleep(10);
         Thread.sleep(4000);
@@ -73,11 +71,10 @@ public class ServiceHealthAggregatorTest {
         /* in the TestMonitor, thread is sleeping only for 10 milliseconds, */
         /* so its state is supposed to be NOT stale (>1 second) and service has to be healthy */
         Assert.assertEquals(HealthcheckStatus.healthy, serviceHealthAggregator.getServiceHealth());
-
     }
 
     private class TestMonitor extends IsolatedHealthMonitor {
-        int threadSleep = 2000;
+        AtomicInteger threadSleep = new AtomicInteger(2000);
 
         public TestMonitor(String name, TimeEntity timeEntity) {
             super(name, timeEntity);
@@ -88,13 +85,13 @@ public class ServiceHealthAggregatorTest {
         }
 
         public void setThreadSleep(int threadSleep) {
-            this.threadSleep = threadSleep;
+            this.threadSleep.set(threadSleep);
         }
 
         @Override
         public synchronized HealthcheckStatus monitor() {
             try {
-                Thread.sleep(threadSleep);
+                Thread.sleep(threadSleep.get());
             } catch (InterruptedException e) {
             }
             return HealthcheckStatus.healthy;

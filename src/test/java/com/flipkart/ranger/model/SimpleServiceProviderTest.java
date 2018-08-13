@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
+import com.flipkart.ranger.finder.ZookeeperSourceConfig;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.healthcheck.Healthchecks;
@@ -59,23 +60,23 @@ public class SimpleServiceProviderTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
+        Deserializer<UnshardedClusterInfo> deserializer = new Deserializer<UnshardedClusterInfo>() {
+            @Override
+            public ServiceNode<UnshardedClusterInfo> deserialize(byte[] data) {
+                try {
+                    return objectMapper.readValue(data,
+                            new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        ZookeeperSourceConfig<UnshardedClusterInfo> curatorSourceConfig = new ZookeeperSourceConfig<UnshardedClusterInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+
         UnshardedClusterFinder serviceFinder = ServiceFinderBuilders.unshardedFinderBuilder()
-                .withConnectionString(testingCluster.getConnectString())
-                .withNamespace("test")
-                .withServiceName("test-service")
-                .withDeserializer(new Deserializer<UnshardedClusterInfo>() {
-                    @Override
-                    public ServiceNode<UnshardedClusterInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
+                .withSourceConfig(curatorSourceConfig)
                 .build();
         serviceFinder.start();
         {

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
+import com.flipkart.ranger.finder.ZookeeperSourceConfig;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
@@ -96,24 +97,24 @@ public class ServiceProviderHealthcheckTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
+        Deserializer<TestShardInfo> deserializer = new Deserializer<TestShardInfo>() {
+            @Override
+            public ServiceNode<TestShardInfo> deserialize(byte[] data) {
+                try {
+                    return objectMapper.readValue(data,
+                            new TypeReference<ServiceNode<TestShardInfo>>() {
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        ZookeeperSourceConfig<TestShardInfo> curatorSourceConfig = new ZookeeperSourceConfig<TestShardInfo>(testingCluster.getConnectString(), "test", "test-service", deserializer);
+
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                .withConnectionString(testingCluster.getConnectString())
-                .withNamespace("test")
-                .withServiceName("test-service")
-                .withDeserializer(new Deserializer<TestShardInfo>() {
-                    @Override
-                    public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<TestShardInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
-                .witHhealthcheckRefreshTimeMillis(10)
+                .withSourceConfig(curatorSourceConfig)
+                .withHealthcheckRefreshTimeMillis(10)
                 .build();
         serviceFinder.start();
         ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));

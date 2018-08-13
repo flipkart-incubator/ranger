@@ -16,34 +16,34 @@
 
 package com.flipkart.ranger.finder;
 
+import com.flipkart.ranger.model.Deserializer;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.imps.CuratorFrameworkState;
 
-public class Service {
+public class CuratorFrameworkConfig<T> extends SourceConfig<T> {
     private CuratorFramework curatorFramework;
-    private String namespace;
+    private Deserializer<T> deserializer;
     private String serviceName;
 
-    public Service(CuratorFramework curatorFramework, String namespace, String serviceName) {
+    public CuratorFrameworkConfig(CuratorFramework curatorFramework, String serviceName, Deserializer<T> deserializer) {
+        super(ServiceType.CURATORSOURCE);
         this.curatorFramework = curatorFramework;
-        this.namespace = namespace;
+        this.deserializer = deserializer;
         this.serviceName = serviceName;
-    }
-
-    public CuratorFramework getCuratorFramework() {
-        return curatorFramework;
-    }
-
-    public String getNamespace() {
-        return namespace;
     }
 
     public String getServiceName() {
         return serviceName;
     }
 
-    public boolean isRunning() {
-        return curatorFramework != null
-                && (curatorFramework.getState() == CuratorFrameworkState.STARTED);
+    public Deserializer<T> getDeserializer() {
+        return deserializer;
+    }
+
+    public CuratorFramework getCuratorFramework() {
+        return curatorFramework;
+    }
+
+    public ServiceRegistryUpdater<T> accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception {
+        return sourceConfigVisitor.visit(this);
     }
 }

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.ServiceFinderBuilders;
 import com.flipkart.ranger.ServiceProviderBuilders;
+import com.flipkart.ranger.finder.CuratorFrameworkConfig;
 import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
@@ -60,6 +61,7 @@ public class ServiceProviderExtCuratorTest {
         registerService("localhost-1", 9000, 1);
         registerService("localhost-2", 9000, 1);
         registerService("localhost-3", 9000, 2);
+        Thread.sleep(1000);
     }
 
     @After
@@ -111,23 +113,23 @@ public class ServiceProviderExtCuratorTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
+        Deserializer<TestShardInfo> deserializer = new Deserializer<TestShardInfo>() {
+            @Override
+            public ServiceNode<TestShardInfo> deserialize(byte[] data) {
+                try {
+                    return objectMapper.readValue(data,
+                            new TypeReference<ServiceNode<TestShardInfo>>() {
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        CuratorFrameworkConfig<TestShardInfo> curatorFrameworkConfig = new CuratorFrameworkConfig<TestShardInfo>(curatorFramework, "test-service", deserializer);
+
         SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
-                .withCuratorFramework(curatorFramework)
-                .withNamespace("test")
-                .withServiceName("test-service")
-                .withDeserializer(new Deserializer<TestShardInfo>() {
-                    @Override
-                    public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<TestShardInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                })
+                .withSourceConfig(curatorFrameworkConfig)
                 .build();
         serviceFinder.start();
         {
@@ -157,6 +159,7 @@ public class ServiceProviderExtCuratorTest {
     }
 
     private void registerService(String host, int port, int shardId) throws Exception {
+        logger.debug("Registering Service: " + host + ", " + port + ". ShardId: " + shardId);
         final ServiceProvider<TestShardInfo> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
@@ -179,5 +182,6 @@ public class ServiceProviderExtCuratorTest {
                 .buildServiceDiscovery();
         serviceProvider.start();
         serviceProviders.add(serviceProvider);
+        logger.debug("Service registered: " + host + ", " + port + ". ShardId: " + shardId);
     }
 }

@@ -16,22 +16,21 @@
 
 package com.flipkart.ranger.finder.unsharded;
 
+import com.flipkart.ranger.finder.ServiceRegistryUpdater;
 import com.flipkart.ranger.finder.BaseServiceFinderBuilder;
-import com.flipkart.ranger.finder.Service;
-import com.flipkart.ranger.model.Deserializer;
+import com.flipkart.ranger.finder.SourceConfig;
 import com.flipkart.ranger.model.ServiceNodeSelector;
 import com.flipkart.ranger.model.ShardSelector;
 
 public class UnshardedFinderBuilder extends BaseServiceFinderBuilder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedClusterFinder> {
     @Override
-    protected UnshardedClusterFinder buildFinder(Service service,
-                                                 Deserializer<UnshardedClusterInfo> deserializer,
+    protected UnshardedClusterFinder buildFinder(SourceConfig<UnshardedClusterInfo> config,
+                                                 ServiceRegistryUpdater<UnshardedClusterInfo> registryUpdater,
                                                  ShardSelector<UnshardedClusterInfo,
                                                  UnshardedClusterServiceRegistry> shardSelector,
                                                  ServiceNodeSelector<UnshardedClusterInfo> nodeSelector,
                                                  int healthcheckRefreshTimeMillis) {
-        UnshardedClusterServiceRegistry unshardedClusterServiceRegistry
-                = new UnshardedClusterServiceRegistry(service, deserializer, healthcheckRefreshTimeMillis);
-        return new UnshardedClusterFinder(unshardedClusterServiceRegistry, new NoOpShardSelector(), nodeSelector);
+        UnshardedClusterServiceRegistry unshardedClusterServiceRegistry = new UnshardedClusterServiceRegistry();
+        return new UnshardedClusterFinder(unshardedClusterServiceRegistry, registryUpdater, new NoOpShardSelector(), nodeSelector, healthcheckRefreshTimeMillis);
     }
 }

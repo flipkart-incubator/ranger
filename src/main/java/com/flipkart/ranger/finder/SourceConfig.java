@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.model;
+package com.flipkart.ranger.finder;
 
-import java.util.List;
+public abstract class SourceConfig<T>  {
 
-public interface ServiceRegistry<T> {
-    public void nodes(List<ServiceNode<T>> nodes);
+    public enum ServiceType {
+        CURATORSOURCE,
+        ZOOKEEPERSOURCE,
+        HTTPSOURCE
+    }
+
+    private ServiceType serviceType;
+
+    public SourceConfig(ServiceType serviceType) {
+        this.serviceType = serviceType;
+    }
+
+    public ServiceType getServiceType() {
+        return serviceType;
+    }
+
+    public abstract ServiceRegistryUpdater<T> accept(SourceConfigVisitor<T> sourceConfigVisitor) throws Exception;
 }

@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>, Healthcheck {
 
     /* Logger */
-    private static final Logger logger = LoggerFactory.getLogger(ServiceHealthAggregator.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(ServiceHealthAggregator.class);
 
     /* An atomic reference of the aggregated health */
     private AtomicReference<HealthcheckStatus> healthcheckStatusAtomicReference;
@@ -153,12 +153,15 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
         /* check health status of isolated monitors */
         for (IsolatedHealthMonitor isolatedHealthMonitor : isolatedHealthMonitorList) {
             if (isolatedHealthMonitor.isDisabled()) {
+                logger.debug("isolatedHealthMonitor is disabled");
                 continue;
             }
             Long timeDifference;
             if (null != isolatedHealthMonitor.getLastStatusUpdateTime()) {
                 timeDifference = currentTime.getTime() - isolatedHealthMonitor.getLastStatusUpdateTime().getTime();
+                logger.debug("time difference: " + timeDifference.toString());
             } else {
+                logger.debug("time difference is set to null");
                 timeDifference = null;
             }
             /* check if the monitor and its last updated time is stale, if so, mark status as unhealthy */
@@ -167,6 +170,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
                 logger.error("Monitor: {} is stuck and its status is stale. Marking service as unhealthy", isolatedHealthMonitor.getName());
                 healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);
             } else if (HealthcheckStatus.unhealthy == isolatedHealthMonitor.getHealthStatus()) {
+                logger.debug("isolatedHealthMonitor is unhealthy");
                 healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);
             }
         }
