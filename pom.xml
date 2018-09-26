@@ -7,7 +7,7 @@
     <groupId>com.flipkart.ranger</groupId>
     <artifactId>ranger</artifactId>
     <packaging>jar</packaging>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
 
     <distributionManagement>
         <repository>
@@ -48,14 +48,21 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <curator.version>3.1.0</curator.version>
+        <guava.version>26.0-jre</guava.version>
+        <curator.version>4.0.1</curator.version>
+        <jackson.version>2.9.5</jackson.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <apache.httpclient.version>4.5.6</apache.httpclient.version>
+
+        <maven.compiler.version>3.8.0</maven.compiler.version>
+        <java.version>1.8</java.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>18.0</version>
+            <version>${guava.version}</version>
         </dependency>
 
         <!--Curator-->
@@ -80,13 +87,13 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.5.0</version>
+            <version>${jackson.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.0</version>
+            <version>${slf4j.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -103,7 +110,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.1</version>
+            <version>${apache.httpclient.version}</version>
         </dependency>
     </dependencies>
 
@@ -112,10 +119,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>${maven.compiler.version}</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -134,10 +141,8 @@
                         <ignoreTrivial>true</ignoreTrivial>
                     </instrumentation>
                     <check>
-
                     </check>
                 </configuration>
-
             </plugin>
         </plugins>
     </build>
