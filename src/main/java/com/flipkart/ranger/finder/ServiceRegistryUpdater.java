@@ -28,7 +28,6 @@ import org.apache.zookeeper.WatchedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Condition;
@@ -69,7 +68,12 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 }
             }
         }).forPath(PathBuilder.path(serviceRegistry.getService())); //Start watcher on service node
-        serviceRegistry.nodes(checkForUpdateOnZookeeper());
+        List<ServiceNode<T>> nodes = checkForUpdateOnZookeeper();
+        if (nodes != null) {
+            serviceRegistry.nodes(nodes);
+        } else {
+            logger.warn("No service shards/nodes found for service:" + serviceRegistry.getService().getServiceName());
+        }
         logger.info("Started polling zookeeper for changes");
     }
 
@@ -139,7 +143,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
         } catch (Exception e) {
             logger.error("Error getting service data from zookeeper: ", e);
         }
-        return Collections.emptyList();
+        return null;
     }
 
     public void stop() {
