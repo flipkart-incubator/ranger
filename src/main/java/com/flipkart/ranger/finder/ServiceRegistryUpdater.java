@@ -28,6 +28,7 @@ import org.apache.zookeeper.WatchedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Condition;
@@ -138,7 +139,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
         } catch (Exception e) {
             logger.error("Error getting service data from zookeeper: ", e);
         }
-        return null;
+        return Collections.emptyList();
     }
 
     public void stop() {
