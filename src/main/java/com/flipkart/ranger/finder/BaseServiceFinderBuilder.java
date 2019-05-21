@@ -81,6 +81,11 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         return this;
     }
 
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withDisableWatchers(boolean disableWatchers) {
+        this.disableWatchers = disableWatchers;
+        return this;
+    }
+
     public FinderType build() {
         Preconditions.checkNotNull(namespace);
         Preconditions.checkNotNull(serviceName);
