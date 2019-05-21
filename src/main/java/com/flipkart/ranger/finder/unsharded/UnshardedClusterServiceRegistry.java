@@ -27,12 +27,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class UnshardedClusterServiceRegistry extends AbstractZookeeperServiceRegistry<UnshardedClusterInfo> {
     private AtomicReference<List<ServiceNode<UnshardedClusterInfo>>> nodes
-                                        = new AtomicReference<List<ServiceNode<UnshardedClusterInfo>>>();
+                                        = new AtomicReference<>();
 
     protected UnshardedClusterServiceRegistry(Service service,
                                               Deserializer<UnshardedClusterInfo> deserializer,
-                                              int refreshInterval) {
-        super(service, deserializer, refreshInterval);
+                                              int refreshInterval,
+                                              boolean disableWatchers) {
+        super(service, deserializer, refreshInterval, disableWatchers);
     }
 
     public List<ServiceNode<UnshardedClusterInfo>> nodes() {

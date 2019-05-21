@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -38,42 +39,42 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
     private static final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
 
     private ServiceRegistry<T> serviceRegistry;
+    private final boolean disableWatchers;
 
     private Lock checkLock = new ReentrantLock();
     private Condition checkCondition = checkLock.newCondition();
     private boolean checkForUpdate = false;
 
-    public ServiceRegistryUpdater(ServiceRegistry<T> serviceRegistry) {
+    public ServiceRegistryUpdater(ServiceRegistry<T> serviceRegistry, boolean disableWatchers) {
         this.serviceRegistry = serviceRegistry;
+        this.disableWatchers = disableWatchers;
     }
 
     public void start() throws Exception {
         CuratorFramework curatorFramework = serviceRegistry.getService().getCuratorFramework();
-        curatorFramework.getChildren().usingWatcher(new CuratorWatcher() {
-            @Override
-            public void process(WatchedEvent event) throws Exception {
-                switch (event.getType()) {
+        if(!disableWatchers) {
+            curatorFramework.getChildren()
+                    .usingWatcher(new CuratorWatcher() {
+                        @Override
+                        public void process(WatchedEvent event) throws Exception {
+                            switch (event.getType()) {
 
-                    case NodeChildrenChanged: {
-                        checkForUpdate();
-                        break;
-                    }
-                    case None:
-                    case NodeCreated:
-                    case NodeDeleted:
-                    case NodeDataChanged:
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }).forPath(PathBuilder.path(serviceRegistry.getService())); //Start watcher on service node
-        List<ServiceNode<T>> nodes = checkForUpdateOnZookeeper();
-        if (nodes != null) {
-            serviceRegistry.nodes(nodes);
-        } else {
-            logger.warn("No service shards/nodes found for service:" + serviceRegistry.getService().getServiceName());
+                                case NodeChildrenChanged: {
+                                    checkForUpdate();
+                                    break;
+                                }
+                                case None:
+                                case NodeCreated:
+                                case NodeDeleted:
+                                case NodeDataChanged:
+                                default:
+                                    break;
+                            }
+                        }
+                    })
+                    .forPath(PathBuilder.path(serviceRegistry.getService())); //Start watcher on service node
         }
+        updateRegistry();
         logger.info("Started polling zookeeper for changes");
     }
 
@@ -86,14 +87,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 while (!checkForUpdate) {
                     checkCondition.await();
                 }
-                List<ServiceNode<T>> nodes = checkForUpdateOnZookeeper();
-                if(null != nodes) {
-                    logger.debug("Setting nodelist of size: " + nodes.size());
-                    serviceRegistry.nodes(nodes);
-                }
-                else {
-                    logger.warn("No service shards/nodes found. We are disconnected from zookeeper. Keeping old list.");
-                }
+                updateRegistry();
                 checkForUpdate =false;
             } finally {
                 checkLock.unlock();
@@ -111,12 +105,12 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
         }
     }
 
-    private List<ServiceNode<T>> checkForUpdateOnZookeeper() {
+    private Optional<List<ServiceNode<T>>> checkForUpdateOnZookeeper() {
         try {
             final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
             final Service service = serviceRegistry.getService();
             if(!service.isRunning()) {
-                return null;
+                return Optional.empty();
             }
             final Deserializer<T> deserializer = serviceRegistry.getDeserializer();
             final CuratorFramework curatorFramework = service.getCuratorFramework();
@@ -125,12 +119,10 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());
             for(String child : children) {
                 final String path = String.format("%s/%s", parentPath, child);
-                if(null == curatorFramework.checkExists().forPath(path)) {
-                    continue;
-                }
-                byte[] data = curatorFramework.getData().forPath(path);
+                boolean hasChild = null != curatorFramework.checkExists().forPath(path);
+                final byte[] data = hasChild ? curatorFramework.getData().forPath(path) : null;
                 if(null == data) {
-                    logger.warn("Not data present for node: " + path);
+                    logger.warn("Not data present for node: {}", path);
                     continue;
                 }
                 ServiceNode<T> key = deserializer.deserialize(data);
@@ -139,14 +131,28 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                     nodes.add(key);
                 }
             }
-            return nodes;
+            return Optional.of(nodes);
         } catch (Exception e) {
             logger.error("Error getting service data from zookeeper: ", e);
         }
-        return null;
+        return Optional.empty();
     }
 
     public void stop() {
         logger.debug("Stopped updater");
     }
+
+
+    private void updateRegistry() {
+        List<ServiceNode<T>> nodes = checkForUpdateOnZookeeper().orElse(null);
+        if(null != nodes) {
+            logger.debug("Setting nodelist of size: {}", nodes.size());
+            serviceRegistry.nodes(nodes);
+        }
+        else {
+            logger.warn("No service shards/nodes found. We are disconnected from zookeeper. Keeping old list for {}",
+                        serviceRegistry.getService().getServiceName());
+        }
+    }
+
 }

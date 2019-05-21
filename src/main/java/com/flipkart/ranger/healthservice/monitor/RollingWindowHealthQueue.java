@@ -35,7 +35,7 @@ public class RollingWindowHealthQueue {
     private Integer maxFailures;
 
     /* current failures in the window */
-    private final AtomicReference<Integer> currentFailuresCount = new AtomicReference<Integer>();
+    private final AtomicReference<Integer> currentFailuresCount = new AtomicReference<>();
 
     /* queue of health statuses */
     private Queue<HealthcheckStatus> statusQueue;

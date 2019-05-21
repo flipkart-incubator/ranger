@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Flipkart Internet Pvt. Ltd.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -85,7 +85,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
      * this monitor will not be scheduled in a separate isolated thread,
      * but instead its execution will happen inline, in a single thread, along with other inline monitors
      *
-     * @param monitor an implementation of line {@link Monitor<HealthcheckStatus>}
+     * @param monitor an implementation of line {@link Monitor}
      */
     @Override
     public void addInlineMonitor(Monitor<HealthcheckStatus> monitor) {
@@ -111,11 +111,14 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
         scheduledFutureList = Lists.newArrayListWithCapacity(isolatedHealthMonitorList.size());
         for (IsolatedHealthMonitor isolatedHealthMonitor : isolatedHealthMonitorList) {
             final ScheduledFuture<?> scheduledFuture =
-                    scheduledExecutorService.scheduleAtFixedRate(
+                    scheduledExecutorService.scheduleWithFixedDelay(
                             isolatedHealthMonitor,
-                            isolatedHealthMonitor.getRunInterval().getInitialDelay(),
-                            isolatedHealthMonitor.getRunInterval().getTimeInterval(),
-                            isolatedHealthMonitor.getRunInterval().getTimeUnit());
+                            isolatedHealthMonitor.getRunInterval()
+                                    .getInitialDelay(),
+                            isolatedHealthMonitor.getRunInterval()
+                                    .getTimeInterval(),
+                            isolatedHealthMonitor.getRunInterval()
+                                    .getTimeUnit());
             scheduledFutureList.add(scheduledFuture);
         }
         running.set(true);
@@ -145,33 +148,52 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
     public HealthcheckStatus getServiceHealth() {
         if (!running.get()) {
             throw new UnsupportedOperationException("Cannot get HealthStatus, when Aggregator isnt running. " +
-                    "Please start the aggregator before trying to get health");
+                                                            "Please start the aggregator before trying to get health");
         }
         healthcheckStatusAtomicReference.set(HealthcheckStatus.healthy);
         Date currentTime = new Date();
 
         /* check health status of isolated monitors */
-        for (IsolatedHealthMonitor isolatedHealthMonitor : isolatedHealthMonitorList) {
-            if (isolatedHealthMonitor.isDisabled()) {
-                continue;
-            }
-            Long timeDifference;
-            if (null != isolatedHealthMonitor.getLastStatusUpdateTime()) {
-                timeDifference = currentTime.getTime() - isolatedHealthMonitor.getLastStatusUpdateTime().getTime();
-            } else {
-                timeDifference = null;
-            }
-            /* check if the monitor and its last updated time is stale, if so, mark status as unhealthy */
-            if ((timeDifference == null || timeDifference > isolatedHealthMonitor.getStalenessAllowedInMillis())
-                    && HealthcheckStatus.unhealthy != healthcheckStatusAtomicReference.get()) {
-                logger.error("Monitor: {} is stuck and its status is stale. Marking service as unhealthy", isolatedHealthMonitor.getName());
-                healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);
-            } else if (HealthcheckStatus.unhealthy == isolatedHealthMonitor.getHealthStatus()) {
-                healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);
-            }
+        final boolean hasUnhealthyMonitor = isolatedHealthMonitorList.stream()
+                .filter(isolatedHealthMonitor -> !isolatedHealthMonitor.isDisabled())
+                .anyMatch(isolatedHealthMonitor -> isIsolatedMonitorHealthy(isolatedHealthMonitor, currentTime));
+        if (hasUnhealthyMonitor) {
+            healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);
         }
+        processMonitors();
 
-        /* check status of all inline monitors in the same thread */
+        return healthcheckStatusAtomicReference.get();
+    }
+
+    @Override
+    public HealthcheckStatus check() {
+        return getServiceHealth();
+    }
+
+    private boolean isIsolatedMonitorHealthy( IsolatedHealthMonitor isolatedHealthMonitor, Date currentTime) {
+        if (HealthcheckStatus.unhealthy == isolatedHealthMonitor.getHealthStatus()) {
+            return true;
+        }
+        final boolean hasValidUpdateTime
+                = null != isolatedHealthMonitor.getLastStatusUpdateTime()
+                && hasValidUpdatedTime(isolatedHealthMonitor, currentTime);
+            /* check if the monitor and its last updated time is stale, if so, mark status as unhealthy */
+        if (!hasValidUpdateTime) {
+            logger.error("Monitor: {} is stuck and its status is stale. Marking service as unhealthy",
+                         isolatedHealthMonitor.getName());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasValidUpdatedTime(IsolatedHealthMonitor isolatedHealthMonitor, Date currentTime) {
+        final long timeDifferenceMillis = currentTime.getTime() - isolatedHealthMonitor.getLastStatusUpdateTime()
+                .getTime();
+        return timeDifferenceMillis <= isolatedHealthMonitor.getStalenessAllowedInMillis();
+    }
+
+    private void processMonitors() {
+    /* check status of all inline monitors in the same thread */
         for (Monitor<HealthcheckStatus> healthMonitor : inlineHealthMonitorList) {
             if (healthMonitor.isDisabled()) {
                 continue;
@@ -181,12 +203,5 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
                 healthcheckStatusAtomicReference.set(HealthcheckStatus.unhealthy);
             }
         }
-
-        return healthcheckStatusAtomicReference.get();
-    }
-
-    @Override
-    public HealthcheckStatus check() {
-        return getServiceHealth();
     }
 }

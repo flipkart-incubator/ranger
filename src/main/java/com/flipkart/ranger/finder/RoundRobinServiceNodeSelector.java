@@ -20,15 +20,9 @@ import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ServiceNodeSelector;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class RoundRobinServiceNodeSelector<T> implements ServiceNodeSelector<T> {
-    private static final ThreadLocal<Integer> index =
-            new ThreadLocal<Integer>() {
-                @Override protected Integer initialValue() {
-                    return 0;
-                }
-            };
+    private static final ThreadLocal<Integer> index = ThreadLocal.withInitial(() -> 0);
 
     @Override
     public ServiceNode<T> select(List<ServiceNode<T>> serviceNodes) {

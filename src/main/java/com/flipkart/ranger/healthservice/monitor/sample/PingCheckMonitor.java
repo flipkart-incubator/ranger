@@ -82,11 +82,7 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
     @Override
     public HealthcheckStatus monitor() {
         logger.debug("Running ping monitor :{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
-        Future<Boolean> futurePingResponse = executorService.submit(new Callable<Boolean>() {
-            public Boolean call() {
-                return healthPing();
-            }
-        });
+        Future<Boolean> futurePingResponse = executorService.submit(this::healthPing);
 
         try {
             final Boolean pingSuccessful = futurePingResponse.get(pingTimeoutInMilliseconds, TimeUnit.MILLISECONDS);

@@ -26,7 +26,7 @@ public class ServiceFinderBuilders {
     }
     
     public static <T> SimpleShardedServiceFinderBuilder<T> shardedFinderBuilder() {
-        return new SimpleShardedServiceFinderBuilder<T>();
+        return new SimpleShardedServiceFinderBuilder<>();
     }
 
     public static UnshardedFinderBuilder unshardedFinderBuilder() {

@@ -96,7 +96,6 @@ public class ServiceProviderBuilder<T> {
 
     /**
      * Register a monitor to the service, to setup a continuous monitoring on the monitor
-     * <p/>
      * this method can be used to add a {@link IsolatedHealthMonitor} which will later be
      * scheduled at regular intervals and monitored to generate and maintain an aggregated health of the service
      * the scheduling will happen in an isolated thread
