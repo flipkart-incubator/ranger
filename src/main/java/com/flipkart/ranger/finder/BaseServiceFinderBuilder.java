@@ -30,7 +30,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
     private String serviceName;
     private CuratorFramework curatorFramework;
     private String connectionString;
-    private int healthcheckRefreshTimeMillis;
+    private int nodeRefreshIntervalMs;
     private boolean disableWatchers;
     private Deserializer<T> deserializer;
     private ShardSelector<T, RegistryType> shardSelector;
@@ -71,8 +71,8 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         return this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> witHhealthcheckRefreshTimeMillis(int healthcheckRefreshTimeMillis) {
-        this.healthcheckRefreshTimeMillis = healthcheckRefreshTimeMillis;
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNodeRefreshIntervalMs(int nodeRefreshIntervalMs) {
+        this.nodeRefreshIntervalMs = nodeRefreshIntervalMs;
         return this;
     }
 
@@ -93,11 +93,11 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if( 0 == healthcheckRefreshTimeMillis) {
-            healthcheckRefreshTimeMillis = 1000;
+        if( 0 == nodeRefreshIntervalMs) {
+            nodeRefreshIntervalMs = 1000;
         }
         Service service = new Service(curatorFramework, namespace, serviceName);
-        return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis, disableWatchers);
+        return buildFinder(service, deserializer, shardSelector, nodeSelector, nodeRefreshIntervalMs, disableWatchers);
     }
 
     protected abstract FinderType buildFinder(Service service,

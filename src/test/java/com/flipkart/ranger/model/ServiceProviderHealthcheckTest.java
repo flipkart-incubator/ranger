@@ -113,7 +113,7 @@ public class ServiceProviderHealthcheckTest {
                         return null;
                     }
                 })
-                .witHhealthcheckRefreshTimeMillis(10)
+                .withNodeRefreshIntervalMs(10)
                 .build();
         serviceFinder.start();
         ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
@@ -188,7 +188,7 @@ public class ServiceProviderHealthcheckTest {
                     .withPort(port)
                     .withNodeData(new TestShardInfo(shardId))
                     .withHealthcheck(healthcheck)
-                    .withRefreshIntervalMillis(10)
+                    .withHealthUpdateIntervalMs(10)
                     .buildServiceDiscovery();
             serviceProvider.start();
         }

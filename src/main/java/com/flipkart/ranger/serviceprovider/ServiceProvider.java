@@ -39,7 +39,7 @@ public class ServiceProvider<T> {
     private CuratorFramework curatorFramework;
     private ServiceNode<T> serviceNode;
     private List<Healthcheck> healthchecks;
-    private final int refreshInterval;
+    private final int healthUpdateInterval;
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> future;
     private ServiceHealthAggregator serviceHealthAggregator;
@@ -48,14 +48,14 @@ public class ServiceProvider<T> {
     public ServiceProvider(String serviceName, Serializer<T> serializer,
                            CuratorFramework curatorFramework,
                            ServiceNode<T> serviceNode,
-                           List<Healthcheck> healthchecks, int refreshInterval,
+                           List<Healthcheck> healthchecks, int healthUpdateInterval,
                            ServiceHealthAggregator serviceHealthAggregator) {
         this.serviceName = serviceName;
         this.serializer = serializer;
         this.curatorFramework = curatorFramework;
         this.serviceNode = serviceNode;
         this.healthchecks = healthchecks;
-        this.refreshInterval = refreshInterval;
+        this.healthUpdateInterval = healthUpdateInterval;
         this.serviceHealthAggregator = serviceHealthAggregator;
     }
 
@@ -76,7 +76,8 @@ public class ServiceProvider<T> {
         logger.debug("Connected to zookeeper");
         createPath();
         logger.debug("Set initial node data on zookeeper.");
-        future = executorService.scheduleWithFixedDelay(new HealthChecker<T>(healthchecks, this), 0, refreshInterval, TimeUnit.MILLISECONDS);
+        future = executorService.scheduleWithFixedDelay(new HealthChecker<T>(healthchecks, this), 0,
+                                                        healthUpdateInterval, TimeUnit.MILLISECONDS);
     }
 
     public void stop() throws Exception {

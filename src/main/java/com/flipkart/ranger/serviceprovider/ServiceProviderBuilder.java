@@ -38,7 +38,7 @@ public class ServiceProviderBuilder<T> {
     private String hostname;
     private int port;
     private T nodeData;
-    private int refreshIntervalMillis;
+    private int healthUpdateIntervalMs;
     private List<Healthcheck> healthchecks = Lists.newArrayList();
 
     /* list of isolated monitors */
@@ -89,8 +89,8 @@ public class ServiceProviderBuilder<T> {
         return this;
     }
 
-    public ServiceProviderBuilder<T> withRefreshIntervalMillis(int refreshIntervalMillis) {
-        this.refreshIntervalMillis = refreshIntervalMillis;
+    public ServiceProviderBuilder<T> withHealthUpdateIntervalMs(int healthUpdateIntervalMs) {
+        this.healthUpdateIntervalMs = healthUpdateIntervalMs;
         return this;
     }
 
@@ -122,8 +122,8 @@ public class ServiceProviderBuilder<T> {
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if (0 == refreshIntervalMillis) {
-            refreshIntervalMillis = 1000;
+        if (0 == healthUpdateIntervalMs) {
+            healthUpdateIntervalMs = 1000;
         }
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
         for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
@@ -131,7 +131,8 @@ public class ServiceProviderBuilder<T> {
         }
         healthchecks.add(serviceHealthAggregator);
         return new ServiceProvider<>(serviceName, serializer, curatorFramework,
-                new ServiceNode<>(hostname, port, nodeData), healthchecks, refreshIntervalMillis, serviceHealthAggregator);
+                                     new ServiceNode<>(hostname, port, nodeData), healthchecks,
+                                     healthUpdateIntervalMs, serviceHealthAggregator);
     }
 
 }
