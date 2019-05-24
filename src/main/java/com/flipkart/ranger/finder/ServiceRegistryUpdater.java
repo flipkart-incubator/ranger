@@ -75,7 +75,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                     .forPath(PathBuilder.path(serviceRegistry.getService())); //Start watcher on service node
         }
         updateRegistry();
-        logger.info("Started polling zookeeper for changes");
+        logger.info("Started polling zookeeper for changes for service:{}", serviceRegistry.getService().getServiceName());
     }
 
     @Override
