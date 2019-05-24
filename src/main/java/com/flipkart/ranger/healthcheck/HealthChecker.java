@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * A Runnable which maintains the health state of the ServiceProvider
- * @param <T>
+ * @param <T> type of provider
  */
 public class HealthChecker<T> implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(HealthChecker.class);
@@ -57,8 +57,8 @@ public class HealthChecker<T> implements Runnable {
         serviceNode.setLastUpdatedTimeStamp(System.currentTimeMillis());
         try {
             serviceProvider.updateState(serviceNode);
-            logger.debug(String.format("Node is %s for (%s, %d)",
-                                        healthcheckStatus, serviceNode.getHost(), serviceNode.getPort()));
+            logger.debug("Node is {} for ({}, {})",
+                                        healthcheckStatus.name(), serviceNode.getHost(), serviceNode.getPort());
         } catch (Exception e) {
             logger.error("Error updating health state in zookeeper: ", e);
         }

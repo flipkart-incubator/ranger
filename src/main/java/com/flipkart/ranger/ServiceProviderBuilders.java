@@ -26,10 +26,10 @@ public class ServiceProviderBuilders {
     }
     
     public static <T> ServiceProviderBuilder<T> shardedServiceProviderBuilder() {
-        return new ServiceProviderBuilder<T>();
+        return new ServiceProviderBuilder<>();
     }
 
     public static ServiceProviderBuilder<UnshardedClusterInfo> unshardedServiceProviderBuilder() {
-        return new ServiceProviderBuilder<UnshardedClusterInfo>();
+        return new ServiceProviderBuilder<>();
     }
 }

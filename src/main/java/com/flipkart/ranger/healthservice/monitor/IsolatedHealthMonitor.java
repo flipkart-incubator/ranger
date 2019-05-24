@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * A health monitor that implements a {@link Monitor<T>} and {@link Runnable}
+ * A health monitor that implements a {@link Monitor} and {@link Runnable}
  * Maintains the latest state of the Monitor, and its latest updated timestamp
  *
  * @see com.flipkart.ranger.healthservice.monitor.sample.PingCheckMonitor
@@ -108,7 +108,7 @@ public abstract class IsolatedHealthMonitor<T> implements Runnable, Monitor<T> {
     }
 
     public Date getLastStatusUpdateTime() {
-        return lastStatusUpdateTime;
+        return null != lastStatusUpdateTime ? new Date(lastStatusUpdateTime.getTime()) : null;
     }
 
     public String getName() {

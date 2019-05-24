@@ -21,9 +21,7 @@ import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import java.io.File;
 
 /**
- * @author tushar.naik
- * @version 1.0
- * @date 28/02/16 - 1:07 AM
+ * Helper for creating instances of {@link Monitor}
  */
 public class Monitors {
 

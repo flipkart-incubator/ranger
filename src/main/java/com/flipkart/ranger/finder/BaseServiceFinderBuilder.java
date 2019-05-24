@@ -24,16 +24,21 @@ import com.google.common.base.Preconditions;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseServiceFinderBuilder.class);
+
     private String namespace;
     private String serviceName;
     private CuratorFramework curatorFramework;
     private String connectionString;
-    private int healthcheckRefreshTimeMillis;
+    private int nodeRefreshIntervalMs;
+    private boolean disableWatchers;
     private Deserializer<T> deserializer;
     private ShardSelector<T, RegistryType> shardSelector;
-    private ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<T>();
+    private ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<>();
 
     public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNamespace(final String namespace) {
         this.namespace = namespace;
@@ -70,14 +75,22 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         return this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> witHhealthcheckRefreshTimeMillis(int healthcheckRefreshTimeMillis) {
-        this.healthcheckRefreshTimeMillis = healthcheckRefreshTimeMillis;
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNodeRefreshIntervalMs(int nodeRefreshIntervalMs) {
+        this.nodeRefreshIntervalMs = nodeRefreshIntervalMs;
         return this;
     }
 
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withDisableWatchers() {
+        this.disableWatchers = true;
+        return this;
+    }
 
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withDisableWatchers(boolean disableWatchers) {
+        this.disableWatchers = disableWatchers;
+        return this;
+    }
 
-    public FinderType build() throws Exception {
+    public FinderType build() {
         Preconditions.checkNotNull(namespace);
         Preconditions.checkNotNull(serviceName);
         Preconditions.checkNotNull(deserializer);
@@ -89,17 +102,19 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if( 0 == healthcheckRefreshTimeMillis) {
-            healthcheckRefreshTimeMillis = 1000;
+        if(nodeRefreshIntervalMs < 1000) {
+            LOGGER.warn("Node refresh interval too low: {} ms. Has been upgraded to 1000ms ", nodeRefreshIntervalMs);
+            nodeRefreshIntervalMs = 1000;
         }
         Service service = new Service(curatorFramework, namespace, serviceName);
-        return buildFinder(service, deserializer, shardSelector, nodeSelector, healthcheckRefreshTimeMillis);
+        return buildFinder(service, deserializer, shardSelector, nodeSelector, nodeRefreshIntervalMs, disableWatchers);
     }
 
     protected abstract FinderType buildFinder(Service service,
                                               Deserializer<T> deserializer,
                                               ShardSelector<T, RegistryType> shardSelector,
                                               ServiceNodeSelector<T> nodeSelector,
-                                              int healthcheckRefreshTimeMillis);
+                                              int healthcheckRefreshTimeMillis,
+                                              boolean disableWatchers);
 
 }

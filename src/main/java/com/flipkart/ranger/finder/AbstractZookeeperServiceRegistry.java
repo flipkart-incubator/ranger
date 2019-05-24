@@ -26,15 +26,22 @@ import java.util.concurrent.*;
 
 public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistry<T> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractZookeeperServiceRegistry.class);
-    private int refreshIntervalMillis;
+    private final int refreshIntervalMillis;
+    private final boolean disableWatchers;
     private ServiceRegistryUpdater<T> updater;
     private ExecutorService executorService = Executors.newFixedThreadPool(1);
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> scheduledFuture;
+    private Future<Void> queryThreadFuture;
 
-    protected AbstractZookeeperServiceRegistry(Service service, Deserializer<T> deserializer, int refreshIntervalMillis) {
+    protected AbstractZookeeperServiceRegistry(
+            Service service,
+            Deserializer<T> deserializer,
+            int refreshIntervalMillis,
+            boolean disableWatchers) {
         super(service, deserializer);
         this.refreshIntervalMillis = refreshIntervalMillis;
+        this.disableWatchers = disableWatchers;
     }
 
     @Override
@@ -44,17 +51,14 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
         logger.debug("Connected to zookeeper cluster");
         service.getCuratorFramework().newNamespaceAwareEnsurePath(PathBuilder.path(service))
                                     .ensure(service.getCuratorFramework().getZookeeperClient());
-        updater = new ServiceRegistryUpdater<T>(this);
+        updater = new ServiceRegistryUpdater<>(this, disableWatchers);
         updater.start();
-        executorService.submit(updater);
-        scheduledFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    updater.checkForUpdate();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        queryThreadFuture = executorService.submit(updater);
+        scheduledFuture = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                updater.checkForUpdate();
+            } catch (Exception e) {
+                logger.error("Error checking for updates from zk for service:" + service.getServiceName() , e);
             }
         }, 0, refreshIntervalMillis, TimeUnit.MILLISECONDS);
         logger.debug("Service Registry Started");
@@ -67,6 +71,9 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
                 scheduledFuture.cancel(true);
             }
             updater.stop();
+            if(null != queryThreadFuture) {
+                executorService.shutdownNow();
+            }
         } catch (Exception e) {
             logger.error("Error stopping ZK poller: ", e);
         }

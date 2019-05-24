@@ -19,11 +19,13 @@ package com.flipkart.ranger.healthservice.monitor;
 /**
  * An generic interface to monitor any entity
  *
- * @param <T>
+ * @param <T> Type of monitor
  */
 public interface Monitor<T> {
     /**
      * trigger a single check of the monitor service
+     *
+     * @return status of check
      */
     T monitor();
 

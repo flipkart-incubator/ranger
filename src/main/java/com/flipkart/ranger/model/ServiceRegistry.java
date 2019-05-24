@@ -33,7 +33,7 @@ public abstract class ServiceRegistry<T> {
 
     public abstract void stop() throws Exception;
 
-    abstract public void nodes(List<ServiceNode<T>> nodes);
+    public abstract void nodes(List<ServiceNode<T>> nodes);
 
     public Service getService() {
         return service;

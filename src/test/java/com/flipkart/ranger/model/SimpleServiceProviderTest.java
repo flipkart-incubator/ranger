@@ -76,6 +76,7 @@ public class SimpleServiceProviderTest {
                         return null;
                     }
                 })
+                .withDisableWatchers()
                 .build();
         serviceFinder.start();
         {

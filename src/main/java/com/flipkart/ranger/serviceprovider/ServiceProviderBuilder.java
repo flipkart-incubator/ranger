@@ -26,10 +26,15 @@ import com.google.common.collect.Lists;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class ServiceProviderBuilder<T> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceProviderBuilder.class);
+
     private String namespace;
     private String serviceName;
     private CuratorFramework curatorFramework;
@@ -38,7 +43,7 @@ public class ServiceProviderBuilder<T> {
     private String hostname;
     private int port;
     private T nodeData;
-    private int refreshIntervalMillis;
+    private int healthUpdateIntervalMs;
     private List<Healthcheck> healthchecks = Lists.newArrayList();
 
     /* list of isolated monitors */
@@ -89,19 +94,19 @@ public class ServiceProviderBuilder<T> {
         return this;
     }
 
-    public ServiceProviderBuilder<T> withRefreshIntervalMillis(int refreshIntervalMillis) {
-        this.refreshIntervalMillis = refreshIntervalMillis;
+    public ServiceProviderBuilder<T> withHealthUpdateIntervalMs(int healthUpdateIntervalMs) {
+        this.healthUpdateIntervalMs = healthUpdateIntervalMs;
         return this;
     }
 
     /**
      * Register a monitor to the service, to setup a continuous monitoring on the monitor
-     * <p/>
      * this method can be used to add a {@link IsolatedHealthMonitor} which will later be
      * scheduled at regular intervals and monitored to generate and maintain an aggregated health of the service
      * the scheduling will happen in an isolated thread
      *
      * @param monitor an implementation of the {@link IsolatedHealthMonitor}
+     * @return builder for next call
      */
     public ServiceProviderBuilder<T> withIsolatedHealthMonitor(IsolatedHealthMonitor monitor) {
         this.isolatedMonitors.add(monitor);
@@ -123,8 +128,9 @@ public class ServiceProviderBuilder<T> {
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if (0 == refreshIntervalMillis) {
-            refreshIntervalMillis = 1000;
+        if (healthUpdateIntervalMs < 1000) {
+            LOGGER.warn("Health update interval too low: {} ms. Has been upgraded to 1000ms ", healthUpdateIntervalMs);
+            healthUpdateIntervalMs = 1000;
         }
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
         for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
@@ -132,7 +138,8 @@ public class ServiceProviderBuilder<T> {
         }
         healthchecks.add(serviceHealthAggregator);
         return new ServiceProvider<>(serviceName, serializer, curatorFramework,
-                new ServiceNode<>(hostname, port, nodeData), healthchecks, refreshIntervalMillis, serviceHealthAggregator);
+                                     new ServiceNode<>(hostname, port, nodeData), healthchecks,
+                                     healthUpdateIntervalMs, serviceHealthAggregator);
     }
 
 }
