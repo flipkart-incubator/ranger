@@ -58,7 +58,7 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
             try {
                 updater.checkForUpdate();
             } catch (Exception e) {
-                logger.error("Error checking for updates from zk", e);
+                logger.error("Error checking for updates from zk for service:" + service.getServiceName() , e);
             }
         }, 0, refreshIntervalMillis, TimeUnit.MILLISECONDS);
         logger.debug("Service Registry Started");
