@@ -26,10 +26,15 @@ import com.google.common.collect.Lists;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class ServiceProviderBuilder<T> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceProviderBuilder.class);
+
     private String namespace;
     private String serviceName;
     private CuratorFramework curatorFramework;
@@ -101,6 +106,7 @@ public class ServiceProviderBuilder<T> {
      * the scheduling will happen in an isolated thread
      *
      * @param monitor an implementation of the {@link IsolatedHealthMonitor}
+     * @return builder for next call
      */
     public ServiceProviderBuilder<T> withIsolatedHealthMonitor(IsolatedHealthMonitor monitor) {
         this.isolatedMonitors.add(monitor);
@@ -122,7 +128,8 @@ public class ServiceProviderBuilder<T> {
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if (0 == healthUpdateIntervalMs) {
+        if (healthUpdateIntervalMs < 1000) {
+            LOGGER.warn("Health update interval too low: {} ms. Has been upgraded to 1000ms ", healthUpdateIntervalMs);
             healthUpdateIntervalMs = 1000;
         }
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();

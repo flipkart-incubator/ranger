@@ -24,8 +24,12 @@ import com.google.common.base.Preconditions;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseServiceFinderBuilder.class);
+
     private String namespace;
     private String serviceName;
     private CuratorFramework curatorFramework;
@@ -99,6 +103,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
             curatorFramework.start();
         }
         if(nodeRefreshIntervalMs < 1000) {
+            LOGGER.warn("Node refresh interval too low: {} ms. Has been upgraded to 1000ms ", nodeRefreshIntervalMs);
             nodeRefreshIntervalMs = 1000;
         }
         Service service = new Service(curatorFramework, namespace, serviceName);

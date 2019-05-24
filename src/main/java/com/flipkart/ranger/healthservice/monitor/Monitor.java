@@ -24,6 +24,8 @@ package com.flipkart.ranger.healthservice.monitor;
 public interface Monitor<T> {
     /**
      * trigger a single check of the monitor service
+     *
+     * @return status of check
      */
     T monitor();
 

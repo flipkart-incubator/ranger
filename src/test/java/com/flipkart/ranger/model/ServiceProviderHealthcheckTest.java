@@ -113,7 +113,7 @@ public class ServiceProviderHealthcheckTest {
                         return null;
                     }
                 })
-                .withNodeRefreshIntervalMs(10)
+                .withNodeRefreshIntervalMs(1000)
                 .build();
         serviceFinder.start();
         ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
@@ -121,7 +121,7 @@ public class ServiceProviderHealthcheckTest {
         Assert.assertEquals("localhost-1", node.getHost());
         TestServiceProvider testServiceProvider = serviceProviders.get(node.getHost());
         testServiceProvider.oor();
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         Assert.assertNull(serviceFinder.get(new TestShardInfo(1)));
         serviceFinder.stop();
     }
