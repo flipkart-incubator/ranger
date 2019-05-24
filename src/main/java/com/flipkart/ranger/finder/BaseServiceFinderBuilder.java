@@ -98,7 +98,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if( 0 == nodeRefreshIntervalMs) {
+        if(nodeRefreshIntervalMs < 1000) {
             nodeRefreshIntervalMs = 1000;
         }
         Service service = new Service(curatorFramework, namespace, serviceName);
