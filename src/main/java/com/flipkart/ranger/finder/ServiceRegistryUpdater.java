@@ -43,7 +43,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
 
     private Lock checkLock = new ReentrantLock();
     private Condition checkCondition = checkLock.newCondition();
-    private boolean checkForUpdate = false;
+    private boolean checkForUpdate;
 
     public ServiceRegistryUpdater(ServiceRegistry<T> serviceRegistry, boolean disableWatchers) {
         this.serviceRegistry = serviceRegistry;

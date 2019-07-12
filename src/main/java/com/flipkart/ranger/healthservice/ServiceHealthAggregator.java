@@ -57,11 +57,15 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
     /* If aggregator is running or not */
     private AtomicBoolean running;
 
+    /* Start time of checks .. will be used to ignore checks that are not yet supposed to start */
+    private long startTime;
+
     public ServiceHealthAggregator() {
         this.healthcheckStatusAtomicReference = new AtomicReference<>();
         this.isolatedHealthMonitorList = Lists.newArrayList();
         this.inlineHealthMonitorList = Lists.newArrayList();
         this.running = new AtomicBoolean(false);
+        this.startTime = 0;
     }
 
     /**
@@ -121,6 +125,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
                                     .getTimeUnit());
             scheduledFutureList.add(scheduledFuture);
         }
+        startTime = System.currentTimeMillis();
         running.set(true);
     }
 
@@ -155,6 +160,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
 
         /* check health status of isolated monitors */
         final boolean hasUnhealthyMonitor = isolatedHealthMonitorList.stream()
+                .filter(this::isMonitorReady)
                 .filter(isolatedHealthMonitor -> !isolatedHealthMonitor.isDisabled())
                 .anyMatch(isolatedHealthMonitor -> isIsolatedMonitorHealthy(isolatedHealthMonitor, currentTime));
         if (hasUnhealthyMonitor) {
@@ -190,6 +196,22 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
         final long timeDifferenceMillis = currentTime.getTime() - isolatedHealthMonitor.getLastStatusUpdateTime()
                 .getTime();
         return timeDifferenceMillis <= isolatedHealthMonitor.getStalenessAllowedInMillis();
+    }
+
+    private boolean isMonitorReady(IsolatedHealthMonitor isolatedHealthMonitor) {
+        final TimeEntity runInterval = isolatedHealthMonitor.getRunInterval();
+        final long initialDelay = runInterval.getInitialDelay();
+        if(0 == initialDelay) {
+            return true;
+        }
+        final long delayEndTime = startTime + runInterval.getTimeUnit().toMillis(runInterval.getInitialDelay());
+        final long currentTimeMillis = System.currentTimeMillis();
+        if( currentTimeMillis > delayEndTime ) {
+            return true;
+        }
+        logger.warn("Ignoring monitor {} as current time {} is still before ready time {}",
+                    isolatedHealthMonitor.getName(), new Date(delayEndTime), new Date(currentTimeMillis));
+        return false;
     }
 
     private void processMonitors() {

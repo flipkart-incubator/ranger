@@ -31,11 +31,12 @@ public class SimpleShardedServiceFinderBuilder<T> extends BaseServiceFinderBuild
             ServiceNodeSelector<T> nodeSelector,
             int nodeRefreshIntervalMs,
             boolean disableWatchers) {
-        if (null == shardSelector) {
-            shardSelector = new MatchingShardSelector<>();
-        }
-        MapBasedServiceRegistry<T> serviceRegistry
+        final MapBasedServiceRegistry<T> serviceRegistry
                 = new MapBasedServiceRegistry<>(service, deserializer, nodeRefreshIntervalMs, disableWatchers);
-        return new SimpleShardedServiceFinder<>(serviceRegistry, shardSelector, nodeSelector);
+        return new SimpleShardedServiceFinder<>(serviceRegistry,
+                                                shardSelector == null
+                                                ? new MatchingShardSelector<>()
+                                                : shardSelector,
+                                                nodeSelector);
     }
 }
