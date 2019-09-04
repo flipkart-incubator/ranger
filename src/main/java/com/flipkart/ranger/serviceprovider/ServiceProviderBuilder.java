@@ -44,6 +44,7 @@ public class ServiceProviderBuilder<T> {
     private int port;
     private T nodeData;
     private int healthUpdateIntervalMs;
+    private int staleUpdateThresholdMs;
     private List<Healthcheck> healthchecks = Lists.newArrayList();
 
     /* list of isolated monitors */
@@ -99,6 +100,11 @@ public class ServiceProviderBuilder<T> {
         return this;
     }
 
+    public ServiceProviderBuilder<T> withStaleUpdateThresholdMs(int staleUpdateThresholdMs) {
+        this.staleUpdateThresholdMs = staleUpdateThresholdMs;
+        return this;
+    }
+
     /**
      * Register a monitor to the service, to setup a continuous monitoring on the monitor
      * this method can be used to add a {@link IsolatedHealthMonitor} which will later be
@@ -132,6 +138,11 @@ public class ServiceProviderBuilder<T> {
             LOGGER.warn("Health update interval too low: {} ms. Has been upgraded to 1000ms ", healthUpdateIntervalMs);
             healthUpdateIntervalMs = 1000;
         }
+        if (staleUpdateThresholdMs < 1000) {
+            LOGGER.warn("Stale update too too low: {} ms. Has been upgraded to 60000ms ", staleUpdateThresholdMs);
+            staleUpdateThresholdMs = 60000;
+        }
+
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
         for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
             serviceHealthAggregator.addIsolatedMonitor(isolatedMonitor);
@@ -139,7 +150,7 @@ public class ServiceProviderBuilder<T> {
         healthchecks.add(serviceHealthAggregator);
         return new ServiceProvider<>(serviceName, serializer, curatorFramework,
                                      new ServiceNode<>(hostname, port, nodeData), healthchecks,
-                                     healthUpdateIntervalMs, serviceHealthAggregator);
+                                     healthUpdateIntervalMs, staleUpdateThresholdMs, serviceHealthAggregator);
     }
 
 }
