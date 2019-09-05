@@ -132,7 +132,8 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
                 if (HealthcheckStatus.healthy == key.getHealthcheckStatus()){
                     if (key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime){
                         nodes.add(key);
-                    } else {
+                    }
+                    else {
                         logger.warn("Zombie node [{}:{}] found for [{}]", key.getHost(), key.getPort(), serviceName);
                     }
                 }

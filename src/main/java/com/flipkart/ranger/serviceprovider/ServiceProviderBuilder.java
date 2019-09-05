@@ -135,26 +135,16 @@ public class ServiceProviderBuilder<T> {
             curatorFramework.start();
         }
 
-        if (healthUpdateIntervalMs < 1000) {
-            LOGGER.warn("Health update interval too low (should be between 1000ms and 20000ms). Current value: {} ms. " +
+        if (healthUpdateIntervalMs < 1000 || healthUpdateIntervalMs > 20000) {
+            LOGGER.warn("Health update interval should be between 1000ms and 20000ms. Current value: {} ms. " +
                     "Being set to 1000ms", healthUpdateIntervalMs);
             healthUpdateIntervalMs = 1000;
         }
-        else if (healthUpdateIntervalMs > 20000) {
-            LOGGER.warn("Health update interval too high (should be between 1000ms and 20000ms). Current value: {} ms. " +
-                    "Being set to 20000ms", healthUpdateIntervalMs);
-            healthUpdateIntervalMs = 20000;
-        }
 
-        if (staleUpdateThresholdMs < 5000) {
-            LOGGER.warn("Stale update threshold too low (should be between 5000ms and 20000ms). Current value: {} ms. " +
+        if (staleUpdateThresholdMs < 5000 || staleUpdateThresholdMs > 20000) {
+            LOGGER.warn("Stale update threshold should be between 5000ms and 20000ms. Current value: {} ms. " +
                     "Being set to 5000ms", staleUpdateThresholdMs);
             staleUpdateThresholdMs = 5000;
-        }
-        else if (staleUpdateThresholdMs > 20000) {
-            LOGGER.warn("Stale update threshold too high (should be between 5000ms and 20000ms). Current value: {} ms. " +
-                    "Being set to 45000ms", staleUpdateThresholdMs);
-            staleUpdateThresholdMs = 20000;
         }
 
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
