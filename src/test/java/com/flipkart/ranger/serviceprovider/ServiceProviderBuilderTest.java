@@ -76,6 +76,7 @@ public class ServiceProviderBuilderTest {
                     })
                     .withHostname(host)
                     .withPort(port)
+                    .withHealthUpdateIntervalMs(1000)
                     .buildServiceDiscovery();
         } catch (Exception e) {
             exception = e;
@@ -100,6 +101,7 @@ public class ServiceProviderBuilderTest {
                 .withHostname(host)
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
                 .withPort(port)
+                .withHealthUpdateIntervalMs(1000)
                 .buildServiceDiscovery();
     }
 }

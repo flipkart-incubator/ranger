@@ -181,6 +181,7 @@ public class CustomShardSelectorTest {
                 .withPort(port)
                 .withNodeData(new TestShardInfo(a,b))
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
+                .withHealthUpdateIntervalMs(1000)
                 .buildServiceDiscovery();
         serviceProvider.start();
         serviceProviders.add(serviceProvider);

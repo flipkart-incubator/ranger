@@ -176,6 +176,7 @@ public class ServiceProviderExtCuratorTest {
                 .withPort(port)
                 .withNodeData(new TestShardInfo(shardId))
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
+                .withHealthUpdateIntervalMs(1000)
                 .buildServiceDiscovery();
         serviceProvider.start();
         serviceProviders.add(serviceProvider);

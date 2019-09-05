@@ -116,6 +116,7 @@ public class SimpleServiceProviderTest {
                 .withHostname(host)
                 .withPort(port)
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
+                .withHealthUpdateIntervalMs(1000)
                 .buildServiceDiscovery();
         serviceProvider.start();
     }
