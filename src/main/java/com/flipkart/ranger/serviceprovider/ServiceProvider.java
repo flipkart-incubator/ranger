@@ -47,7 +47,6 @@ public class ServiceProvider<T> {
     private ServiceNode<T> serviceNode;
     private List<Healthcheck> healthchecks;
     private final int healthUpdateInterval;
-    private final int staleUpdateThreshold;
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> future;
     private ServiceHealthAggregator serviceHealthAggregator;
@@ -56,7 +55,7 @@ public class ServiceProvider<T> {
     public ServiceProvider(String serviceName, Serializer<T> serializer,
                            CuratorFramework curatorFramework,
                            ServiceNode<T> serviceNode,
-                           List<Healthcheck> healthchecks, int healthUpdateInterval, int staleUpdateThreshold,
+                           List<Healthcheck> healthchecks, int healthUpdateInterval,
                            ServiceHealthAggregator serviceHealthAggregator) {
         this.serviceName = serviceName;
         this.serializer = serializer;
@@ -64,7 +63,6 @@ public class ServiceProvider<T> {
         this.serviceNode = serviceNode;
         this.healthchecks = healthchecks;
         this.healthUpdateInterval = healthUpdateInterval;
-        this.staleUpdateThreshold = staleUpdateThreshold;
         this.serviceHealthAggregator = serviceHealthAggregator;
     }
 
@@ -103,7 +101,7 @@ public class ServiceProvider<T> {
 
     public int getStaleUpdateThreshold() {
         //Reduce it by 100ms to make sure we do not overrun the stale check on client which will ignore the service node instance
-        return staleUpdateThreshold - 100;
+        return healthUpdateInterval - 100;
     }
 
     private void createPath() throws Exception {

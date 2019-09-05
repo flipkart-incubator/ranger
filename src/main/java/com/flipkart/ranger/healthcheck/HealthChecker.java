@@ -59,10 +59,11 @@ public class HealthChecker<T> implements Runnable {
         //1. First time
         //2. Stale update threshold breach
         //3. Update in health status
+        long currentTime = System.currentTimeMillis();
         if(lastHealthcheckStatus == null ||
-            (System.currentTimeMillis() - lastUpdatedTime) > serviceProvider.getStaleUpdateThreshold()
+            (currentTime - lastUpdatedTime) > serviceProvider.getStaleUpdateThreshold()
                 || lastHealthcheckStatus != healthcheckStatus) {
-            lastUpdatedTime = System.currentTimeMillis();
+            lastUpdatedTime = currentTime;
             ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
             serviceNode.setHealthcheckStatus(healthcheckStatus);
             serviceNode.setLastUpdatedTimeStamp(lastUpdatedTime);
