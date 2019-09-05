@@ -116,10 +116,10 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
             final Deserializer<T> deserializer = serviceRegistry.getDeserializer();
             final CuratorFramework curatorFramework = service.getCuratorFramework();
             final String parentPath = PathBuilder.path(service);
-            logger.info("Looking for node list of [{}]", serviceName);
+            logger.debug("Looking for node list of [{}]", serviceName);
             List<String> children = curatorFramework.getChildren().forPath(parentPath);
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());
-            logger.info("Found {} nodes for [{}]", nodes.size(), serviceName);
+            logger.debug("Found {} nodes for [{}]", nodes.size(), serviceName);
             for(String child : children) {
                 final String path = String.format("%s/%s", parentPath, child);
                 boolean hasChild = null != curatorFramework.checkExists().forPath(path);
@@ -153,7 +153,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
     private void updateRegistry() {
         List<ServiceNode<T>> nodes = checkForUpdateOnZookeeper().orElse(null);
         if(null != nodes) {
-            logger.info("Updating nodelist of size: {} for [{}]", nodes.size(),
+            logger.debug("Updating nodelist of size: {} for [{}]", nodes.size(),
                     serviceRegistry.getService().getServiceName());
             serviceRegistry.nodes(nodes);
         }
