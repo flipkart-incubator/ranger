@@ -140,7 +140,8 @@ public class ServiceProviderBuilder<T> {
             healthUpdateIntervalMs = 3000;
         }
         if (staleUpdateThresholdMs < 1000 || staleUpdateThresholdMs > 45000) {
-            LOGGER.warn("Stale update too too low: {} ms. Has been upgraded to 45000ms ", staleUpdateThresholdMs);
+            LOGGER.warn("Stale update threshold should be between 1000ms and 45000ms. Current value: {} ms. " +
+                "Being set to 45000ms", staleUpdateThresholdMs);
             staleUpdateThresholdMs = 45000;
         }
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();

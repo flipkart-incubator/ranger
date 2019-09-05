@@ -103,7 +103,6 @@ public class ServiceProvider<T> {
     }
 
     public int getStaleUpdateThreshold() {
-        //Reduce it by 100ms to make sure we do not overrun the stale check on client which will ignore the service node instance
         return staleUpdateThreshold;
     }
 
