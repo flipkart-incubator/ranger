@@ -129,9 +129,9 @@ public class ServiceProviderBuilder<T> {
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if (healthUpdateIntervalMs < 1000) {
-            LOGGER.warn("Health update interval too low: {} ms. Has been upgraded to 1000ms ", healthUpdateIntervalMs);
-            healthUpdateIntervalMs = 1000;
+        if (healthUpdateIntervalMs < 1000 || healthUpdateIntervalMs > 60000) {
+            LOGGER.warn("Health update interval too low: {} ms. Has been upgraded to 60000ms ", healthUpdateIntervalMs);
+            healthUpdateIntervalMs = 60000;
         }
 
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
