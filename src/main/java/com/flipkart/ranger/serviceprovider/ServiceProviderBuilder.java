@@ -134,7 +134,7 @@ public class ServiceProviderBuilder<T> {
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if (healthUpdateIntervalMs < 3000 || healthUpdateIntervalMs > 60000) {
+        if (healthUpdateIntervalMs < 1000 || healthUpdateIntervalMs > 60000) {
             LOGGER.warn("Health update interval should be between 3000ms and 60000ms. Current value: {} ms. " +
                 "Being set to 3000ms", healthUpdateIntervalMs);
             healthUpdateIntervalMs = 3000;
