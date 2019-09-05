@@ -109,26 +109,33 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
         try {
             final long healthcheckZombieCheckThresholdTime = System.currentTimeMillis() - 60000; //1 Minute
             final Service service = serviceRegistry.getService();
+            final String serviceName = service.getServiceName();
             if(!service.isRunning()) {
                 return Optional.empty();
             }
             final Deserializer<T> deserializer = serviceRegistry.getDeserializer();
             final CuratorFramework curatorFramework = service.getCuratorFramework();
             final String parentPath = PathBuilder.path(service);
+            logger.debug("Looking for node list of [{}]", serviceName);
             List<String> children = curatorFramework.getChildren().forPath(parentPath);
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());
+            logger.debug("Found {} nodes for [{}]", nodes.size(), serviceName);
             for(String child : children) {
                 final String path = String.format("%s/%s", parentPath, child);
                 boolean hasChild = null != curatorFramework.checkExists().forPath(path);
                 final byte[] data = hasChild ? curatorFramework.getData().forPath(path) : null;
                 if(null == data) {
-                    logger.warn("Not data present for node: {}", path);
+                    logger.warn("Not data present for node: {} of [{}]", path, serviceName);
                     continue;
                 }
                 ServiceNode<T> key = deserializer.deserialize(data);
-                if(HealthcheckStatus.healthy == key.getHealthcheckStatus()
-                        && key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime) {
-                    nodes.add(key);
+                if (HealthcheckStatus.healthy == key.getHealthcheckStatus()){
+                    if (key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime){
+                        nodes.add(key);
+                    }
+                    else {
+                        logger.warn("Zombie node [{}:{}] found for [{}]", key.getHost(), key.getPort(), serviceName);
+                    }
                 }
             }
             return Optional.of(nodes);
@@ -139,14 +146,15 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
     }
 
     public void stop() {
-        logger.debug("Stopped updater");
+        logger.info("Stopped updater for [{}]", serviceRegistry.getService().getServiceName());
     }
 
 
     private void updateRegistry() {
         List<ServiceNode<T>> nodes = checkForUpdateOnZookeeper().orElse(null);
         if(null != nodes) {
-            logger.debug("Setting nodelist of size: {}", nodes.size());
+            logger.debug("Updating nodelist of size: {} for [{}]", nodes.size(),
+                    serviceRegistry.getService().getServiceName());
             serviceRegistry.nodes(nodes);
         }
         else {

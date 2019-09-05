@@ -134,24 +134,27 @@ public class ServiceProviderBuilder<T> {
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if (healthUpdateIntervalMs < 1000 || healthUpdateIntervalMs > 60000) {
-            LOGGER.warn("Health update interval should be between 3000ms and 60000ms. Current value: {} ms. " +
-                "Being set to 3000ms", healthUpdateIntervalMs);
-            healthUpdateIntervalMs = 3000;
+
+        if (healthUpdateIntervalMs < 1000 || healthUpdateIntervalMs > 20000) {
+            LOGGER.warn("Health update interval should be between 1000ms and 20000ms. Current value: {} ms. " +
+                    "Being set to 1000ms", healthUpdateIntervalMs);
+            healthUpdateIntervalMs = 1000;
         }
-        if (staleUpdateThresholdMs < 1000 || staleUpdateThresholdMs > 45000) {
-            LOGGER.warn("Stale update threshold should be between 1000ms and 45000ms. Current value: {} ms. " +
-                "Being set to 45000ms", staleUpdateThresholdMs);
-            staleUpdateThresholdMs = 45000;
+
+        if (staleUpdateThresholdMs < 5000 || staleUpdateThresholdMs > 20000) {
+            LOGGER.warn("Stale update threshold should be between 5000ms and 20000ms. Current value: {} ms. " +
+                    "Being set to 5000ms", staleUpdateThresholdMs);
+            staleUpdateThresholdMs = 5000;
         }
+
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
         for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
             serviceHealthAggregator.addIsolatedMonitor(isolatedMonitor);
         }
         healthchecks.add(serviceHealthAggregator);
         return new ServiceProvider<>(serviceName, serializer, curatorFramework,
-                                     new ServiceNode<>(hostname, port, nodeData), healthchecks,
-                                     healthUpdateIntervalMs, staleUpdateThresholdMs, serviceHealthAggregator);
+                new ServiceNode<>(hostname, port, nodeData), healthchecks,
+                healthUpdateIntervalMs, staleUpdateThresholdMs, serviceHealthAggregator);
     }
 
 }
