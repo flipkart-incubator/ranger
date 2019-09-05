@@ -150,7 +150,8 @@ public class ServiceProviderBuilder<T> {
             LOGGER.warn("Stale update threshold too low (should be between 5000ms and 20000ms). Current value: {} ms. " +
                     "Being set to 5000ms", staleUpdateThresholdMs);
             staleUpdateThresholdMs = 5000;
-        } else if (staleUpdateThresholdMs > 20000) {
+        }
+        else if (staleUpdateThresholdMs > 20000) {
             LOGGER.warn("Stale update threshold too high (should be between 5000ms and 20000ms). Current value: {} ms. " +
                     "Being set to 45000ms", staleUpdateThresholdMs);
             staleUpdateThresholdMs = 20000;
