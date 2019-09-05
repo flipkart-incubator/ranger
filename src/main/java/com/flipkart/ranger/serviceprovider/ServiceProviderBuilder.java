@@ -134,16 +134,27 @@ public class ServiceProviderBuilder<T> {
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if (healthUpdateIntervalMs < 1000 || healthUpdateIntervalMs > 60000) {
-            LOGGER.warn("Health update interval should be between 3000ms and 60000ms. Current value: {} ms. " +
-                "Being set to 3000ms", healthUpdateIntervalMs);
-            healthUpdateIntervalMs = 3000;
+
+        if (healthUpdateIntervalMs < 5000){
+            LOGGER.warn("Health update interval too low (should be between 5000ms and 60000ms). Current value: {} ms. " +
+                    "Being set to 5000ms", healthUpdateIntervalMs);
+            healthUpdateIntervalMs = 5000;
+        } else if (healthUpdateIntervalMs > 30000){
+            LOGGER.warn("Health update interval too high (should be between 5000ms and 60000ms). Current value: {} ms. " +
+                    "Being set to 30000ms", healthUpdateIntervalMs);
+            healthUpdateIntervalMs = 30000;
         }
-        if (staleUpdateThresholdMs < 1000 || staleUpdateThresholdMs > 45000) {
-            LOGGER.warn("Stale update threshold should be between 1000ms and 45000ms. Current value: {} ms. " +
-                "Being set to 45000ms", staleUpdateThresholdMs);
+
+        if (staleUpdateThresholdMs < 5000){
+            LOGGER.warn("Stale update threshold too low (should be between 5000ms and 45000ms). Current value: {} ms. " +
+                    "Being set to 5000ms", staleUpdateThresholdMs);
+            staleUpdateThresholdMs = 5000;
+        } else if (staleUpdateThresholdMs > 45000){
+            LOGGER.warn("Stale update threshold too high (should be between 5000ms and 45000ms). Current value: {} ms. " +
+                    "Being set to 45000ms", staleUpdateThresholdMs);
             staleUpdateThresholdMs = 45000;
         }
+
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
         for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
             serviceHealthAggregator.addIsolatedMonitor(isolatedMonitor);
