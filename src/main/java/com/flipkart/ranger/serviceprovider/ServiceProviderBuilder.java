@@ -44,6 +44,7 @@ public class ServiceProviderBuilder<T> {
     private int port;
     private T nodeData;
     private int healthUpdateIntervalMs;
+    private int staleUpdateThresholdMs;
     private List<Healthcheck> healthchecks = Lists.newArrayList();
 
     /* list of isolated monitors */
@@ -99,6 +100,11 @@ public class ServiceProviderBuilder<T> {
         return this;
     }
 
+    public ServiceProviderBuilder<T> withStaleUpdateThresholdMs(int staleUpdateThresholdMs) {
+        this.staleUpdateThresholdMs = staleUpdateThresholdMs;
+        return this;
+    }
+
     /**
      * Register a monitor to the service, to setup a continuous monitoring on the monitor
      * this method can be used to add a {@link IsolatedHealthMonitor} which will later be
@@ -128,9 +134,15 @@ public class ServiceProviderBuilder<T> {
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100)).build();
             curatorFramework.start();
         }
-        if (healthUpdateIntervalMs < 1000) {
-            LOGGER.warn("Health update interval too low: {} ms. Has been upgraded to 1000ms ", healthUpdateIntervalMs);
-            healthUpdateIntervalMs = 1000;
+        if (healthUpdateIntervalMs < 3000 || healthUpdateIntervalMs > 60000) {
+            LOGGER.warn("Health update interval should be between 3000ms and 60000ms. Current value: {} ms. " +
+                "Being set to 3000ms", healthUpdateIntervalMs);
+            healthUpdateIntervalMs = 3000;
+        }
+        if (staleUpdateThresholdMs < 1000 || staleUpdateThresholdMs > 45000) {
+            LOGGER.warn("Stale update threshold should be between 1000ms and 45000ms. Current value: {} ms. " +
+                "Being set to 45000ms", staleUpdateThresholdMs);
+            staleUpdateThresholdMs = 45000;
         }
         final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
         for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
@@ -139,7 +151,7 @@ public class ServiceProviderBuilder<T> {
         healthchecks.add(serviceHealthAggregator);
         return new ServiceProvider<>(serviceName, serializer, curatorFramework,
                                      new ServiceNode<>(hostname, port, nodeData), healthchecks,
-                                     healthUpdateIntervalMs, serviceHealthAggregator);
+                                     healthUpdateIntervalMs, staleUpdateThresholdMs, serviceHealthAggregator);
     }
 
 }

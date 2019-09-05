@@ -32,6 +32,8 @@ public class HealthChecker<T> implements Runnable {
 
     private List<Healthcheck> healthchecks;
     private ServiceProvider<T> serviceProvider;
+    private HealthcheckStatus lastHealthcheckStatus;
+    private long lastUpdatedTime;
 
     public HealthChecker(List<Healthcheck> healthchecks, ServiceProvider<T> serviceProvider) {
         this.healthchecks = healthchecks;
@@ -52,15 +54,27 @@ public class HealthChecker<T> implements Runnable {
                 break;
             }
         }
-        ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
-        serviceNode.setHealthcheckStatus(healthcheckStatus);
-        serviceNode.setLastUpdatedTimeStamp(System.currentTimeMillis());
-        try {
-            serviceProvider.updateState(serviceNode);
-            logger.debug("Node is {} for ({}, {})",
-                                        healthcheckStatus.name(), serviceNode.getHost(), serviceNode.getPort());
-        } catch (Exception e) {
-            logger.error("Error updating health state in zookeeper: ", e);
+        //Trigger update only if state change has happened
+        //Conditions on which update will be triggered
+        //1. First time
+        //2. Stale update threshold breach
+        //3. Update in health status
+        long currentTime = System.currentTimeMillis();
+        if(lastHealthcheckStatus == null ||
+            (currentTime - lastUpdatedTime) > serviceProvider.getStaleUpdateThreshold()
+                || lastHealthcheckStatus != healthcheckStatus) {
+            lastUpdatedTime = currentTime;
+            ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
+            serviceNode.setHealthcheckStatus(healthcheckStatus);
+            serviceNode.setLastUpdatedTimeStamp(lastUpdatedTime);
+            try {
+                serviceProvider.updateState(serviceNode);
+                logger.debug("Node is {} for ({}, {})",
+                    healthcheckStatus.name(), serviceNode.getHost(), serviceNode.getPort());
+            } catch (Exception e) {
+                logger.error("Error updating health state in zookeeper: ", e);
+            }
         }
+        lastHealthcheckStatus = healthcheckStatus;
     }
 }
