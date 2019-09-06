@@ -63,12 +63,12 @@ public class HealthChecker<T> implements Runnable {
         if(lastHealthcheckStatus == null ||
             (currentTime - lastUpdatedTime) > serviceProvider.getStaleUpdateThreshold()
                 || lastHealthcheckStatus != healthcheckStatus) {
-            lastUpdatedTime = currentTime;
             ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
             serviceNode.setHealthcheckStatus(healthcheckStatus);
             serviceNode.setLastUpdatedTimeStamp(lastUpdatedTime);
             try {
                 serviceProvider.updateState(serviceNode);
+                lastUpdatedTime = currentTime;
                 logger.debug("Node is {} for ({}, {})",
                     healthcheckStatus.name(), serviceNode.getHost(), serviceNode.getPort());
             } catch (Exception e) {
