@@ -48,7 +48,7 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
     public void start() throws Exception {
         final Service service = getService();
         service.getCuratorFramework().blockUntilConnected();
-        logger.debug("Connected to zookeeper cluster");
+        logger.debug("Connected to zookeeper cluster for {}", service.getServiceName());
         service.getCuratorFramework().newNamespaceAwareEnsurePath(PathBuilder.path(service))
                                     .ensure(service.getCuratorFramework().getZookeeperClient());
         updater = new ServiceRegistryUpdater<>(this, disableWatchers);
@@ -61,11 +61,12 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
                 logger.error("Error checking for updates from zk for service:" + service.getServiceName() , e);
             }
         }, 0, refreshIntervalMillis, TimeUnit.MILLISECONDS);
-        logger.debug("Service Registry Started");
+        logger.debug("Service Registry Started for {}", service.getServiceName());
     }
 
     @Override
     public void stop() throws Exception {
+        final Service service = getService();
         try {
             if( null != scheduledFuture ) {
                 scheduledFuture.cancel(true);
@@ -75,11 +76,11 @@ public abstract class AbstractZookeeperServiceRegistry<T> extends ServiceRegistr
                 executorService.shutdownNow();
             }
         } catch (Exception e) {
-            logger.error("Error stopping ZK poller: ", e);
+            logger.error(String.format("Error stopping ZK poller for %s", service.getServiceName()), e);
         }
-        getService().getCuratorFramework().close();
+        service.getCuratorFramework().close();
         //TODO
-        logger.debug("Service Registry stopped");
+        logger.debug("Service Registry stopped for {}", service.getServiceName());
     }
 
 }

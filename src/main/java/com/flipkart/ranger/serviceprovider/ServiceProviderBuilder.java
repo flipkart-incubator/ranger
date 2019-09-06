@@ -136,14 +136,14 @@ public class ServiceProviderBuilder<T> {
         }
 
         if (healthUpdateIntervalMs < 1000 || healthUpdateIntervalMs > 20000) {
-            LOGGER.warn("Health update interval should be between 1000ms and 20000ms. Current value: {} ms. " +
-                    "Being set to 1000ms", healthUpdateIntervalMs);
+            LOGGER.warn("Health update interval for {} should be between 1000ms and 20000ms. Current value: {} ms. " +
+                    "Being set to 1000ms", serviceName, healthUpdateIntervalMs);
             healthUpdateIntervalMs = 1000;
         }
 
         if (staleUpdateThresholdMs < 5000 || staleUpdateThresholdMs > 20000) {
-            LOGGER.warn("Stale update threshold should be between 5000ms and 20000ms. Current value: {} ms. " +
-                    "Being set to 5000ms", staleUpdateThresholdMs);
+            LOGGER.warn("Stale update threshold for {} should be between 5000ms and 20000ms. Current value: {} ms. " +
+                    "Being set to 5000ms", serviceName, staleUpdateThresholdMs);
             staleUpdateThresholdMs = 5000;
         }
 
