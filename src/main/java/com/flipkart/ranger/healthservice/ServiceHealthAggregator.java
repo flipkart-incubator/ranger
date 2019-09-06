@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>, Healthcheck {
 
     /* Logger */
-    private static final Logger logger = LoggerFactory.getLogger(ServiceHealthAggregator.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(ServiceHealthAggregator.class);
 
     /* An atomic reference of the aggregated health */
     private AtomicReference<HealthcheckStatus> healthcheckStatusAtomicReference;

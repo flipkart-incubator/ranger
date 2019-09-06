@@ -36,7 +36,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ServiceRegistryUpdater<T> implements Callable<Void> {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceRegistryUpdater.class);
 
     private ServiceRegistry<T> serviceRegistry;
     private final boolean disableWatchers;
