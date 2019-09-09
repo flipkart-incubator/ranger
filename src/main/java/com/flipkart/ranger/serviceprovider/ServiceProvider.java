@@ -83,9 +83,9 @@ public class ServiceProvider<T> {
         serviceHealthAggregator.start();
         curatorFramework.blockUntilConnected();
         curatorFramework.createContainers(String.format("/%s", serviceName));
-        logger.debug("Connected to zookeeper");
+        logger.debug("Connected to zookeeper for {}", serviceName);
         createPath();
-        logger.debug("Set initial node data on zookeeper.");
+        logger.debug("Set initial node data on zookeeper for {}", serviceName);
         future = executorService.scheduleWithFixedDelay(new HealthChecker<>(healthchecks, this), 0,
                                                         healthUpdateInterval, TimeUnit.MILLISECONDS);
     }
@@ -121,8 +121,10 @@ public class ServiceProvider<T> {
                 return null;
             });
         } catch (Exception e) {
-            logger.error("Could not create node after 60 retries (1 min). This service will not be discoverable. Retry after some time.", e);
-            throw new Exception("Could not create node after 60 retries (1 min). This service will not be discoverable. Retry after some time.", e);
+            final String message = String.format("Could not create node for %s after 60 retries (1 min). " +
+                            "This service will not be discoverable. Retry after some time.", serviceName);
+            logger.error(message, e);
+            throw new Exception(message, e);
         }
 
     }

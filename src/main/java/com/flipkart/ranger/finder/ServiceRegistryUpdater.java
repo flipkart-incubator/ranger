@@ -36,7 +36,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ServiceRegistryUpdater<T> implements Callable<Void> {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceRegistryUpdater.class);
 
     private ServiceRegistry<T> serviceRegistry;
     private final boolean disableWatchers;
@@ -119,7 +119,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
             logger.debug("Looking for node list of [{}]", serviceName);
             List<String> children = curatorFramework.getChildren().forPath(parentPath);
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());
-            logger.debug("Found {} nodes for [{}]", nodes.size(), serviceName);
+            logger.debug("Found {} nodes for [{}]", children.size(), serviceName);
             for(String child : children) {
                 final String path = String.format("%s/%s", parentPath, child);
                 boolean hasChild = null != curatorFramework.checkExists().forPath(path);
