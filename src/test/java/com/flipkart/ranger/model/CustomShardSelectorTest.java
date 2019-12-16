@@ -26,21 +26,19 @@ import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class CustomShardSelectorTest {
-    private static final Logger logger = LoggerFactory.getLogger(CustomShardSelectorTest.class);
-
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
     private List<ServiceProvider<TestShardInfo>> serviceProviders = Lists.newArrayList();
@@ -158,7 +156,6 @@ public class CustomShardSelectorTest {
             Assert.assertEquals(new TestShardInfo(1, 2), node.getNodeData());
         }
         serviceFinder.stop();
-        //while (true);
     }
 
     private void registerService(String host, int port, int a, int b) throws Exception {

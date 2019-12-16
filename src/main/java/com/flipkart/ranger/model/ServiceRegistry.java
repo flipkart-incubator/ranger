@@ -24,16 +24,14 @@ public abstract class ServiceRegistry<T> {
     private final Service service;
     private final Deserializer<T> deserializer;
 
-    protected ServiceRegistry(Service service, Deserializer<T> deserializer) {
+    protected ServiceRegistry(
+            Service service,
+            Deserializer<T> deserializer) {
         this.service = service;
         this.deserializer = deserializer;
     }
 
-    public abstract void start() throws Exception;
-
-    public abstract void stop() throws Exception;
-
-    public abstract void nodes(List<ServiceNode<T>> nodes);
+    public abstract void updateNodes(List<ServiceNode<T>> nodes);
 
     public Service getService() {
         return service;

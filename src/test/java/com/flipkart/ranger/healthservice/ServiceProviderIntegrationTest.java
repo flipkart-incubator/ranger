@@ -29,6 +29,7 @@ import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
+import com.flipkart.ranger.util.Exceptions;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
@@ -76,7 +77,7 @@ public class ServiceProviderIntegrationTest {
                                     new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
                                     });
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            Exceptions.illegalState(e);
                         }
                         return null;
                     }

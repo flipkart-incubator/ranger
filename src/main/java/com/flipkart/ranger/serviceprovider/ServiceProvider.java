@@ -21,6 +21,7 @@ import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
+import com.flipkart.ranger.util.Exceptions;
 import com.github.rholder.retry.BlockStrategies;
 import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
@@ -124,7 +125,7 @@ public class ServiceProvider<T> {
             final String message = String.format("Could not create node for %s after 60 retries (1 min). " +
                             "This service will not be discoverable. Retry after some time.", serviceName);
             logger.error(message, e);
-            throw new Exception(message, e);
+            Exceptions.illegalState(message, e);
         }
 
     }

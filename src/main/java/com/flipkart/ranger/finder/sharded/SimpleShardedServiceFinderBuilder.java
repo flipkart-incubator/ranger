@@ -28,14 +28,11 @@ public class SimpleShardedServiceFinderBuilder<T> extends BaseServiceFinderBuild
             Service service,
             Deserializer<T> deserializer,
             ShardSelector<T, MapBasedServiceRegistry<T>> shardSelector,
-            ServiceNodeSelector<T> nodeSelector,
-            int nodeRefreshIntervalMs,
-            boolean disableWatchers) {
+            ServiceNodeSelector<T> nodeSelector) {
         if (null == shardSelector) {
             shardSelector = new MatchingShardSelector<>();
         }
-        MapBasedServiceRegistry<T> serviceRegistry
-                = new MapBasedServiceRegistry<>(service, deserializer, nodeRefreshIntervalMs, disableWatchers);
+        final MapBasedServiceRegistry<T> serviceRegistry = new MapBasedServiceRegistry<>(service, deserializer);
         return new SimpleShardedServiceFinder<>(serviceRegistry, shardSelector, nodeSelector);
     }
 }
