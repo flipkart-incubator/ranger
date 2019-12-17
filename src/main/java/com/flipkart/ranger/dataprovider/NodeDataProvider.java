@@ -1,21 +1,16 @@
-package com.flipkart.ranger.datasource;
+package com.flipkart.ranger.dataprovider;
 
 import com.flipkart.ranger.model.ServiceNode;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  *
  */
-public interface NodeDataSource<T> {
+public interface NodeDataProvider<T> {
     void start();
 
     void ensureConnected();
 
     void stop();
-
-    Optional<List<ServiceNode<T>>> refresh();
 
     boolean isActive();
 

@@ -16,6 +16,8 @@
 
 package com.flipkart.ranger.serviceprovider;
 
+import com.flipkart.ranger.datasource.ZookeeperNodeDataSource;
+import com.flipkart.ranger.finder.Service;
 import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
@@ -152,9 +154,13 @@ public class ServiceProviderBuilder<T> {
             serviceHealthAggregator.addIsolatedMonitor(isolatedMonitor);
         }
         healthchecks.add(serviceHealthAggregator);
-        return new ServiceProvider<>(serviceName, serializer, curatorFramework,
+        final Service service = new Service(namespace, serviceName);
+
+        final ZookeeperNodeDataSource<T> zookeeperNodeDataSource
+                = new ZookeeperNodeDataSource<>(service, serializer, null, curatorFramework);
+        return new ServiceProvider<>(service,
                 new ServiceNode<>(hostname, port, nodeData), healthchecks,
-                healthUpdateIntervalMs, staleUpdateThresholdMs, serviceHealthAggregator);
+                healthUpdateIntervalMs, staleUpdateThresholdMs, zookeeperNodeDataSource, serviceHealthAggregator);
     }
 
 }

@@ -16,20 +16,12 @@
 
 package com.flipkart.ranger.serviceprovider;
 
+import com.flipkart.ranger.datasource.NodeDataSource;
+import com.flipkart.ranger.finder.Service;
 import com.flipkart.ranger.healthcheck.HealthChecker;
 import com.flipkart.ranger.healthcheck.Healthcheck;
 import com.flipkart.ranger.healthservice.ServiceHealthAggregator;
-import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
-import com.flipkart.ranger.util.Exceptions;
-import com.github.rholder.retry.BlockStrategies;
-import com.github.rholder.retry.Retryer;
-import com.github.rholder.retry.RetryerBuilder;
-import com.github.rholder.retry.StopStrategies;
-import com.github.rholder.retry.WaitStrategies;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,61 +34,54 @@ import java.util.concurrent.TimeUnit;
 public class ServiceProvider<T> {
     private static final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
 
-    private String serviceName;
-    private Serializer<T> serializer;
-    private CuratorFramework curatorFramework;
-    private ServiceNode<T> serviceNode;
-    private List<Healthcheck> healthchecks;
+    private final Service service;
+    private final ServiceNode<T> serviceNode;
+    private final List<Healthcheck> healthchecks;
     private final int healthUpdateInterval;
     private final int staleUpdateThreshold;
+    private final NodeDataSource<T> dataSource;
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> future;
     private ServiceHealthAggregator serviceHealthAggregator;
 
 
-    public ServiceProvider(String serviceName, Serializer<T> serializer,
-                           CuratorFramework curatorFramework,
-                           ServiceNode<T> serviceNode,
-                           List<Healthcheck> healthchecks, int healthUpdateInterval,
-                           int staleUpdateThreshold,
-                           ServiceHealthAggregator serviceHealthAggregator) {
-        this.serviceName = serviceName;
-        this.serializer = serializer;
-        this.curatorFramework = curatorFramework;
+    public ServiceProvider(
+            Service service,
+            ServiceNode<T> serviceNode,
+            List<Healthcheck> healthchecks,
+            int healthUpdateInterval,
+            int staleUpdateThreshold,
+            NodeDataSource<T> dataSource,
+            ServiceHealthAggregator serviceHealthAggregator) {
+        this.service = service;
         this.serviceNode = serviceNode;
         this.healthchecks = healthchecks;
         this.healthUpdateInterval = healthUpdateInterval;
         this.staleUpdateThreshold = staleUpdateThreshold;
+        this.dataSource = dataSource;
         this.serviceHealthAggregator = serviceHealthAggregator;
     }
 
-    public void updateState(ServiceNode<T> serviceNode) throws Exception {
-        final String path = String.format("/%s/%s", serviceName, serviceNode.representation());
-        if(null == curatorFramework.checkExists().forPath(path)) {
-            createPath();
-        }
-        curatorFramework.setData().forPath(
-                path,
-                serializer.serialize(serviceNode));
+    public void updateState(ServiceNode<T> serviceNode) {
+        dataSource.updateState(serviceNode);
     }
 
-    public void start() throws Exception {
+    public void start() {
+        dataSource.start();
         serviceHealthAggregator.start();
-        curatorFramework.blockUntilConnected();
-        curatorFramework.createContainers(String.format("/%s", serviceName));
-        logger.debug("Connected to zookeeper for {}", serviceName);
-        createPath();
-        logger.debug("Set initial node data on zookeeper for {}", serviceName);
+        logger.info("Connected to zookeeper for {}", service.getServiceName());
+        dataSource.updateState(serviceNode);
+        logger.debug("Set initial node data on zookeeper for {}", service.getServiceName());
         future = executorService.scheduleWithFixedDelay(new HealthChecker<>(healthchecks, this), 0,
                                                         healthUpdateInterval, TimeUnit.MILLISECONDS);
     }
 
-    public void stop() throws Exception {
+    public void stop() {
         serviceHealthAggregator.stop();
         if(null != future) {
             future.cancel(true);
         }
-        curatorFramework.close();
+        dataSource.stop();
     }
 
     public ServiceNode<T> getServiceNode() {
@@ -107,26 +92,4 @@ public class ServiceProvider<T> {
         return staleUpdateThreshold;
     }
 
-    private void createPath() throws Exception {
-        Retryer<Void> retryer = RetryerBuilder.<Void>newBuilder()
-                .retryIfExceptionOfType(KeeperException.NodeExistsException.class) //Ephemeral node still exists
-                .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.SECONDS))
-                .withBlockStrategy(BlockStrategies.threadSleepStrategy())
-                .withStopStrategy(StopStrategies.neverStop())
-                .build();
-        try {
-            retryer.call(() -> {
-                curatorFramework.create().withMode(CreateMode.EPHEMERAL).forPath(
-                        String.format("/%s/%s", serviceName, serviceNode.representation()),
-                        serializer.serialize(serviceNode));
-                return null;
-            });
-        } catch (Exception e) {
-            final String message = String.format("Could not create node for %s after 60 retries (1 min). " +
-                            "This service will not be discoverable. Retry after some time.", serviceName);
-            logger.error(message, e);
-            Exceptions.illegalState(message, e);
-        }
-
-    }
 }

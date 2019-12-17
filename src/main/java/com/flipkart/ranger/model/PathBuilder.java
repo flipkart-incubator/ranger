@@ -24,7 +24,11 @@ public class PathBuilder {
         throw new InstantiationError("Must not instantiate this class");
     }
     
-    public static String path(final Service service) {
+    public static String servicePath(final Service service) {
         return String.format("/%s", service.getServiceName());
+    }
+
+    public static<T> String instancePath(final Service service, final ServiceNode<T> node) {
+        return String.format("/%s/%s", service.getServiceName(), node.representation());
     }
 }

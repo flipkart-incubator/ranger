@@ -39,7 +39,7 @@ public class ZookeeperWatcherRegistryUpdateSignalGenerator<T> extends RegistryUp
                             onSignalReceived();
                         }
                     })
-                    .forPath(PathBuilder.path(service)); //Start watcher on service node
+                    .forPath(PathBuilder.servicePath(service)); //Start watcher on service node
         } catch (Exception e) {
             log.error("Could not setup ZK watchers for service: " + service.getServiceName(), e);
         }

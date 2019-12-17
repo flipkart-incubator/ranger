@@ -115,11 +115,12 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
                         serviceName, nodeRefreshIntervalMs);
             nodeRefreshIntervalMs = 1000;
         }
-        Service service = new Service(curatorFramework, namespace, serviceName);
+        Service service = new Service(namespace, serviceName);
         val finder = buildFinder(service, deserializer, shardSelector, nodeSelector);
         val registry = finder.getServiceRegistry();
         List<RegistryUpdateSignalGenerator<T>> signalGenerators = new ArrayList<>();
         final ZookeeperNodeDataSource<T> zookeeperNodeDataSource = new ZookeeperNodeDataSource<>(service,
+                                                                                                 null,
                                                                                                  deserializer,
                                                                                                  curatorFramework);
         signalGenerators.add(new ScheduledRegistryUpdateSignalGenerator<>(service,
