@@ -26,13 +26,12 @@ public class SimpleShardedServiceFinderBuilder<T> extends BaseServiceFinderBuild
     @Override
     protected SimpleShardedServiceFinder<T> buildFinder(
             Service service,
-            Deserializer<T> deserializer,
             ShardSelector<T, MapBasedServiceRegistry<T>> shardSelector,
             ServiceNodeSelector<T> nodeSelector) {
         if (null == shardSelector) {
             shardSelector = new MatchingShardSelector<>();
         }
-        final MapBasedServiceRegistry<T> serviceRegistry = new MapBasedServiceRegistry<>(service, deserializer);
+        final MapBasedServiceRegistry<T> serviceRegistry = new MapBasedServiceRegistry<>(service);
         return new SimpleShardedServiceFinder<>(serviceRegistry, shardSelector, nodeSelector);
     }
 }

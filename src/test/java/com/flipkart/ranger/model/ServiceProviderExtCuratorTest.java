@@ -25,6 +25,7 @@ import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -33,14 +34,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class ServiceProviderExtCuratorTest {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderExtCuratorTest.class);
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
@@ -147,7 +146,7 @@ public class ServiceProviderExtCuratorTest {
             Assert.assertNotNull(node);
             Assert.assertEquals(2, node.getNodeData().getShardId());
         }
-        logger.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
+        log.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
             ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(99));
             Assert.assertNull(node);

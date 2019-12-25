@@ -20,6 +20,7 @@ import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.TimeEntity;
 import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.healthservice.monitor.RollingWindowHealthQueue;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
@@ -28,8 +29,6 @@ import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.*;
 
@@ -37,10 +36,9 @@ import java.util.concurrent.*;
  * A Ping checking monitor, which executes a {@link HttpRequest} at regular intervals
  * Maintains every healthcheck in a {@link RollingWindowHealthQueue} to prevent continuous flaps of health
  */
+@Slf4j
 public class PingCheckMonitor extends IsolatedHealthMonitor {
-
-    private static final Logger logger = LoggerFactory.getLogger(PingCheckMonitor.class);
-
+    
     private HttpRequest httpRequest;
     private String host;
     private ExecutorService executorService;
@@ -81,7 +79,7 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
 
     @Override
     public HealthcheckStatus monitor() {
-        logger.debug("Running ping monitor :{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
+        log.debug("Running ping monitor :{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
         Future<Boolean> futurePingResponse = executorService.submit(this::healthPing);
 
         try {
@@ -92,8 +90,8 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
                 return getRollingWindowHealthcheckStatus(HealthcheckStatus.healthy);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.error("Ping monitor failed:{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
-            logger.error("Error running ping monitor: ", e);
+            log.error("Ping monitor failed:{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
+            log.error("Error running ping monitor: ", e);
             return getRollingWindowHealthcheckStatus(HealthcheckStatus.unhealthy);
         }
     }
@@ -102,7 +100,7 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
         if (rollingWindowHealthQueue.checkInRollingWindow(healthy)) {
             return HealthcheckStatus.healthy;
         } else {
-            logger.info("{} is marking itself unhealthy since the current rolling window frame contains many failures (> threshold)). " +
+            log.info("{} is marking itself unhealthy since the current rolling window frame contains many failures (> threshold)). " +
                     "Was pinging on HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
             return HealthcheckStatus.unhealthy;
         }
@@ -110,17 +108,17 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
 
     private boolean healthPing() {
         try {
-            logger.debug("executing http HttpRequest: {}, host:{}, port:{}", httpRequest, host, port);
+            log.debug("executing http HttpRequest: {}, host:{}, port:{}", httpRequest, host, port);
             CloseableHttpResponse response = httpClient.execute(new HttpHost(host, port), httpRequest);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                logger.error("Error while executing Ping Test. HttpRequest: {}, host:{}, port:{}, reason:{}", httpRequest, host, port, response.getStatusLine().getReasonPhrase());
+                log.error("Error while executing Ping Test. HttpRequest: {}, host:{}, port:{}, reason:{}", httpRequest, host, port, response.getStatusLine().getReasonPhrase());
                 response.close();
                 return false;
             }
             response.close();
             return true;
         } catch (Exception e) {
-            logger.error("Exception while executing HttpRequest: ", e);
+            log.error("Exception while executing HttpRequest: ", e);
             return false;
         }
     }

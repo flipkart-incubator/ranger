@@ -25,6 +25,7 @@ import com.flipkart.ranger.model.ServiceRegistry;
 import com.flipkart.ranger.model.ShardSelector;
 import com.flipkart.ranger.signals.SignalGenerator;
 import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -35,8 +36,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseServiceFinderBuilder.class);
 
     private String namespace;
     private String serviceName;
@@ -111,12 +112,12 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
             curatorFramework.start();
         }
         if (nodeRefreshIntervalMs < 1000) {
-            LOGGER.warn("Node refresh interval for {} is too low: {} ms. Has been upgraded to 1000ms ",
+            log.warn("Node refresh interval for {} is too low: {} ms. Has been upgraded to 1000ms ",
                         serviceName, nodeRefreshIntervalMs);
             nodeRefreshIntervalMs = 1000;
         }
         Service service = new Service(namespace, serviceName);
-        val finder = buildFinder(service, deserializer, shardSelector, nodeSelector);
+        val finder = buildFinder(service, shardSelector, nodeSelector);
         val registry = finder.getServiceRegistry();
         List<SignalGenerator<T>> signalGenerators = new ArrayList<>();
         final ZookeeperNodeDataSource<T> zookeeperNodeDataSource = new ZookeeperNodeDataSource<>(service,
@@ -130,7 +131,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
                                                                                      curatorFramework));
         }
         else {
-            LOGGER.info("Push based signal updater not registered for service: {}", service.getServiceName());
+            log.info("Push based signal updater not registered for service: {}", service.getServiceName());
         }
         val updater = new ServiceRegistryUpdater<T>(registry, zookeeperNodeDataSource, signalGenerators);
         finder.registerUpdater(updater);
@@ -139,7 +140,6 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
 
     protected abstract FinderType buildFinder(
             Service service,
-            Deserializer<T> deserializer,
             ShardSelector<T, RegistryType> shardSelector,
             ServiceNodeSelector<T> nodeSelector);
 

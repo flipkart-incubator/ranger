@@ -22,13 +22,12 @@ import com.flipkart.ranger.healthcheck.HealthcheckResult;
 import com.flipkart.ranger.healthservice.HealthService;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.signals.SignalGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+@Slf4j
 public class ServiceProvider<T> {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
 
     private final Service service;
     private final ServiceNode<T> serviceNode;
@@ -54,9 +53,9 @@ public class ServiceProvider<T> {
         dataSource.start();
         healthServices.forEach(HealthService::start);
         signalGenerators.forEach(SignalGenerator::start);
-        logger.info("Connected to zookeeper for {}", service.getServiceName());
+        log.info("Connected to zookeeper for {}", service.getServiceName());
         dataSource.updateState(serviceNode);
-        logger.debug("Set initial node data on zookeeper for {}", service.getServiceName());
+        log.debug("Set initial node data on zookeeper for {}", service.getServiceName());
 
     }
 
@@ -68,13 +67,13 @@ public class ServiceProvider<T> {
 
     private void handleHealthUpdate(HealthcheckResult result) {
         if(null == result) {
-            logger.debug("No update to health state of node. Skipping data source update.");
+            log.debug("No update to health state of node. Skipping data source update.");
             return;
         }
         serviceNode.setHealthcheckStatus(result.getStatus());
         serviceNode.setLastUpdatedTimeStamp(result.getUpdatedTime());
         dataSource.updateState(serviceNode);
-        logger.debug("Updated node with health check result: {}", result);
+        log.debug("Updated node with health check result: {}", result);
     }
 
 }

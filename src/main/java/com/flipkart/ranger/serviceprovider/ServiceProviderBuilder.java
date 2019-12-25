@@ -28,19 +28,17 @@ import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.signals.ScheduledSignalGenerator;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 public class ServiceProviderBuilder<T> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceProviderBuilder.class);
-
+    
     private String namespace;
     private String serviceName;
     private CuratorFramework curatorFramework;
@@ -142,13 +140,13 @@ public class ServiceProviderBuilder<T> {
         }
 
         if (healthUpdateIntervalMs < 1000 || healthUpdateIntervalMs > 20000) {
-            LOGGER.warn("Health update interval for {} should be between 1000ms and 20000ms. Current value: {} ms. " +
+            log.warn("Health update interval for {} should be between 1000ms and 20000ms. Current value: {} ms. " +
                                 "Being set to 1000ms", serviceName, healthUpdateIntervalMs);
             healthUpdateIntervalMs = 1000;
         }
 
         if (staleUpdateThresholdMs < 5000 || staleUpdateThresholdMs > 20000) {
-            LOGGER.warn("Stale update threshold for {} should be between 5000ms and 20000ms. Current value: {} ms. " +
+            log.warn("Stale update threshold for {} should be between 5000ms and 20000ms. Current value: {} ms. " +
                                 "Being set to 5000ms", serviceName, staleUpdateThresholdMs);
             staleUpdateThresholdMs = 5000;
         }

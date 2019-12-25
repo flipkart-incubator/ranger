@@ -21,8 +21,7 @@ import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.healthservice.monitor.Monitor;
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.List;
@@ -37,10 +36,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * which can be used to register a set of {@link IsolatedHealthMonitor}s and get an aggregated health of the service.
  * The aggregated health is maintained by scheduling and running the set of registered (enabled) monitors at regular intervals.
  */
+@Slf4j
 public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>, Healthcheck {
-
-    /* Logger */
-    private static final Logger logger = LoggerFactory.getLogger(ServiceHealthAggregator.class);
 
     /* An atomic reference of the aggregated health */
     private AtomicReference<HealthcheckStatus> healthcheckStatusAtomicReference;
@@ -104,7 +101,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
     public void start() {
         if (running.get()) {
             /* in case the aggregator is already running */
-            logger.info("Service aggregator is already running");
+            log.info("Service aggregator is already running");
             return;
         }
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(isolatedHealthMonitorList.size());
@@ -130,7 +127,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
     @Override
     public synchronized void stop() {
         if (running.get()) {
-            logger.error("Service aggregator is currently not running, cannot stop..");
+            log.error("Service aggregator is currently not running, cannot stop..");
             return;
         }
         for (ScheduledFuture<?> scheduledFuture : scheduledFutureList) {
@@ -179,7 +176,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
                 && hasValidUpdatedTime(isolatedHealthMonitor, currentTime);
             /* check if the monitor and its last updated time is stale, if so, mark status as unhealthy */
         if (!hasValidUpdateTime) {
-            logger.error("Monitor: {} is stuck and its status is stale. Marking service as unhealthy",
+            log.error("Monitor: {} is stuck and its status is stale. Marking service as unhealthy",
                          isolatedHealthMonitor.getName());
             return true;
         }

@@ -16,21 +16,13 @@
 
 package com.flipkart.ranger.finder;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class Service {
-    private String namespace;
-    private String serviceName;
-
-    public Service(String namespace, String serviceName) {
-        this.namespace = namespace;
-        this.serviceName = serviceName;
-    }
-
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
+    private final String namespace;
+    private final String serviceName;
 }

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.model;
+package com.flipkart.ranger.util;
 
 import com.flipkart.ranger.finder.Service;
+import com.flipkart.ranger.model.ServiceNode;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PathBuilder {
-    
-    private PathBuilder() {
-        throw new InstantiationError("Must not instantiate this class");
-    }
-    
+
     public static String servicePath(final Service service) {
         return String.format("/%s", service.getServiceName());
     }

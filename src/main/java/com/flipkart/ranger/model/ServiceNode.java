@@ -17,7 +17,9 @@
 package com.flipkart.ranger.model;
 
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
+import lombok.Data;
 
+@Data
 public class ServiceNode<T> {
     private String host;
     private int port;
@@ -34,47 +36,7 @@ public class ServiceNode<T> {
         this.nodeData = nodeData;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public T getNodeData() {
-        return nodeData;
-    }
-
-    public void setNodeData(T nodeData) {
-        this.nodeData = nodeData;
-    }
-
     public String representation() {
         return String.format("%s:%d", host, port);
-    }
-
-    public HealthcheckStatus getHealthcheckStatus() {
-        return healthcheckStatus;
-    }
-
-    public void setHealthcheckStatus(HealthcheckStatus healthcheckStatus) {
-        this.healthcheckStatus = healthcheckStatus;
-    }
-
-    public long getLastUpdatedTimeStamp() {
-        return lastUpdatedTimeStamp;
-    }
-
-    public void setLastUpdatedTimeStamp(long lastUpdatedTimeStamp) {
-        this.lastUpdatedTimeStamp = lastUpdatedTimeStamp;
     }
 }

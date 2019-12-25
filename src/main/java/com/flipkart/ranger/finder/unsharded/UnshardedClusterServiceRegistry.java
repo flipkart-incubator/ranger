@@ -17,7 +17,6 @@
 package com.flipkart.ranger.finder.unsharded;
 
 import com.flipkart.ranger.finder.Service;
-import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ServiceRegistry;
 import com.google.common.collect.ImmutableList;
@@ -29,10 +28,8 @@ public class UnshardedClusterServiceRegistry extends ServiceRegistry<UnshardedCl
     private AtomicReference<List<ServiceNode<UnshardedClusterInfo>>> nodes
                                         = new AtomicReference<>();
 
-    public UnshardedClusterServiceRegistry(
-            Service service,
-            Deserializer<UnshardedClusterInfo> deserializer) {
-        super(service, deserializer);
+    public UnshardedClusterServiceRegistry(Service service) {
+        super(service);
     }
 
     public List<ServiceNode<UnshardedClusterInfo>> nodes() {

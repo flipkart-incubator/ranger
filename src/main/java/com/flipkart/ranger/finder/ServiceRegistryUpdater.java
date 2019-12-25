@@ -24,9 +24,8 @@ import com.flipkart.ranger.util.Exceptions;
 import com.github.rholder.retry.RetryerBuilder;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -38,8 +37,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class ServiceRegistryUpdater<T> {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceRegistryUpdater.class);
 
     private final ServiceRegistry<T> serviceRegistry;
     private final NodeDataSource<T> nodeDataSource;
@@ -66,13 +65,13 @@ public class ServiceRegistryUpdater<T> {
     public void start() {
         val serviceName = serviceRegistry.getService().getServiceName();
         nodeDataSource.start();
-        logger.info("Started data source for [{}]", serviceName);
+        log.info("Started data source for [{}]", serviceName);
         this.signalGenerators.forEach(SignalGenerator::start);
-        logger.info("Started signal generators for [{}]", serviceName);
+        log.info("Started signal generators for [{}]", serviceName);
         queryThreadFuture = this.executorService.submit(this::queryExecutor);
-        logger.info("Started updater for [{}]. Triggering initial update.", serviceName);
+        log.info("Started updater for [{}]. Triggering initial update.", serviceName);
         checkForUpdate(null);
-        logger.info("Waiting for initial update to complete for: {}", serviceName);
+        log.info("Waiting for initial update to complete for: {}", serviceName);
         Stopwatch stopwatch = Stopwatch.createStarted();
         try {
             RetryerBuilder.<Boolean>newBuilder()
@@ -83,7 +82,7 @@ public class ServiceRegistryUpdater<T> {
         catch (Exception e) {
             Exceptions.illegalState("Could not perform initial state for service: " + serviceName, e);
         }
-        logger.info("Initial node list updated for service: {} in {}ms",
+        log.info("Initial node list updated for service: {} in {}ms",
                     serviceName, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
@@ -93,9 +92,9 @@ public class ServiceRegistryUpdater<T> {
         }
         val serviceName = serviceRegistry.getService().getServiceName();
         this.signalGenerators.forEach(SignalGenerator::stop);
-        logger.info("Stopped signal generators and updater for [{}]", serviceName);
+        log.info("Stopped signal generators and updater for [{}]", serviceName);
         nodeDataSource.stop();
-        logger.info("Stopped data source for [{}]", serviceName);
+        log.info("Stopped data source for [{}]", serviceName);
     }
 
     public void checkForUpdate(T signalData) {
@@ -121,7 +120,7 @@ public class ServiceRegistryUpdater<T> {
                 updateRegistry();
             }
             catch (InterruptedException e) {
-                logger.info("Updater thread interrupted");
+                log.info("Updater thread interrupted");
                 Exceptions.illegalState(e);
             }
             finally {
@@ -132,22 +131,22 @@ public class ServiceRegistryUpdater<T> {
     }
 
     private void updateRegistry() {
-        logger.debug("Checking for updates on data source for service: {}",
+        log.debug("Checking for updates on data source for service: {}",
                      serviceRegistry.getService().getServiceName());
         if(!nodeDataSource.isActive()) {
-            logger.warn("Node data source seems to be down. Keeping old list for {}",
+            log.warn("Node data source seems to be down. Keeping old list for {}",
                         serviceRegistry.getService().getServiceName());
             return;
         }
         List<ServiceNode<T>> nodes = nodeDataSource.refresh().orElse(null);
         if (null != nodes) {
-            logger.debug("Updating nodelist of size: {} for [{}]", nodes.size(),
+            log.debug("Updating nodelist of size: {} for [{}]", nodes.size(),
                          serviceRegistry.getService().getServiceName());
             serviceRegistry.updateNodes(nodes);
             initialRefreshCompleted.compareAndSet(false, true);
         }
         else {
-            logger.warn("Null list returned from node data source. We are in a weird state. Keeping old list for {}",
+            log.warn("Null list returned from node data source. We are in a weird state. Keeping old list for {}",
                         serviceRegistry.getService().getServiceName());
         }
     }

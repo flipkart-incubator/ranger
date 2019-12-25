@@ -26,19 +26,18 @@ import com.flipkart.ranger.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class ServiceProviderTest {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderTest.class);
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
@@ -140,7 +139,7 @@ public class ServiceProviderTest {
             Assert.assertNotNull(node);
             Assert.assertEquals(2, node.getNodeData().getShardId());
         }
-        logger.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
+        log.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
             ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(99));
             Assert.assertNull(node);
@@ -189,7 +188,7 @@ public class ServiceProviderTest {
             Assert.assertNotNull(node);
             Assert.assertEquals(2, node.getNodeData().getShardId());
         }
-        logger.info("PERF::RoundRobinSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
+        log.info("PERF::RoundRobinSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
             ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(99));
             Assert.assertNull(node);
@@ -221,9 +220,9 @@ public class ServiceProviderTest {
                 .build();
         serviceFinder.start();
         List<ServiceNode<TestShardInfo>> all = serviceFinder.getAll(new TestShardInfo(1));
-        logger.info("Testing ServiceFinder.getAll()");
+        log.info("Testing ServiceFinder.getAll()");
         for (ServiceNode<TestShardInfo> serviceNode : all) {
-            logger.info("node = " + serviceNode.getHost() + ":" + serviceNode.getPort() + "  " + serviceNode.getHealthcheckStatus() + " " + serviceNode
+            log.info("node = " + serviceNode.getHost() + ":" + serviceNode.getPort() + "  " + serviceNode.getHealthcheckStatus() + " " + serviceNode
                     .getLastUpdatedTimeStamp());
         }
         Assert.assertEquals(3, all.size());

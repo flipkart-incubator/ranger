@@ -17,27 +17,16 @@
 package com.flipkart.ranger.model;
 
 import com.flipkart.ranger.finder.Service;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class ServiceRegistry<T> {
     private final Service service;
-    private final Deserializer<T> deserializer;
-
-    protected ServiceRegistry(
-            Service service,
-            Deserializer<T> deserializer) {
-        this.service = service;
-        this.deserializer = deserializer;
-    }
 
     public abstract void updateNodes(List<ServiceNode<T>> nodes);
-
-    public Service getService() {
-        return service;
-    }
-
-    public Deserializer<T> getDeserializer() {
-        return deserializer;
-    }
 }

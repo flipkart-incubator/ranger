@@ -3,7 +3,7 @@ package com.flipkart.ranger.datasource;
 import com.flipkart.ranger.finder.Service;
 import com.flipkart.ranger.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.model.Deserializer;
-import com.flipkart.ranger.model.PathBuilder;
+import com.flipkart.ranger.util.PathBuilder;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.util.Exceptions;

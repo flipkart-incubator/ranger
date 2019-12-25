@@ -2,7 +2,7 @@ package com.flipkart.ranger.datasource.signals;
 
 import com.flipkart.ranger.datasource.NodeDataSource;
 import com.flipkart.ranger.finder.Service;
-import com.flipkart.ranger.model.PathBuilder;
+import com.flipkart.ranger.util.PathBuilder;
 import com.flipkart.ranger.signals.SignalGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

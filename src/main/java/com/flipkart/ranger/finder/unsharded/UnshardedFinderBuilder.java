@@ -18,7 +18,6 @@ package com.flipkart.ranger.finder.unsharded;
 
 import com.flipkart.ranger.finder.BaseServiceFinderBuilder;
 import com.flipkart.ranger.finder.Service;
-import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNodeSelector;
 import com.flipkart.ranger.model.ShardSelector;
 
@@ -27,11 +26,10 @@ public class UnshardedFinderBuilder extends BaseServiceFinderBuilder<UnshardedCl
     @Override
     protected UnshardedClusterFinder buildFinder(
             Service service,
-            Deserializer<UnshardedClusterInfo> deserializer,
             ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry> shardSelector,
             ServiceNodeSelector<UnshardedClusterInfo> nodeSelector) {
         final UnshardedClusterServiceRegistry unshardedClusterServiceRegistry
-                = new UnshardedClusterServiceRegistry(service, deserializer);
+                = new UnshardedClusterServiceRegistry(service);
         return new UnshardedClusterFinder(unshardedClusterServiceRegistry, new NoOpShardSelector(), nodeSelector);
     }
 }

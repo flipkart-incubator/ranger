@@ -16,8 +16,7 @@
 
 package com.flipkart.ranger.healthcheck;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -25,8 +24,8 @@ import java.util.function.Supplier;
 /**
  * A Runnable which maintains the health state of the ServiceProvider
  */
+@Slf4j
 public class HealthChecker implements Supplier<HealthcheckResult> {
-    private static final Logger logger = LoggerFactory.getLogger(HealthChecker.class);
 
     private final List<Healthcheck> healthChecks;
     private final int staleUpdateThreshold;
@@ -56,7 +55,7 @@ public class HealthChecker implements Supplier<HealthcheckResult> {
                 healthcheckStatus = healthcheck.check();
             }
             catch (Throwable t) {
-                logger.error("Error running healthcheck. Setting node to unhealthy", t);
+                log.error("Error running healthcheck. Setting node to unhealthy", t);
                 healthcheckStatus = HealthcheckStatus.unhealthy;
             }
             if (HealthcheckStatus.unhealthy == healthcheckStatus) {

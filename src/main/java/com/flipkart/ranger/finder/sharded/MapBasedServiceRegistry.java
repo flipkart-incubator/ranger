@@ -17,7 +17,6 @@
 package com.flipkart.ranger.finder.sharded;
 
 import com.flipkart.ranger.finder.Service;
-import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ServiceRegistry;
 import com.google.common.collect.ArrayListMultimap;
@@ -31,9 +30,8 @@ public class MapBasedServiceRegistry<T> extends ServiceRegistry<T> {
     private AtomicReference<ListMultimap<T, ServiceNode<T>>> nodes = new AtomicReference<>();
 
     public MapBasedServiceRegistry(
-            Service service,
-            Deserializer<T> deserializer) {
-        super(service, deserializer);
+            Service service) {
+        super(service);
     }
 
     public ListMultimap<T, ServiceNode<T>> nodes() {
