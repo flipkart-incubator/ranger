@@ -74,16 +74,6 @@ public class HealthChecker implements Supplier<HealthcheckResult> {
                 || lastHealthcheckStatus != healthcheckStatus) {
             lastUpdatedTime = currentTime;
             lastHealthcheckStatus = healthcheckStatus;
-/*            ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
-            serviceNode.setHealthcheckStatus(healthcheckStatus);
-            serviceNode.setLastUpdatedTimeStamp(lastUpdatedTime);
-            try {
-                serviceProvider.updateState();
-                logger.debug("Node is {} for ({}, {})",
-                    healthcheckStatus.name(), serviceNode.getHost(), serviceNode.getPort());
-            } catch (Exception e) {
-                logger.error("Error updating health state in zookeeper: ", e);
-            }*/
             return true;
         }
         lastHealthcheckStatus = healthcheckStatus;

@@ -66,7 +66,7 @@ public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegist
         }
     }
 
-    public void start() throws Exception {
+    public void start() {
         final ServiceRegistryUpdater<T> updater = registryUpdater.get();
         if (null != updater) {
             updater.start();
@@ -77,7 +77,7 @@ public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegist
         }
     }
 
-    public void stop() throws Exception {
+    public void stop() {
         final ServiceRegistryUpdater<T> updater = registryUpdater.get();
         if (null != updater) {
             updater.stop();

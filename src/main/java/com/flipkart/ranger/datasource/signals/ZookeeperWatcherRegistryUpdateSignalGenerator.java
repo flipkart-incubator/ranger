@@ -55,6 +55,6 @@ public class ZookeeperWatcherRegistryUpdateSignalGenerator<T> extends SignalGene
 
     @Override
     public void stop() {
-
+        //Nothing to stop here
     }
 }

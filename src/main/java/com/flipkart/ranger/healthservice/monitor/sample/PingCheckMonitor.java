@@ -92,7 +92,8 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
                 return getRollingWindowHealthcheckStatus(HealthcheckStatus.healthy);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.error("Ping monitor failed:{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port, e);
+            logger.error("Ping monitor failed:{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
+            logger.error("Error running ping monitor: ", e);
             return getRollingWindowHealthcheckStatus(HealthcheckStatus.unhealthy);
         }
     }

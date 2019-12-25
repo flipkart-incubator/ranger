@@ -122,6 +122,7 @@ public class ServiceRegistryUpdater<T> {
             }
             catch (InterruptedException e) {
                 logger.info("Updater thread interrupted");
+                Exceptions.illegalState(e);
             }
             finally {
                 checkForUpdate = false;
