@@ -16,14 +16,14 @@
 
 package com.flipkart.ranger.finder;
 
-import com.flipkart.ranger.datasource.RegistryUpdateSignalGenerator;
-import com.flipkart.ranger.datasource.ScheduledRegistryUpdateSignalGenerator;
+import com.flipkart.ranger.datasource.signals.ScheduledRegistryUpdateSignalGenerator;
 import com.flipkart.ranger.datasource.ZookeeperNodeDataSource;
-import com.flipkart.ranger.datasource.ZookeeperWatcherRegistryUpdateSignalGenerator;
+import com.flipkart.ranger.datasource.signals.ZookeeperWatcherRegistryUpdateSignalGenerator;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNodeSelector;
 import com.flipkart.ranger.model.ServiceRegistry;
 import com.flipkart.ranger.model.ShardSelector;
+import com.flipkart.ranger.signals.SignalGenerator;
 import com.google.common.base.Preconditions;
 import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
@@ -118,14 +118,12 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         Service service = new Service(namespace, serviceName);
         val finder = buildFinder(service, deserializer, shardSelector, nodeSelector);
         val registry = finder.getServiceRegistry();
-        List<RegistryUpdateSignalGenerator<T>> signalGenerators = new ArrayList<>();
+        List<SignalGenerator<T>> signalGenerators = new ArrayList<>();
         final ZookeeperNodeDataSource<T> zookeeperNodeDataSource = new ZookeeperNodeDataSource<>(service,
                                                                                                  null,
                                                                                                  deserializer,
                                                                                                  curatorFramework);
-        signalGenerators.add(new ScheduledRegistryUpdateSignalGenerator<>(service,
-                                                                          zookeeperNodeDataSource,
-                                                                          nodeRefreshIntervalMs));
+        signalGenerators.add(new ScheduledRegistryUpdateSignalGenerator<>(service, nodeRefreshIntervalMs));
         if (!disablePushUpdaters) {
             signalGenerators.add(new ZookeeperWatcherRegistryUpdateSignalGenerator<>(service,
                                                                                      zookeeperNodeDataSource,

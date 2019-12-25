@@ -18,78 +18,63 @@ package com.flipkart.ranger.serviceprovider;
 
 import com.flipkart.ranger.datasource.NodeDataSource;
 import com.flipkart.ranger.finder.Service;
-import com.flipkart.ranger.healthcheck.HealthChecker;
-import com.flipkart.ranger.healthcheck.Healthcheck;
-import com.flipkart.ranger.healthservice.ServiceHealthAggregator;
+import com.flipkart.ranger.healthcheck.HealthcheckResult;
+import com.flipkart.ranger.healthservice.HealthService;
 import com.flipkart.ranger.model.ServiceNode;
+import com.flipkart.ranger.signals.SignalGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 public class ServiceProvider<T> {
     private static final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
 
     private final Service service;
     private final ServiceNode<T> serviceNode;
-    private final List<Healthcheck> healthchecks;
-    private final int healthUpdateInterval;
-    private final int staleUpdateThreshold;
     private final NodeDataSource<T> dataSource;
-    private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-    private ScheduledFuture<?> future;
-    private ServiceHealthAggregator serviceHealthAggregator;
-
+    private final List<HealthService> healthServices;
+    private final List<SignalGenerator<HealthcheckResult>> signalGenerators;
 
     public ServiceProvider(
             Service service,
             ServiceNode<T> serviceNode,
-            List<Healthcheck> healthchecks,
-            int healthUpdateInterval,
-            int staleUpdateThreshold,
             NodeDataSource<T> dataSource,
-            ServiceHealthAggregator serviceHealthAggregator) {
+            List<HealthService> healthServices,
+            List<SignalGenerator<HealthcheckResult>> signalGenerators) {
         this.service = service;
         this.serviceNode = serviceNode;
-        this.healthchecks = healthchecks;
-        this.healthUpdateInterval = healthUpdateInterval;
-        this.staleUpdateThreshold = staleUpdateThreshold;
         this.dataSource = dataSource;
-        this.serviceHealthAggregator = serviceHealthAggregator;
-    }
-
-    public void updateState(ServiceNode<T> serviceNode) {
-        dataSource.updateState(serviceNode);
+        this.healthServices = healthServices;
+        this.signalGenerators = signalGenerators;
+        signalGenerators.forEach(signalGenerator -> signalGenerator.registerConsumer(this::handleHealthUpdate));
     }
 
     public void start() {
         dataSource.start();
-        serviceHealthAggregator.start();
+        healthServices.forEach(HealthService::start);
+        signalGenerators.forEach(SignalGenerator::start);
         logger.info("Connected to zookeeper for {}", service.getServiceName());
         dataSource.updateState(serviceNode);
         logger.debug("Set initial node data on zookeeper for {}", service.getServiceName());
-        future = executorService.scheduleWithFixedDelay(new HealthChecker<>(healthchecks, this), 0,
-                                                        healthUpdateInterval, TimeUnit.MILLISECONDS);
+
     }
 
     public void stop() {
-        serviceHealthAggregator.stop();
-        if(null != future) {
-            future.cancel(true);
-        }
+        signalGenerators.forEach(SignalGenerator::stop);
+        healthServices.forEach(HealthService::stop);
         dataSource.stop();
     }
 
-    public ServiceNode<T> getServiceNode() {
-        return serviceNode;
-    }
-
-    public int getStaleUpdateThreshold() {
-        return staleUpdateThreshold;
+    private void handleHealthUpdate(HealthcheckResult result) {
+        if(null == result) {
+            logger.debug("No update to health state of node. Skipping data source update.");
+            return;
+        }
+        serviceNode.setHealthcheckStatus(result.getStatus());
+        serviceNode.setLastUpdatedTimeStamp(result.getUpdatedTime());
+        dataSource.updateState(serviceNode);
+        logger.debug("Updated node with health check result: {}", result);
     }
 
 }

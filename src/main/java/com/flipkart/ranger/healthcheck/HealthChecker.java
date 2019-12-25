@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,41 +16,50 @@
 
 package com.flipkart.ranger.healthcheck;
 
-import com.flipkart.ranger.model.ServiceNode;
-import com.flipkart.ranger.serviceprovider.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A Runnable which maintains the health state of the ServiceProvider
- * @param <T> type of provider
  */
-public class HealthChecker<T> implements Runnable {
+public class HealthChecker implements Supplier<HealthcheckResult> {
     private static final Logger logger = LoggerFactory.getLogger(HealthChecker.class);
 
-    private List<Healthcheck> healthchecks;
-    private ServiceProvider<T> serviceProvider;
+    private final List<Healthcheck> healthChecks;
+    private final int staleUpdateThreshold;
     private HealthcheckStatus lastHealthcheckStatus;
     private long lastUpdatedTime;
 
-    public HealthChecker(List<Healthcheck> healthchecks, ServiceProvider<T> serviceProvider) {
-        this.healthchecks = healthchecks;
-        this.serviceProvider = serviceProvider;
+    public HealthChecker(List<Healthcheck> healthChecks, int staleUpdateThreshold) {
+        this.healthChecks = healthChecks;
+        this.staleUpdateThreshold = staleUpdateThreshold;
     }
 
     @Override
-    public void run() {
+    public HealthcheckResult get() {
+        if(refreshHealth()) {
+            return HealthcheckResult.builder()
+                    .status(lastHealthcheckStatus)
+                    .updatedTime(lastUpdatedTime)
+                    .build();
+        }
+        return null;
+    }
+
+    private boolean refreshHealth() {
         HealthcheckStatus healthcheckStatus = HealthcheckStatus.unhealthy;
-        for(Healthcheck healthcheck : healthchecks) {
+        for (Healthcheck healthcheck : healthChecks) {
             try {
                 healthcheckStatus = healthcheck.check();
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
                 logger.error("Error running healthcheck. Setting node to unhealthy", t);
                 healthcheckStatus = HealthcheckStatus.unhealthy;
             }
-            if(HealthcheckStatus.unhealthy == healthcheckStatus) {
+            if (HealthcheckStatus.unhealthy == healthcheckStatus) {
                 break;
             }
         }
@@ -60,21 +69,24 @@ public class HealthChecker<T> implements Runnable {
         //2. Stale update threshold breach
         //3. Update in health status
         long currentTime = System.currentTimeMillis();
-        if(lastHealthcheckStatus == null ||
-            (currentTime - lastUpdatedTime) > serviceProvider.getStaleUpdateThreshold()
+        if (lastHealthcheckStatus == null
+                || (currentTime - lastUpdatedTime) > staleUpdateThreshold
                 || lastHealthcheckStatus != healthcheckStatus) {
             lastUpdatedTime = currentTime;
-            ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
+            lastHealthcheckStatus = healthcheckStatus;
+/*            ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
             serviceNode.setHealthcheckStatus(healthcheckStatus);
             serviceNode.setLastUpdatedTimeStamp(lastUpdatedTime);
             try {
-                serviceProvider.updateState(serviceNode);
+                serviceProvider.updateState();
                 logger.debug("Node is {} for ({}, {})",
                     healthcheckStatus.name(), serviceNode.getHost(), serviceNode.getPort());
             } catch (Exception e) {
                 logger.error("Error updating health state in zookeeper: ", e);
-            }
+            }*/
+            return true;
         }
         lastHealthcheckStatus = healthcheckStatus;
+        return false;
     }
 }

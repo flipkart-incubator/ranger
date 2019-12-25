@@ -143,8 +143,28 @@ public class ZookeeperNodeDataSource<T> implements NodeDataSource<T> {
         }
     }
 
-    private void createPath(ServiceNode<T> serviceNode) {
-        final Retryer<Void> retryer = RetryerBuilder.<Void>newBuilder()
+    private synchronized void createPath(ServiceNode<T> serviceNode) {
+        final String instancePath = PathBuilder.instancePath(service, serviceNode);
+        try {
+            if (null == curatorFramework.checkExists().forPath(instancePath)) {
+                curatorFramework.create()
+                        .creatingParentContainersIfNeeded()
+                        .withMode(CreateMode.EPHEMERAL)
+                        .forPath(instancePath, serializer.serialize(serviceNode));
+                log.info("Created instance path: {}", instancePath);
+            }
+        }
+        catch (KeeperException.NodeExistsException e) {
+            log.warn("Node already exists.. Race condition?", e);
+        }
+        catch (Exception e) {
+            final String message = String.format(
+                    "Could not create node for %s after 60 retries (1 min). " +
+                            "This service will not be discoverable. Retry after some time.", service.getServiceName());
+            log.error(message, e);
+            Exceptions.illegalState(message, e);
+        }
+        /*final Retryer<Void> retryer = RetryerBuilder.<Void>newBuilder()
                 .retryIfExceptionOfType(KeeperException.NodeExistsException.class) //Ephemeral node still exists
                 .withWaitStrategy(WaitStrategies.fixedWait(1, TimeUnit.SECONDS))
                 .withBlockStrategy(BlockStrategies.threadSleepStrategy())
@@ -153,10 +173,14 @@ public class ZookeeperNodeDataSource<T> implements NodeDataSource<T> {
         final String instancePath = PathBuilder.instancePath(service, serviceNode);
         try {
             retryer.call(() -> {
-                curatorFramework.create()
-                        .withMode(CreateMode.EPHEMERAL)
-                        .forPath(instancePath, serializer.serialize(serviceNode));
-                log.info("Created instance path: {}", instancePath);
+                try {
+                    curatorFramework.create()
+                            .withMode(CreateMode.EPHEMERAL)
+                            .forPath(instancePath, serializer.serialize(serviceNode));
+                    log.info("Created instance path: {}", instancePath);
+                } catch (KeeperException.NodeExistsException e) {
+                    log.warn("Node already exists.. Race condition?", e);
+                }
                 return null;
             });
         }
@@ -166,11 +190,11 @@ public class ZookeeperNodeDataSource<T> implements NodeDataSource<T> {
                             "This service will not be discoverable. Retry after some time.", service.getServiceName());
             log.error(message, e);
             Exceptions.illegalState(message, e);
-        }
+        }*/
     }
 
     private Optional<List<ServiceNode<T>>> checkForUpdateOnZookeeper() {
-        if(!started.get()) {
+        if (!started.get()) {
             log.warn("Data source is not yet started for service: {}. No nodes will be returned.",
                      service.getServiceName());
             return Optional.empty();
@@ -212,7 +236,7 @@ public class ZookeeperNodeDataSource<T> implements NodeDataSource<T> {
                     log.warn("No data present for node: {} of [{}]", path, serviceName);
                     skipNode = true;
                 }
-                if(skipNode) {
+                if (skipNode) {
                     log.debug("Skipping node: {}", path);
                     continue;
                 }

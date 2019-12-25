@@ -17,11 +17,12 @@
 package com.flipkart.ranger.finder;
 
 import com.flipkart.ranger.datasource.NodeDataSource;
-import com.flipkart.ranger.datasource.RegistryUpdateSignalGenerator;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.model.ServiceRegistry;
+import com.flipkart.ranger.signals.SignalGenerator;
 import com.flipkart.ranger.util.Exceptions;
 import com.github.rholder.retry.RetryerBuilder;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import lombok.val;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class ServiceRegistryUpdater<T> {
     private Lock checkLock = new ReentrantLock();
     private Condition checkCondition = checkLock.newCondition();
     private boolean checkForUpdate = false;
-    private final List<RegistryUpdateSignalGenerator<T>> signalGenerators;
+    private final List<SignalGenerator<T>> signalGenerators;
     private Future<Void> queryThreadFuture;
 
     private ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -55,7 +56,7 @@ public class ServiceRegistryUpdater<T> {
     public ServiceRegistryUpdater(
             ServiceRegistry<T> serviceRegistry,
             NodeDataSource<T> nodeDataSource,
-            List<RegistryUpdateSignalGenerator<T>> signalGenerators) {
+            List<SignalGenerator<T>> signalGenerators) {
         this.serviceRegistry = serviceRegistry;
         this.nodeDataSource = nodeDataSource;
         this.signalGenerators = signalGenerators;
@@ -66,11 +67,11 @@ public class ServiceRegistryUpdater<T> {
         val serviceName = serviceRegistry.getService().getServiceName();
         nodeDataSource.start();
         logger.info("Started data source for [{}]", serviceName);
-        this.signalGenerators.forEach(RegistryUpdateSignalGenerator::start);
+        this.signalGenerators.forEach(SignalGenerator::start);
         logger.info("Started signal generators for [{}]", serviceName);
         queryThreadFuture = this.executorService.submit(this::queryExecutor);
         logger.info("Started updater for [{}]. Triggering initial update.", serviceName);
-        checkForUpdate();
+        checkForUpdate(null);
         logger.info("Waiting for initial update to complete for: {}", serviceName);
         Stopwatch stopwatch = Stopwatch.createStarted();
         try {
@@ -91,13 +92,14 @@ public class ServiceRegistryUpdater<T> {
             executorService.shutdownNow();
         }
         val serviceName = serviceRegistry.getService().getServiceName();
-        this.signalGenerators.forEach(RegistryUpdateSignalGenerator::shutdown);
+        this.signalGenerators.forEach(SignalGenerator::stop);
         logger.info("Stopped signal generators and updater for [{}]", serviceName);
         nodeDataSource.stop();
         logger.info("Stopped data source for [{}]", serviceName);
     }
 
-    public void checkForUpdate() {
+    public void checkForUpdate(T signalData) {
+        Preconditions.checkArgument(null == signalData);
         try {
             checkLock.lock();
             checkForUpdate = true;

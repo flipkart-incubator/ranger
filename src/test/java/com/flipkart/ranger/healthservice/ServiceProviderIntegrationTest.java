@@ -25,7 +25,6 @@ import com.flipkart.ranger.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.healthcheck.Healthchecks;
 import com.flipkart.ranger.healthservice.monitor.sample.RotationStatusMonitor;
-import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
 import com.flipkart.ranger.serviceprovider.ServiceProvider;
@@ -69,18 +68,13 @@ public class ServiceProviderIntegrationTest {
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withDeserializer(new Deserializer<UnshardedClusterInfo>() {
-                    @Override
-                    public ServiceNode<UnshardedClusterInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            Exceptions.illegalState(e);
-                        }
-                        return null;
+                .withDeserializer(data -> {
+                    try {
+                        return objectMapper.readValue(data, new TypeReference<ServiceNode<UnshardedClusterInfo>>() {});
+                    } catch (IOException e) {
+                        Exceptions.illegalState(e);
                     }
+                    return null;
                 })
                 .build();
         serviceFinder.start();

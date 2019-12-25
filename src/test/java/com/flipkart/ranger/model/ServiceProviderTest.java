@@ -113,19 +113,14 @@ public class ServiceProviderTest {
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withDeserializer(new Deserializer<TestShardInfo>() {
-                    @Override
-                    public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                                          new TypeReference<ServiceNode<TestShardInfo>>() {
-                                                          });
-                        }
-                        catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
+                .withDeserializer(data -> {
+                    try {
+                        return objectMapper.readValue(data, new TypeReference<ServiceNode<TestShardInfo>>() {});
                     }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
                 })
                 .build();
         serviceFinder.start();
@@ -256,7 +251,7 @@ public class ServiceProviderTest {
                 .withPort(port)
                 .withNodeData(new TestShardInfo(shardId))
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
-                .withHealthUpdateIntervalMs(1000)
+                .withHealthUpdateIntervalMs(15000)
                 .buildServiceDiscovery();
         serviceProvider.start();
         serviceProviders.add(serviceProvider);

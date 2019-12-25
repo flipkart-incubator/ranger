@@ -18,11 +18,14 @@ package com.flipkart.ranger.serviceprovider;
 
 import com.flipkart.ranger.datasource.ZookeeperNodeDataSource;
 import com.flipkart.ranger.finder.Service;
+import com.flipkart.ranger.healthcheck.HealthChecker;
 import com.flipkart.ranger.healthcheck.Healthcheck;
+import com.flipkart.ranger.healthcheck.HealthcheckResult;
 import com.flipkart.ranger.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.model.Serializer;
 import com.flipkart.ranger.model.ServiceNode;
+import com.flipkart.ranger.signals.ScheduledSignalGenerator;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.curator.framework.CuratorFramework;
@@ -31,6 +34,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ServiceProviderBuilder<T> {
@@ -139,13 +143,13 @@ public class ServiceProviderBuilder<T> {
 
         if (healthUpdateIntervalMs < 1000 || healthUpdateIntervalMs > 20000) {
             LOGGER.warn("Health update interval for {} should be between 1000ms and 20000ms. Current value: {} ms. " +
-                    "Being set to 1000ms", serviceName, healthUpdateIntervalMs);
+                                "Being set to 1000ms", serviceName, healthUpdateIntervalMs);
             healthUpdateIntervalMs = 1000;
         }
 
         if (staleUpdateThresholdMs < 5000 || staleUpdateThresholdMs > 20000) {
             LOGGER.warn("Stale update threshold for {} should be between 5000ms and 20000ms. Current value: {} ms. " +
-                    "Being set to 5000ms", serviceName, staleUpdateThresholdMs);
+                                "Being set to 5000ms", serviceName, staleUpdateThresholdMs);
             staleUpdateThresholdMs = 5000;
         }
 
@@ -155,12 +159,19 @@ public class ServiceProviderBuilder<T> {
         }
         healthchecks.add(serviceHealthAggregator);
         final Service service = new Service(namespace, serviceName);
-
+        final ScheduledSignalGenerator<HealthcheckResult> healthcheckUpdateSignalGenerator
+                = new ScheduledSignalGenerator<>(
+                service,
+                new HealthChecker(healthchecks, staleUpdateThresholdMs),
+                Collections.emptyList(),
+                healthUpdateIntervalMs);
         final ZookeeperNodeDataSource<T> zookeeperNodeDataSource
                 = new ZookeeperNodeDataSource<>(service, serializer, null, curatorFramework);
         return new ServiceProvider<>(service,
-                new ServiceNode<>(hostname, port, nodeData), healthchecks,
-                healthUpdateIntervalMs, staleUpdateThresholdMs, zookeeperNodeDataSource, serviceHealthAggregator);
+                                     new ServiceNode<>(hostname, port, nodeData),
+                                     zookeeperNodeDataSource,
+                                     Collections.singletonList(serviceHealthAggregator),
+                                     Collections.singletonList(healthcheckUpdateSignalGenerator));
     }
 
 }
