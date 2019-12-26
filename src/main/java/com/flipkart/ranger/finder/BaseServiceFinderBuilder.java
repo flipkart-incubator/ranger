@@ -16,8 +16,8 @@
 
 package com.flipkart.ranger.finder;
 
-import com.flipkart.ranger.datasource.signals.ScheduledRegistryUpdateSignalGenerator;
 import com.flipkart.ranger.datasource.ZookeeperNodeDataSource;
+import com.flipkart.ranger.datasource.signals.ScheduledRegistryUpdateSignalGenerator;
 import com.flipkart.ranger.datasource.signals.ZookeeperWatcherRegistryUpdateSignalGenerator;
 import com.flipkart.ranger.model.Deserializer;
 import com.flipkart.ranger.model.ServiceNodeSelector;
@@ -30,10 +30,9 @@ import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -48,6 +47,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
     private Deserializer<T> deserializer;
     private ShardSelector<T, RegistryType> shardSelector;
     private ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<>();
+    private final List<SignalGenerator<T>> additionalRefreshSignals = new ArrayList<>();
 
     public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNamespace(final String namespace) {
         this.namespace = namespace;
@@ -99,6 +99,21 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         return this;
     }
 
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withAdditionalSignalGenerator(SignalGenerator<T> signalGenerator) {
+        this.additionalRefreshSignals.add(signalGenerator);
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withAdditionalSignalGenerators(SignalGenerator<T> ...signalGenerators) {
+        this.additionalRefreshSignals.addAll(Arrays.asList(signalGenerators));
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withAdditionalSignalGenerators(List<SignalGenerator<T>> signalGenerators) {
+        this.additionalRefreshSignals.addAll(signalGenerators);
+        return this;
+    }
+
     public FinderType build() {
         Preconditions.checkNotNull(namespace);
         Preconditions.checkNotNull(serviceName);
@@ -113,7 +128,7 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         }
         if (nodeRefreshIntervalMs < 1000) {
             log.warn("Node refresh interval for {} is too low: {} ms. Has been upgraded to 1000ms ",
-                        serviceName, nodeRefreshIntervalMs);
+                     serviceName, nodeRefreshIntervalMs);
             nodeRefreshIntervalMs = 1000;
         }
         Service service = new Service(namespace, serviceName);
@@ -133,6 +148,12 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
         else {
             log.info("Push based signal updater not registered for service: {}", service.getServiceName());
         }
+
+        if(!additionalRefreshSignals.isEmpty()) {
+            signalGenerators.addAll(additionalRefreshSignals);
+            log.debug("Added additional signal handlers");
+        }
+
         val updater = new ServiceRegistryUpdater<T>(registry, zookeeperNodeDataSource, signalGenerators);
         finder.registerUpdater(updater);
         return finder;
