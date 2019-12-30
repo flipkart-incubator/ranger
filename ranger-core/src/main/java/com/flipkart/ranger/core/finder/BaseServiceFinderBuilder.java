@@ -1,0 +1,175 @@
+/**
+ * Copyright 2015 Flipkart Internet Pvt. Ltd.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.flipkart.ranger.core.finder;
+
+import com.flipkart.ranger.core.finder.signals.ScheduledRegistryUpdateSignal;
+import com.flipkart.ranger.core.model.*;
+import com.flipkart.ranger.core.signals.Signal;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+
+@Slf4j
+public abstract class BaseServiceFinderBuilder
+        <T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
+
+    protected String namespace;
+    protected String serviceName;
+    protected int nodeRefreshIntervalMs;
+    protected boolean disablePushUpdaters;
+    protected Deserializer<T> deserializer;
+    protected ShardSelector<T, RegistryType> shardSelector;
+    protected ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<>();
+    protected final List<Signal<T>> additionalRefreshSignals = new ArrayList<>();
+    protected final List<Consumer<Void>> startSignalHandlers = Lists.newArrayList();
+    protected final List<Consumer<Void>> stopSignalHandlers = Lists.newArrayList();
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNamespace(final String namespace) {
+        this.namespace = namespace;
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withServiceName(final String serviceName) {
+        this.serviceName = serviceName;
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withDeserializer(Deserializer<T> deserializer) {
+        this.deserializer = deserializer;
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withShardSelector(ShardSelector<T, RegistryType> shardSelector) {
+        this.shardSelector = shardSelector;
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNodeSelector(ServiceNodeSelector<T> nodeSelector) {
+        this.nodeSelector = nodeSelector;
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNodeRefreshIntervalMs(int nodeRefreshIntervalMs) {
+        this.nodeRefreshIntervalMs = nodeRefreshIntervalMs;
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withDisableWatchers() {
+        this.disablePushUpdaters = true;
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withDisableWatchers(boolean disablePushUpdaters) {
+        this.disablePushUpdaters = disablePushUpdaters;
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withAdditionalSignalGenerator(Signal<T> signalGenerator) {
+        this.additionalRefreshSignals.add(signalGenerator);
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withAdditionalSignalGenerators(Signal<T>... signalGenerators) {
+        this.additionalRefreshSignals.addAll(Arrays.asList(signalGenerators));
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withAdditionalSignalGenerators(List<Signal<T>> signalGenerators) {
+        this.additionalRefreshSignals.addAll(signalGenerators);
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withStartSignalHandler(Consumer<Void> startSignalHandler) {
+        this.startSignalHandlers.add(startSignalHandler);
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withStartSignalHandlers(List<Consumer<Void>> startSignalHandlers) {
+        this.startSignalHandlers.addAll(startSignalHandlers);
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withStopSignalHandler(Consumer<Void> stopSignalHandler) {
+        this.stopSignalHandlers.add(stopSignalHandler);
+        return this;
+    }
+
+    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withStopSignalHandlers(List<Consumer<Void>> stopSignalHandlers) {
+        this.stopSignalHandlers.addAll(stopSignalHandlers);
+        return this;
+    }
+
+    public abstract FinderType build();
+
+    protected FinderType buildFinder() {
+        Preconditions.checkNotNull(namespace);
+        Preconditions.checkNotNull(serviceName);
+        Preconditions.checkNotNull(deserializer);
+
+        if (nodeRefreshIntervalMs < 1000) {
+            log.warn("Node refresh interval for {} is too low: {} ms. Has been upgraded to 1000ms ",
+                     serviceName, nodeRefreshIntervalMs);
+            nodeRefreshIntervalMs = 1000;
+        }
+        Service service = new Service(namespace, serviceName);
+        val finder = buildFinder(service, shardSelector, nodeSelector);
+        val registry = finder.getServiceRegistry();
+        List<Signal<T>> signalGenerators = new ArrayList<>();
+        final NodeDataSource<T> nodeDataSource = dataSource(service, null, deserializer);
+
+        signalGenerators.add(new ScheduledRegistryUpdateSignal<>(service, nodeRefreshIntervalMs));
+        additionalRefreshSignals.addAll(implementationSpecificRefreshSignals(service, nodeDataSource));
+        if (!additionalRefreshSignals.isEmpty()) {
+            signalGenerators.addAll(additionalRefreshSignals);
+            log.debug("Added additional signal handlers");
+        }
+
+        val updater = new ServiceRegistryUpdater<T>(registry, nodeDataSource, signalGenerators);
+        finder.getStartSignal()
+                .registerConsumers(startSignalHandlers)
+                .registerConsumer(x -> nodeDataSource.start())
+                .registerConsumer(x -> updater.start())
+                .registerConsumer(x -> signalGenerators.forEach(Signal::start));
+
+        finder.getStopSignal()
+                .registerConsumer(x -> signalGenerators.forEach(Signal::stop))
+                .registerConsumer(x -> updater.stop())
+                .registerConsumer(x -> nodeDataSource.stop())
+                .registerConsumers(stopSignalHandlers);
+        return finder;
+    }
+
+    protected List<Signal<T>> implementationSpecificRefreshSignals(Service service, NodeDataSource<T> nodeDataSource) {
+        return Collections.emptyList();
+    }
+
+    protected abstract NodeDataSource<T> dataSource(
+            Service service, Serializer<T> serializer, Deserializer<T> deserializer);
+
+    protected abstract FinderType buildFinder(
+            Service service,
+            ShardSelector<T, RegistryType> shardSelector,
+            ServiceNodeSelector<T> nodeSelector);
+
+}

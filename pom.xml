@@ -6,8 +6,12 @@
 
     <groupId>com.flipkart.ranger</groupId>
     <artifactId>ranger</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>ranger-core</module>
+        <module>ranger-zookeeper</module>
+    </modules>
 
     <distributionManagement>
         <repository>
@@ -77,24 +81,10 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-
-        <!--Curator-->
         <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-framework</artifactId>
-            <version>${curator.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-recipes</artifactId>
-            <version>${curator.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-test</artifactId>
-            <version>${curator.version}</version>
-            <scope>test</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.26</version>
         </dependency>
 
         <dependency>
