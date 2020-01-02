@@ -16,17 +16,17 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
  *
  */
 @Slf4j
-public class ZkServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T> {
+public class ZkServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T, ZkServiceProviderBuilder<T>> {
     private CuratorFramework curatorFramework;
     private String connectionString;
 
 
-    public BaseServiceProviderBuilder<T> withCuratorFramework(CuratorFramework curatorFramework) {
+    public ZkServiceProviderBuilder<T> withCuratorFramework(CuratorFramework curatorFramework) {
         this.curatorFramework = curatorFramework;
         return this;
     }
 
-    public BaseServiceProviderBuilder<T> withConnectionString(final String connectionString) {
+    public ZkServiceProviderBuilder<T> withConnectionString(final String connectionString) {
         this.connectionString = connectionString;
         return this;
     }

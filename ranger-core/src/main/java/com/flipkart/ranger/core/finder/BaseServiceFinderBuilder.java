@@ -32,97 +32,101 @@ import java.util.function.Consumer;
 
 @Slf4j
 public abstract class BaseServiceFinderBuilder
-        <T, RegistryType extends ServiceRegistry<T>, FinderType extends ServiceFinder<T, RegistryType>> {
+        <
+                T,
+                R extends ServiceRegistry<T>,
+                F extends ServiceFinder<T, R>,
+                B extends BaseServiceFinderBuilder<T, R, F, B>> {
 
     protected String namespace;
     protected String serviceName;
     protected int nodeRefreshIntervalMs;
     protected boolean disablePushUpdaters;
     protected Deserializer<T> deserializer;
-    protected ShardSelector<T, RegistryType> shardSelector;
+    protected ShardSelector<T, R> shardSelector;
     protected ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<>();
     protected final List<Signal<T>> additionalRefreshSignals = new ArrayList<>();
     protected final List<Consumer<Void>> startSignalHandlers = Lists.newArrayList();
     protected final List<Consumer<Void>> stopSignalHandlers = Lists.newArrayList();
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNamespace(final String namespace) {
+    public B withNamespace(final String namespace) {
         this.namespace = namespace;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withServiceName(final String serviceName) {
+    public B withServiceName(final String serviceName) {
         this.serviceName = serviceName;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withDeserializer(Deserializer<T> deserializer) {
+    public B withDeserializer(Deserializer<T> deserializer) {
         this.deserializer = deserializer;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withShardSelector(ShardSelector<T, RegistryType> shardSelector) {
+    public B withShardSelector(ShardSelector<T, R> shardSelector) {
         this.shardSelector = shardSelector;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNodeSelector(ServiceNodeSelector<T> nodeSelector) {
-        this.nodeSelector = nodeSelector;
-        return this;
+    public B withNodeSelector(ServiceNodeSelector<T> nodeSelector) {
+        this.nodeSelector = null != nodeSelector ? nodeSelector : this.nodeSelector;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withNodeRefreshIntervalMs(int nodeRefreshIntervalMs) {
+    public B withNodeRefreshIntervalMs(int nodeRefreshIntervalMs) {
         this.nodeRefreshIntervalMs = nodeRefreshIntervalMs;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withDisableWatchers() {
+    public B withDisableWatchers() {
         this.disablePushUpdaters = true;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withDisableWatchers(boolean disablePushUpdaters) {
+    public B withDisableWatchers(boolean disablePushUpdaters) {
         this.disablePushUpdaters = disablePushUpdaters;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withAdditionalSignalGenerator(Signal<T> signalGenerator) {
+    public B withAdditionalSignalGenerator(Signal<T> signalGenerator) {
         this.additionalRefreshSignals.add(signalGenerator);
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withAdditionalSignalGenerators(Signal<T>... signalGenerators) {
+    public B withAdditionalSignalGenerators(Signal<T>... signalGenerators) {
         this.additionalRefreshSignals.addAll(Arrays.asList(signalGenerators));
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withAdditionalSignalGenerators(List<Signal<T>> signalGenerators) {
+    public B withAdditionalSignalGenerators(List<Signal<T>> signalGenerators) {
         this.additionalRefreshSignals.addAll(signalGenerators);
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withStartSignalHandler(Consumer<Void> startSignalHandler) {
+    public B withStartSignalHandler(Consumer<Void> startSignalHandler) {
         this.startSignalHandlers.add(startSignalHandler);
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withStartSignalHandlers(List<Consumer<Void>> startSignalHandlers) {
+    public B withStartSignalHandlers(List<Consumer<Void>> startSignalHandlers) {
         this.startSignalHandlers.addAll(startSignalHandlers);
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withStopSignalHandler(Consumer<Void> stopSignalHandler) {
+    public B withStopSignalHandler(Consumer<Void> stopSignalHandler) {
         this.stopSignalHandlers.add(stopSignalHandler);
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceFinderBuilder<T, RegistryType, FinderType> withStopSignalHandlers(List<Consumer<Void>> stopSignalHandlers) {
+    public B withStopSignalHandlers(List<Consumer<Void>> stopSignalHandlers) {
         this.stopSignalHandlers.addAll(stopSignalHandlers);
-        return this;
+        return (B)this;
     }
 
-    public abstract FinderType build();
+    public abstract F build();
 
-    protected FinderType buildFinder() {
+    protected F buildFinder() {
         Preconditions.checkNotNull(namespace);
         Preconditions.checkNotNull(serviceName);
         Preconditions.checkNotNull(deserializer);
@@ -167,9 +171,9 @@ public abstract class BaseServiceFinderBuilder
     protected abstract NodeDataSource<T> dataSource(
             Service service, Serializer<T> serializer, Deserializer<T> deserializer);
 
-    protected abstract FinderType buildFinder(
+    protected abstract F buildFinder(
             Service service,
-            ShardSelector<T, RegistryType> shardSelector,
+            ShardSelector<T, R> shardSelector,
             ServiceNodeSelector<T> nodeSelector);
 
 }

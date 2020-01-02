@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  */
 @Slf4j
 public class ScheduledSignal<T> extends Signal<T> {
-    private final Service service;
+    private final String name;
     private final long refreshIntervalMillis;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -32,7 +32,17 @@ public class ScheduledSignal<T> extends Signal<T> {
             @Singular List<Consumer<T>> consumers,
             long refreshIntervalMillis) {
         super(signalDataGenerator, consumers);
-        this.service = service;
+        this.name = String.format("timer-%s-%s", service.getNamespace(), service.getServiceName());
+        this.refreshIntervalMillis = refreshIntervalMillis;
+    }
+
+    public ScheduledSignal(
+            final String name,
+            final Supplier<T> signalDataGenerator,
+            @Singular List<Consumer<T>> consumers,
+            long refreshIntervalMillis) {
+        super(signalDataGenerator, consumers);
+        this.name = name;
         this.refreshIntervalMillis = refreshIntervalMillis;
     }
 
@@ -42,10 +52,10 @@ public class ScheduledSignal<T> extends Signal<T> {
             try {
                 onSignalReceived();
             } catch (Exception e) {
-                log.error("Error delivering signal for:" + service.getServiceName() , e);
+                log.error("Error delivering signal for:" + name , e);
             }
         }, 0, refreshIntervalMillis, TimeUnit.MILLISECONDS);
-        log.info("Started scheduled signal generator for service {}", service.getServiceName());
+        log.info("Started scheduled signal generator: {}", name);
     }
 
     @Override
@@ -53,6 +63,6 @@ public class ScheduledSignal<T> extends Signal<T> {
         if(null != scheduledFuture) {
             scheduledFuture.cancel(true);
         }
-        log.info("Stopped scheduled signal generator for service {}", service.getServiceName());
+        log.info("Stopped scheduled signal generator: {}", name);
     }
 }

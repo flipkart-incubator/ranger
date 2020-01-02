@@ -21,7 +21,9 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
 
-public abstract class SimpleShardedServiceFinderBuilder<T> extends BaseServiceFinderBuilder<T, MapBasedServiceRegistry<T>, SimpleShardedServiceFinder<T>> {
+public abstract class SimpleShardedServiceFinderBuilder<T, B extends SimpleShardedServiceFinderBuilder<T,B>>
+        extends BaseServiceFinderBuilder<T, MapBasedServiceRegistry<T>, SimpleShardedServiceFinder<T>, B> {
+
     @Override
     protected SimpleShardedServiceFinder<T> buildFinder(
             Service service,

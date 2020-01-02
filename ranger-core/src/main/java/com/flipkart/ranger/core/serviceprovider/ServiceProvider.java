@@ -34,7 +34,6 @@ public class ServiceProvider<T> {
     private final Service service;
     private final ServiceNode<T> serviceNode;
     private final NodeDataSource<T> dataSource;
-    private final List<Signal<HealthcheckResult>> signalGenerators;
     @Getter
     private final ExternalTriggeredSignal<Void> startSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
     @Getter
@@ -48,7 +47,6 @@ public class ServiceProvider<T> {
         this.service = service;
         this.serviceNode = serviceNode;
         this.dataSource = dataSource;
-        this.signalGenerators = signalGenerators;
         signalGenerators.forEach(signalGenerator -> signalGenerator.registerConsumer(this::handleHealthUpdate));
     }
 

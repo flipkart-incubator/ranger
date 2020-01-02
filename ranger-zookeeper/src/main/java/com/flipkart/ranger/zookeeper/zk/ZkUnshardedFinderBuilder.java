@@ -21,10 +21,9 @@ import java.util.List;
  *
  */
 @Slf4j
-public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder {
-    protected CuratorFramework curatorFramework;
-    protected String connectionString;
-
+public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder<ZkUnshardedFinderBuilder> {
+    private CuratorFramework curatorFramework;
+    private String connectionString;
 
     public ZkUnshardedFinderBuilder withCuratorFramework(CuratorFramework curatorFramework) {
         this.curatorFramework = curatorFramework;

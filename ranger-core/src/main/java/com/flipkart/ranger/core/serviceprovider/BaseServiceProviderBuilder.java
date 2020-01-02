@@ -30,6 +30,7 @@ import com.flipkart.ranger.core.model.Serializer;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.signals.Signal;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,7 +42,7 @@ import java.util.function.Consumer;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class BaseServiceProviderBuilder<T> {
+public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProviderBuilder<T, B>> {
 
     protected String namespace;
     protected String serviceName;
@@ -55,53 +56,54 @@ public abstract class BaseServiceProviderBuilder<T> {
     protected NodeDataSource<T> nodeDataSource = null;
     protected final List<Consumer<Void>> startSignalHandlers = Lists.newArrayList();
     protected final List<Consumer<Void>> stopSignalHandlers = Lists.newArrayList();
+    protected final List<Signal<HealthcheckResult>> extraRefreshSignals = Lists.newArrayList();
 
     /* list of isolated monitors */
     private List<IsolatedHealthMonitor> isolatedMonitors = Lists.newArrayList();
 
-    public BaseServiceProviderBuilder<T> withNamespace(final String namespace) {
+    public B withNamespace(final String namespace) {
         this.namespace = namespace;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withServiceName(final String serviceName) {
+    public B withServiceName(final String serviceName) {
         this.serviceName = serviceName;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withSerializer(Serializer<T> deserializer) {
+    public B withSerializer(Serializer<T> deserializer) {
         this.serializer = deserializer;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withHostname(final String hostname) {
+    public B withHostname(final String hostname) {
         this.hostname = hostname;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withPort(int port) {
+    public B withPort(int port) {
         this.port = port;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withNodeData(T nodeData) {
+    public B withNodeData(T nodeData) {
         this.nodeData = nodeData;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withHealthcheck(Healthcheck healthcheck) {
+    public B withHealthcheck(Healthcheck healthcheck) {
         this.healthchecks.add(healthcheck);
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withHealthUpdateIntervalMs(int healthUpdateIntervalMs) {
+    public B withHealthUpdateIntervalMs(int healthUpdateIntervalMs) {
         this.healthUpdateIntervalMs = healthUpdateIntervalMs;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withStaleUpdateThresholdMs(int staleUpdateThresholdMs) {
+    public B withStaleUpdateThresholdMs(int staleUpdateThresholdMs) {
         this.staleUpdateThresholdMs = staleUpdateThresholdMs;
-        return this;
+        return (B)this;
     }
 
     /**
@@ -113,34 +115,44 @@ public abstract class BaseServiceProviderBuilder<T> {
      * @param monitor an implementation of the {@link IsolatedHealthMonitor}
      * @return builder for next call
      */
-    public BaseServiceProviderBuilder<T> withIsolatedHealthMonitor(IsolatedHealthMonitor monitor) {
+    public B withIsolatedHealthMonitor(IsolatedHealthMonitor monitor) {
         this.isolatedMonitors.add(monitor);
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withNodeDataSource(NodeDataSource<T> nodeDataSource) {
+    public B withNodeDataSource(NodeDataSource<T> nodeDataSource) {
         this.nodeDataSource = nodeDataSource;
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withStartSignalHandler(Consumer<Void> startSignalHandler) {
+    public B withStartSignalHandler(Consumer<Void> startSignalHandler) {
         this.startSignalHandlers.add(startSignalHandler);
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withStartSignalHandlers(List<Consumer<Void>> startSignalHandlers) {
+    public B withStartSignalHandlers(List<Consumer<Void>> startSignalHandlers) {
         this.startSignalHandlers.addAll(startSignalHandlers);
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withStopSignalHandler(Consumer<Void> stopSignalHandler) {
+    public B withStopSignalHandler(Consumer<Void> stopSignalHandler) {
         this.stopSignalHandlers.add(stopSignalHandler);
-        return this;
+        return (B)this;
     }
 
-    public BaseServiceProviderBuilder<T> withStopSignalHandlers(List<Consumer<Void>> stopSignalHandlers) {
+    public B withStopSignalHandlers(List<Consumer<Void>> stopSignalHandlers) {
         this.stopSignalHandlers.addAll(stopSignalHandlers);
-        return this;
+        return (B)this;
+    }
+
+    public B withExtraRefreshSignal(Signal<HealthcheckResult> extraRefreshSignal) {
+        this.extraRefreshSignals.add(extraRefreshSignal);
+        return (B)this;
+    }
+
+    public B withExtraRefreshSignals(List<Signal<HealthcheckResult>> extraRefreshSignals) {
+        this.extraRefreshSignals.addAll(extraRefreshSignals);
+        return (B)this;
     }
 
     protected final ServiceProvider<T> buildProvider() {
@@ -179,7 +191,10 @@ public abstract class BaseServiceProviderBuilder<T> {
         final List<HealthService> healthServices = Collections.singletonList(serviceHealthAggregator);
 
         final List<Signal<HealthcheckResult>> signalGenerators
-                = Collections.singletonList(healthcheckUpdateSignalGenerator);
+                = ImmutableList.<Signal<HealthcheckResult>>builder()
+                .add(healthcheckUpdateSignalGenerator)
+                .addAll(extraRefreshSignals)
+                .build();
         final ServiceProvider<T> serviceProvider = new ServiceProvider<>(service,
                                                                          new ServiceNode<>(hostname, port, nodeData),
                                                                          usableNodeDataSource,

@@ -1,11 +1,11 @@
 package com.flipkart.ranger.zookeeper.zk;
 
-import com.flipkart.ranger.core.model.NodeDataSource;
-import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinderBuilder;
 import com.flipkart.ranger.core.model.Deserializer;
+import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Serializer;
+import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.Signal;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.util.List;
  *
  */
 @Slf4j
-public class ZkSimpleShardedServiceFinderBuilder<T> extends SimpleShardedServiceFinderBuilder<T> {
+public class ZkSimpleShardedServiceFinderBuilder<T> extends SimpleShardedServiceFinderBuilder<T, ZkSimpleShardedServiceFinderBuilder<T>> {
     protected CuratorFramework curatorFramework;
     protected String connectionString;
 

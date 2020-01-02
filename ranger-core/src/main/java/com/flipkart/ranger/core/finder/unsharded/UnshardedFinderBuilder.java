@@ -21,7 +21,8 @@ import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.finder.BaseServiceFinderBuilder;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 
-public abstract class UnshardedFinderBuilder extends BaseServiceFinderBuilder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedClusterFinder> {
+public abstract class UnshardedFinderBuilder<B extends UnshardedFinderBuilder<B>>
+        extends BaseServiceFinderBuilder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedClusterFinder, B> {
 
     @Override
     protected UnshardedClusterFinder buildFinder(
