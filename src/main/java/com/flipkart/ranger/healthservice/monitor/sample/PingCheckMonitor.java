@@ -39,7 +39,7 @@ import java.util.concurrent.*;
  */
 public class PingCheckMonitor extends IsolatedHealthMonitor {
 
-    private static final Logger logger = LoggerFactory.getLogger(PingCheckMonitor.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(PingCheckMonitor.class);
 
     private HttpRequest httpRequest;
     private String host;

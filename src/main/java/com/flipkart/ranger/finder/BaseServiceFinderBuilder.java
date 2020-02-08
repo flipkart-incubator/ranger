@@ -103,7 +103,8 @@ public abstract class BaseServiceFinderBuilder<T, RegistryType extends ServiceRe
             curatorFramework.start();
         }
         if(nodeRefreshIntervalMs < 1000) {
-            LOGGER.warn("Node refresh interval too low: {} ms. Has been upgraded to 1000ms ", nodeRefreshIntervalMs);
+            LOGGER.warn("Node refresh interval for {} is too low: {} ms. Has been upgraded to 1000ms ",
+                    serviceName, nodeRefreshIntervalMs);
             nodeRefreshIntervalMs = 1000;
         }
         Service service = new Service(curatorFramework, namespace, serviceName);
