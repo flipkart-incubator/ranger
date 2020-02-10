@@ -24,6 +24,7 @@ import com.flipkart.ranger.model.ServiceRegistry;
 import com.google.common.collect.Lists;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.api.CuratorWatcher;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,20 +123,27 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
             logger.debug("Found {} nodes for [{}]", children.size(), serviceName);
             for(String child : children) {
                 final String path = String.format("%s/%s", parentPath, child);
-                boolean hasChild = null != curatorFramework.checkExists().forPath(path);
-                final byte[] data = hasChild ? curatorFramework.getData().forPath(path) : null;
-                if(null == data) {
-                    logger.warn("Not data present for node: {} of [{}]", path, serviceName);
-                    continue;
+                try {
+                    final byte[] data = curatorFramework.getData().forPath(path);
+                    if (null == data) {
+                        logger.warn("Data not present for node: {} of [{}]", path, serviceName);
+                        continue;
+                    }
+                    ServiceNode<T> key = deserializer.deserialize(data);
+                    if (HealthcheckStatus.healthy == key.getHealthcheckStatus()) {
+                        if (key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime) {
+                            nodes.add(key);
+                        }
+                        else {
+                            logger.warn("Zombie node [{}:{}] found for [{}]", key.getHost(), key.getPort(), serviceName);
+                        }
+                    }
                 }
-                ServiceNode<T> key = deserializer.deserialize(data);
-                if (HealthcheckStatus.healthy == key.getHealthcheckStatus()){
-                    if (key.getLastUpdatedTimeStamp() > healthcheckZombieCheckThresholdTime){
-                        nodes.add(key);
-                    }
-                    else {
-                        logger.warn("Zombie node [{}:{}] found for [{}]", key.getHost(), key.getPort(), serviceName);
-                    }
+                catch (KeeperException.NoNodeException e) {
+                    logger.warn("Node not found for path {}", path);
+                }
+                catch (Exception e) {
+                    logger.error(String.format("Data fetch failed for path %s", path), e);
                 }
             }
             return Optional.of(nodes);
@@ -159,7 +167,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
         }
         else {
             logger.warn("No service shards/nodes found. We are disconnected from zookeeper. Keeping old list for {}",
-                        serviceRegistry.getService().getServiceName());
+                    serviceRegistry.getService().getServiceName());
         }
     }
 
