@@ -16,8 +16,8 @@
 
 package com.flipkart.ranger.core.finder;
 
+import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.NodeDataSource;
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.signals.Signal;
 import com.flipkart.ranger.core.util.Exceptions;
@@ -42,11 +42,11 @@ public class ServiceRegistryUpdater<T> {
 
     private final ServiceRegistry<T> serviceRegistry;
     private final NodeDataSource<T> nodeDataSource;
+    private final Deserializer<T> deserializer;
 
     private Lock checkLock = new ReentrantLock();
     private Condition checkCondition = checkLock.newCondition();
     private boolean checkForUpdate = false;
-    private final List<Signal<T>> signalGenerators;
     private Future<Void> queryThreadFuture;
 
     private ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -55,10 +55,10 @@ public class ServiceRegistryUpdater<T> {
     public ServiceRegistryUpdater(
             ServiceRegistry<T> serviceRegistry,
             NodeDataSource<T> nodeDataSource,
-            List<Signal<T>> signalGenerators) {
+            List<Signal<T>> signalGenerators, Deserializer<T> deserializer) {
         this.serviceRegistry = serviceRegistry;
         this.nodeDataSource = nodeDataSource;
-        this.signalGenerators = signalGenerators;
+        this.deserializer = deserializer;
         signalGenerators.forEach(signalGenerator -> signalGenerator.registerConsumer(this::checkForUpdate));
     }
 
@@ -114,6 +114,9 @@ public class ServiceRegistryUpdater<T> {
                 log.info("Updater thread interrupted");
                 Exceptions.illegalState(e);
             }
+            catch (Exception e) {
+                log.error("Registry update failed for service: " + serviceRegistry.getService().name(), e);
+            }
             finally {
                 checkForUpdate = false;
                 checkLock.unlock();
@@ -129,7 +132,7 @@ public class ServiceRegistryUpdater<T> {
                         serviceRegistry.getService().getServiceName());
             return;
         }
-        List<ServiceNode<T>> nodes = nodeDataSource.refresh().orElse(null);
+        val nodes = nodeDataSource.refresh(deserializer).orElse(null);
         if (null != nodes) {
             log.debug("Updating nodelist of size: {} for [{}]", nodes.size(),
                          serviceRegistry.getService().getServiceName());

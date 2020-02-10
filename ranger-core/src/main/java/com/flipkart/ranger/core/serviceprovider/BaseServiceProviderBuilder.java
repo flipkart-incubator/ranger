@@ -16,18 +16,17 @@
 
 package com.flipkart.ranger.core.serviceprovider;
 
-import com.flipkart.ranger.core.healthservice.HealthService;
-import com.flipkart.ranger.core.healthservice.ServiceHealthAggregator;
-import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
-import com.flipkart.ranger.core.signals.ScheduledSignal;
-import com.flipkart.ranger.core.model.NodeDataSource;
-import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.healthcheck.HealthChecker;
 import com.flipkart.ranger.core.healthcheck.Healthcheck;
 import com.flipkart.ranger.core.healthcheck.HealthcheckResult;
-import com.flipkart.ranger.core.model.Deserializer;
+import com.flipkart.ranger.core.healthservice.HealthService;
+import com.flipkart.ranger.core.healthservice.ServiceHealthAggregator;
+import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
+import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Serializer;
+import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.signals.ScheduledSignal;
 import com.flipkart.ranger.core.signals.Signal;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -187,7 +186,7 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
                 new HealthChecker(healthchecks, staleUpdateThresholdMs),
                 Collections.emptyList(),
                 healthUpdateIntervalMs);
-        final NodeDataSource<T> usableNodeDataSource = dataSource(service, serializer, null);
+        final NodeDataSource<T> usableNodeDataSource = dataSource(service);
         final List<HealthService> healthServices = Collections.singletonList(serviceHealthAggregator);
 
         final List<Signal<HealthcheckResult>> signalGenerators
@@ -218,8 +217,5 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
 
     public abstract ServiceProvider<T> build();
 
-    protected abstract NodeDataSource<T> dataSource(
-            final Service service,
-            final Serializer<T> serializer,
-            final Deserializer<T> deserializer);
+    protected abstract NodeDataSource<T> dataSource(final Service service);
 }

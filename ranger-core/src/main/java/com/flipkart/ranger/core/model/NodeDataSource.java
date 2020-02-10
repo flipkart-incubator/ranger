@@ -13,9 +13,9 @@ public interface NodeDataSource<T> {
 
     void stop();
 
-    Optional<List<ServiceNode<T>>> refresh();
+    Optional<List<ServiceNode<T>>> refresh(Deserializer<T> deserializer);
 
     boolean isActive();
 
-    void updateState(ServiceNode<T> serviceNode);
+    void updateState(Serializer<T> serializer, ServiceNode<T> serviceNode);
 }

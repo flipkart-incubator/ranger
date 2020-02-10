@@ -2,10 +2,8 @@ package com.flipkart.ranger.zookeeper.zk;
 
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.model.Deserializer;
-import com.flipkart.ranger.core.model.Serializer;
-import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.core.serviceprovider.BaseServiceProviderBuilder;
+import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
@@ -47,8 +45,7 @@ public class ZkServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T, Z
     }
 
     @Override
-    protected NodeDataSource<T> dataSource(
-            Service service, Serializer<T> serializer, Deserializer<T> deserializer) {
-        return new ZkNodeDataSource<>(service, serializer, deserializer, curatorFramework);
+    protected NodeDataSource<T> dataSource(Service service) {
+        return new ZkNodeDataSource<>(service, curatorFramework);
     }
 }

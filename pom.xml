@@ -11,6 +11,7 @@
     <modules>
         <module>ranger-core</module>
         <module>ranger-zookeeper</module>
+        <module>ranger-http</module>
     </modules>
 
     <distributionManagement>
@@ -54,9 +55,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <guava.version>26.0-jre</guava.version>
         <curator.version>4.0.1</curator.version>
-        <jackson.version>2.9.5</jackson.version>
+        <jackson.version>2.10.1</jackson.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <apache.httpclient.version>4.5.6</apache.httpclient.version>
 
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <java.version>1.8</java.version>
@@ -109,11 +109,6 @@
             <groupId>com.github.rholder</groupId>
             <artifactId>guava-retrying</artifactId>
             <version>2.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${apache.httpclient.version}</version>
         </dependency>
     </dependencies>
 

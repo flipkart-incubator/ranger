@@ -17,6 +17,7 @@
 package com.flipkart.ranger.core.serviceprovider;
 
 import com.flipkart.ranger.core.model.NodeDataSource;
+import com.flipkart.ranger.core.model.Serializer;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import com.flipkart.ranger.core.signals.Signal;
@@ -33,6 +34,7 @@ public class ServiceProvider<T> {
 
     private final Service service;
     private final ServiceNode<T> serviceNode;
+    private final Serializer<T> serializer;
     private final NodeDataSource<T> dataSource;
     @Getter
     private final ExternalTriggeredSignal<Void> startSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
@@ -42,17 +44,19 @@ public class ServiceProvider<T> {
     public ServiceProvider(
             Service service,
             ServiceNode<T> serviceNode,
+            Serializer<T> serializer,
             NodeDataSource<T> dataSource,
             List<Signal<HealthcheckResult>> signalGenerators) {
         this.service = service;
         this.serviceNode = serviceNode;
+        this.serializer = serializer;
         this.dataSource = dataSource;
         signalGenerators.forEach(signalGenerator -> signalGenerator.registerConsumer(this::handleHealthUpdate));
     }
 
     public void start() {
         startSignal.trigger();
-        dataSource.updateState(serviceNode);
+        dataSource.updateState(serializer, serviceNode);
         log.debug("Set initial node data on zookeeper for {}", service.getServiceName());
     }
 
@@ -67,7 +71,7 @@ public class ServiceProvider<T> {
         }
         serviceNode.setHealthcheckStatus(result.getStatus());
         serviceNode.setLastUpdatedTimeStamp(result.getUpdatedTime());
-        dataSource.updateState(serviceNode);
+        dataSource.updateState(serializer, serviceNode);
         log.debug("Updated node with health check result: {}", result);
     }
 

@@ -2,9 +2,7 @@ package com.flipkart.ranger.zookeeper.zk;
 
 import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinderBuilder;
-import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.NodeDataSource;
-import com.flipkart.ranger.core.model.Serializer;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.Signal;
 import com.google.common.base.Preconditions;
@@ -52,8 +50,8 @@ public class ZkSimpleShardedServiceFinderBuilder<T> extends SimpleShardedService
 
     @Override
     protected NodeDataSource<T> dataSource(
-            Service service, Serializer<T> serializer, Deserializer<T> deserializer) {
-        return new ZkNodeDataSource<>(service, null, deserializer, curatorFramework);
+            Service service) {
+        return new ZkNodeDataSource<>(service, curatorFramework);
     }
 
     @Override

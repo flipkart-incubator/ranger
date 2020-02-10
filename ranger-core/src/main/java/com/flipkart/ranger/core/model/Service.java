@@ -25,4 +25,13 @@ import lombok.Data;
 public class Service {
     private final String namespace;
     private final String serviceName;
+
+    public String name() {
+        return String.format("%s/%s", namespace, serviceName);
+    }
+
+    @Override
+    public String toString() {
+        return name();
+    }
 }

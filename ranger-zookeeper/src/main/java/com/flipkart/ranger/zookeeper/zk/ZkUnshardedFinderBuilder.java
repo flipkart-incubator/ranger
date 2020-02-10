@@ -5,8 +5,6 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedFinderBuilder;
-import com.flipkart.ranger.core.model.Deserializer;
-import com.flipkart.ranger.core.model.Serializer;
 import com.flipkart.ranger.core.signals.Signal;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -52,10 +50,8 @@ public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder<ZkUnsharded
 
     @Override
     protected NodeDataSource<UnshardedClusterInfo> dataSource(
-            Service service,
-            Serializer<UnshardedClusterInfo> serializer,
-            Deserializer<UnshardedClusterInfo> deserializer) {
-        return new ZkNodeDataSource<>(service, null, deserializer, curatorFramework);
+            Service service) {
+        return new ZkNodeDataSource<>(service, curatorFramework);
     }
 
 

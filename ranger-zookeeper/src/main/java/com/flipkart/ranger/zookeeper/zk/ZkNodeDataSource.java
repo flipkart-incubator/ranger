@@ -29,8 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ZkNodeDataSource<T> implements NodeDataSource<T> {
 
     private final Service service;
-    private final Serializer<T> serializer;
-    private final Deserializer<T> deserializer;
     private final CuratorFramework curatorFramework;
     private final Retryer<Boolean> discoveryRetrier = RetryerBuilder.<Boolean>newBuilder()
             .retryIfException(e -> IllegalStateException.class.isAssignableFrom(e.getClass()))
@@ -50,11 +48,8 @@ public class ZkNodeDataSource<T> implements NodeDataSource<T> {
 
     public ZkNodeDataSource(
             final Service service,
-            Serializer<T> serializer, final Deserializer<T> deserializer,
             final CuratorFramework curatorFramework) {
         this.service = service;
-        this.serializer = serializer;
-        this.deserializer = deserializer;
         this.curatorFramework = curatorFramework;
     }
 
@@ -110,8 +105,8 @@ public class ZkNodeDataSource<T> implements NodeDataSource<T> {
     }
 
     @Override
-    public Optional<List<ServiceNode<T>>> refresh() {
-        return checkForUpdateOnZookeeper();
+    public Optional<List<ServiceNode<T>>> refresh(Deserializer<T> deserializer) {
+        return checkForUpdateOnZookeeper(deserializer);
     }
 
     @Override
@@ -121,7 +116,7 @@ public class ZkNodeDataSource<T> implements NodeDataSource<T> {
     }
 
     @Override
-    public void updateState(ServiceNode<T> serviceNode) {
+    public void updateState(Serializer<T> serializer, ServiceNode<T> serviceNode) {
         if (stopped.get()) {
             log.warn("Node has been stopped already for service: {}. No update will be possible.",
                      service.getServiceName());
@@ -132,7 +127,7 @@ public class ZkNodeDataSource<T> implements NodeDataSource<T> {
         try {
             if (null == curatorFramework.checkExists().forPath(path)) {
                 log.info("No node exists for path: {}. Will create now.", path);
-                createPath(serviceNode);
+                createPath(serviceNode, serializer);
             }
             else {
                 curatorFramework.setData().forPath(path, serializer.serialize(serviceNode));
@@ -144,7 +139,9 @@ public class ZkNodeDataSource<T> implements NodeDataSource<T> {
         }
     }
 
-    private synchronized void createPath(ServiceNode<T> serviceNode) {
+    private synchronized void createPath(
+            ServiceNode<T> serviceNode,
+            Serializer<T> serializer) {
         final String instancePath = PathBuilder.instancePath(service, serviceNode);
         try {
             if (null == curatorFramework.checkExists().forPath(instancePath)) {
@@ -167,7 +164,7 @@ public class ZkNodeDataSource<T> implements NodeDataSource<T> {
         }
     }
 
-    private Optional<List<ServiceNode<T>>> checkForUpdateOnZookeeper() {
+    private Optional<List<ServiceNode<T>>> checkForUpdateOnZookeeper(Deserializer<T> deserializer) {
         if (!started.get()) {
             log.warn("Data source is not yet started for service: {}. No nodes will be returned.",
                      service.getServiceName());
