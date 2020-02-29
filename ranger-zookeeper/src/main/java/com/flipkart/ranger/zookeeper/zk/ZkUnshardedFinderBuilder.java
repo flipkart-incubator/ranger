@@ -1,11 +1,12 @@
 package com.flipkart.ranger.zookeeper.zk;
 
-import com.flipkart.ranger.core.model.NodeDataSource;
-import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedFinderBuilder;
+import com.flipkart.ranger.core.model.NodeDataSource;
+import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.Signal;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
@@ -19,7 +20,7 @@ import java.util.List;
  *
  */
 @Slf4j
-public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder<ZkUnshardedFinderBuilder> {
+public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder<ZkUnshardedFinderBuilder, ZkNodeDataDeserializer<UnshardedClusterInfo>> {
     private CuratorFramework curatorFramework;
     private String connectionString;
 
@@ -49,7 +50,7 @@ public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder<ZkUnsharded
     }
 
     @Override
-    protected NodeDataSource<UnshardedClusterInfo> dataSource(
+    protected NodeDataSource<UnshardedClusterInfo, ZkNodeDataDeserializer<UnshardedClusterInfo>> dataSource(
             Service service) {
         return new ZkNodeDataSource<>(service, curatorFramework);
     }
@@ -57,7 +58,7 @@ public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder<ZkUnsharded
 
     @Override
     protected List<Signal<UnshardedClusterInfo>> implementationSpecificRefreshSignals(
-            final Service service, final NodeDataSource<UnshardedClusterInfo> nodeDataSource) {
+            final Service service, final NodeDataSource<UnshardedClusterInfo, ZkNodeDataDeserializer<UnshardedClusterInfo>> nodeDataSource) {
         if (!disablePushUpdaters) {
             return Collections.singletonList(
                     new ZkWatcherRegistryUpdateSignal<>(service, nodeDataSource, curatorFramework));

@@ -17,12 +17,13 @@
 package com.flipkart.ranger.core.finder.sharded;
 
 import com.flipkart.ranger.core.finder.BaseServiceFinderBuilder;
+import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
 
-public abstract class SimpleShardedServiceFinderBuilder<T, B extends SimpleShardedServiceFinderBuilder<T,B>>
-        extends BaseServiceFinderBuilder<T, MapBasedServiceRegistry<T>, SimpleShardedServiceFinder<T>, B> {
+public abstract class SimpleShardedServiceFinderBuilder<T, B extends SimpleShardedServiceFinderBuilder<T,B, D>, D extends Deserializer<T>>
+        extends BaseServiceFinderBuilder<T, MapBasedServiceRegistry<T>, SimpleShardedServiceFinder<T>, B, D> {
 
     @Override
     protected SimpleShardedServiceFinder<T> buildFinder(

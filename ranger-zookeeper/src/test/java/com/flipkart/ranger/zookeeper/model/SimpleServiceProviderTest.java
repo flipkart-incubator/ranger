@@ -19,17 +19,15 @@ package com.flipkart.ranger.zookeeper.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
-import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
-import com.flipkart.ranger.core.model.Deserializer;
-import com.flipkart.ranger.core.model.Serializer;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
+import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
+import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import lombok.val;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
@@ -66,18 +64,15 @@ public class SimpleServiceProviderTest {
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withDeserializer(new Deserializer<UnshardedClusterInfo>() {
-                    @Override
-                    public ServiceNode<UnshardedClusterInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
+                .withDeserializer(data -> {
+                    try {
+                        return objectMapper.readValue(data,
+                                new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
+                                });
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    return null;
                 })
                 .withDisableWatchers()
                 .build();
@@ -101,20 +96,17 @@ public class SimpleServiceProviderTest {
     }
 
     private void registerService(String host, int port, int shardId) throws Exception {
-        ServiceProvider<UnshardedClusterInfo> serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
+        val serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withSerializer(new Serializer<UnshardedClusterInfo>() {
-                    @Override
-                    public byte[] serialize(ServiceNode<UnshardedClusterInfo> data) {
-                        try {
-                            return objectMapper.writeValueAsBytes(data);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
+                .withSerializer(data -> {
+                    try {
+                        return objectMapper.writeValueAsBytes(data);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
                     }
+                    return null;
                 })
                 .withHostname(host)
                 .withPort(port)

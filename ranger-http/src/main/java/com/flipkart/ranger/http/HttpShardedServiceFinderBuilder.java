@@ -6,15 +6,16 @@ import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinderBuilder
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.http.config.HttpClientConfig;
+import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 
 /**
  *
  */
-public class HttpShardedServiceFinderBuilder<T> extends SimpleShardedServiceFinderBuilder<T, HttpShardedServiceFinderBuilder<T>> {
+public class HttpShardedServiceFinderBuilder<T, D extends HTTPResponseDataDeserializer<T>> extends SimpleShardedServiceFinderBuilder<T, HttpShardedServiceFinderBuilder<T, D>, D> {
 
     private HttpClientConfig clientConfig;
 
-    public HttpShardedServiceFinderBuilder<T> withClientConfig(final HttpClientConfig clientConfig) {
+    public HttpShardedServiceFinderBuilder<T, D> withClientConfig(final HttpClientConfig clientConfig) {
         this.clientConfig = clientConfig;
         return this;
     }
@@ -25,8 +26,7 @@ public class HttpShardedServiceFinderBuilder<T> extends SimpleShardedServiceFind
     }
 
     @Override
-    protected NodeDataSource<T> dataSource(
-            Service service) {
+    protected NodeDataSource<T, D> dataSource(Service service) {
         return new HttpNodeDataSource<>(service, clientConfig, new ObjectMapper());
     }
 }

@@ -1,67 +1,42 @@
 package com.flipkart.ranger.http;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.model.*;
+import com.flipkart.ranger.core.model.NodeDataSource;
+import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.util.Exceptions;
+import com.flipkart.ranger.core.util.FinderUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
-import com.flipkart.ranger.http.model.ServiceNodesResponse;
+import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import okhttp3.*;
+import okhttp3.HttpUrl;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
  */
 @Slf4j
-public class HttpNodeDataSource<T> implements NodeDataSource<T> {
+public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> extends HttpNodeDataStoreConnector<T> implements NodeDataSource<T, D> {
 
-    private final Service service;
-    private final HttpClientConfig config;
-    private final OkHttpClient httpClient;
-    private final ObjectMapper mapper;
+    private final AtomicBoolean firstCall = new AtomicBoolean(false);
 
     public HttpNodeDataSource(
             Service service,
             final HttpClientConfig config,
             ObjectMapper mapper) {
-        this.service = service;
-        this.httpClient = new OkHttpClient.Builder()
-                .callTimeout(config.getOperationTimeoutMs() == 0
-                             ? 3000
-                             : config.getOperationTimeoutMs(), TimeUnit.MILLISECONDS)
-                .connectTimeout(config.getConnectionTimeoutMs() == 0
-                                ? 3000
-                                : config.getConnectionTimeoutMs(), TimeUnit.MILLISECONDS)
-                .followRedirects(true)
-                .connectionPool(new ConnectionPool(1, 30, TimeUnit.SECONDS))
-                .build();
-        this.config = config;
-        this.mapper = mapper;
+        super(service, config, mapper);
     }
 
 
     @Override
-    public void start() {
-    }
-
-    @Override
-    public void ensureConnected() {
-
-    }
-
-    @Override
-    public void stop() {
-
-    }
-
-    @Override
-    public Optional<List<ServiceNode<T>>> refresh(Deserializer<T> deserializer) {
+    public Optional<List<ServiceNode<T>>> refresh(D deserializer) {
         final HttpUrl httpUrl = new HttpUrl.Builder()
                 .scheme(config.isSecure()
                         ? "https"
@@ -75,23 +50,29 @@ public class HttpNodeDataSource<T> implements NodeDataSource<T> {
 
         try {
             final Response response = httpClient.newCall(new Request.Builder()
-                                                                .url(httpUrl)
-                                                                .get()
-                                                                .build())
+                                                                 .url(httpUrl)
+                                                                 .get()
+                                                                 .build())
                     .execute();
-            if(response.isSuccessful()) {
+            if (response.isSuccessful()) {
                 final ResponseBody body = response.body();
-                if(null == body) {
+                if (null == body) {
                     log.warn("HTTP call to {} returned empty body", httpUrl.toString());
                 }
                 else {
-                    val serviceResponse = translateResponse(body.bytes());
-                    if (serviceResponse.isSuccess()) {
-                        return Optional.of(serviceResponse.getNodes());
+                    final byte[] bytes;
+                    try {
+                        bytes = body.bytes();
                     }
-                    else {
-                        log.warn("HTTP call to {} is not successful", httpUrl.toString());
+                    finally {
+                        if(null != body) {
+                            body.close();
+                        }
                     }
+                    return Optional.of(FinderUtils.filterValidNodes(
+                            service,
+                            deserializer.deserialize(bytes),
+                            healthcheckZombieCheckThresholdTime(service)));
                 }
             }
             else {
@@ -104,23 +85,9 @@ public class HttpNodeDataSource<T> implements NodeDataSource<T> {
         throw new IllegalStateException("No data received from server");
     }
 
-    private int defaultPort() {
-        return config.isSecure()
-           ? 443
-           : 80;
-    }
-
     @Override
     public boolean isActive() {
-        return httpClient.connectionPool().connectionCount() > 0;
-    }
-
-    @Override
-    public void updateState(Serializer<T> serializer, ServiceNode<T> serviceNode) {
-        throw new UnsupportedOperationException("State update is not supported on HTTP yet.");
-    }
-
-    protected ServiceNodesResponse<T> translateResponse(final byte data[]) throws IOException {
-        return mapper.readValue(data, new TypeReference<ServiceNodesResponse<T>>() {});
+//        return httpClient.connectionPool().connectionCount() > 0;
+        return true;
     }
 }

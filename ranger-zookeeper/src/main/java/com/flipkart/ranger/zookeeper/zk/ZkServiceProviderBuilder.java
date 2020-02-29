@@ -1,9 +1,10 @@
 package com.flipkart.ranger.zookeeper.zk;
 
-import com.flipkart.ranger.core.model.NodeDataSource;
+import com.flipkart.ranger.core.model.NodeDataSink;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.serviceprovider.BaseServiceProviderBuilder;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
@@ -14,7 +15,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
  *
  */
 @Slf4j
-public class ZkServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T, ZkServiceProviderBuilder<T>> {
+public class ZkServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T, ZkServiceProviderBuilder<T>, ZkNodeDataSerializer<T>> {
     private CuratorFramework curatorFramework;
     private String connectionString;
 
@@ -30,7 +31,7 @@ public class ZkServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T, Z
     }
 
     @Override
-    public ServiceProvider<T> build() {
+    public ServiceProvider<T, ZkNodeDataSerializer<T>> build() {
         if (null == curatorFramework) {
             Preconditions.checkNotNull(connectionString);
             log.info("Building custom curator framework");
@@ -45,7 +46,7 @@ public class ZkServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T, Z
     }
 
     @Override
-    protected NodeDataSource<T> dataSource(Service service) {
-        return new ZkNodeDataSource<>(service, curatorFramework);
+    protected NodeDataSink<T, ZkNodeDataSerializer<T>> dataSink(Service service) {
+        return new ZkNodeDataSink<>(service, curatorFramework);
     }
 }

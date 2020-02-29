@@ -1,5 +1,6 @@
 package com.flipkart.ranger.http.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.flipkart.ranger.core.model.ServiceNode;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +18,8 @@ public class ServiceNodesResponse<T> {
 
     @Builder
     public ServiceNodesResponse(
-            boolean success,
-            @Singular List<ServiceNode<T>> nodes) {
+            @JsonProperty("success") boolean success,
+            @JsonProperty("nodes") @Singular List<ServiceNode<T>> nodes) {
         this.success = success;
         this.nodes = nodes;
     }

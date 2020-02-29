@@ -1,6 +1,6 @@
 package com.flipkart.ranger.zookeeper.zk;
 
-import com.flipkart.ranger.core.model.NodeDataSource;
+import com.flipkart.ranger.core.model.NodeDataStoreConnector;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.zookeeper.util.PathBuilder;
 import com.flipkart.ranger.core.signals.Signal;
@@ -21,12 +21,12 @@ import java.util.Collections;
 @ToString(callSuper = true)
 public class ZkWatcherRegistryUpdateSignal<T> extends Signal<T> {
     private final Service service;
-    private final NodeDataSource<T> dataSource;
+    private final NodeDataStoreConnector<T> dataSource;
     private final CuratorFramework curatorFramework;
 
     public ZkWatcherRegistryUpdateSignal(
             Service service,
-            NodeDataSource<T> dataSource,
+            NodeDataStoreConnector<T> dataSource,
             CuratorFramework curatorFramework) {
         super(() -> null, Collections.emptyList());
         this.service = service;

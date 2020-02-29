@@ -19,17 +19,17 @@ package com.flipkart.ranger.zookeeper.healthservice;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
-import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.sample.RotationStatusMonitor;
-import com.flipkart.ranger.core.model.Serializer;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.core.util.Exceptions;
+import com.flipkart.ranger.core.utils.TestUtils;
+import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
+import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
+import lombok.val;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
@@ -87,7 +87,7 @@ public class ServiceProviderIntegrationTest {
             testingCluster.close();
         }
         serviceFinder.stop();
-        Thread.sleep(1000);
+        TestUtils.sleepForSeconds(1);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class ServiceProviderIntegrationTest {
         /* with file existing, 3 nodes should be healthy */
         boolean filecreate = file.createNewFile();
         System.out.println("created file");
-        Thread.sleep(8000);
+        TestUtils.sleepForSeconds(8);
         List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(3, all.size());
@@ -108,7 +108,7 @@ public class ServiceProviderIntegrationTest {
         /* with file deleted, all 3 nodes should be unhealthy */
         delete = file.delete();
         System.out.println("deleted file");
-        Thread.sleep(8000);
+        TestUtils.sleepForSeconds(8);
         all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(0, all.size());
@@ -116,7 +116,7 @@ public class ServiceProviderIntegrationTest {
         /* with anotherFile created, the 4th node should become healthy and discoverable */
         filecreate = anotherFile.createNewFile();
         System.out.println("created anotherFile");
-        Thread.sleep(6000);
+        TestUtils.sleepForSeconds(6);
         all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(1, all.size());
@@ -127,20 +127,17 @@ public class ServiceProviderIntegrationTest {
     }
 
     private void registerService(String host, int port, int shardId, File file) throws Exception {
-        ServiceProvider<UnshardedClusterInfo> serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
+        val serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withSerializer(new Serializer<UnshardedClusterInfo>() {
-                    @Override
-                    public byte[] serialize(ServiceNode<UnshardedClusterInfo> data) {
-                        try {
-                            return objectMapper.writeValueAsBytes(data);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
+                .withSerializer(data -> {
+                    try {
+                        return objectMapper.writeValueAsBytes(data);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
                     }
+                    return null;
                 })
                 .withHostname(host)
                 .withPort(port)

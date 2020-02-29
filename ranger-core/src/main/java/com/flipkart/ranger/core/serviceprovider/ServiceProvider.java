@@ -16,13 +16,10 @@
 
 package com.flipkart.ranger.core.serviceprovider;
 
-import com.flipkart.ranger.core.model.NodeDataSource;
-import com.flipkart.ranger.core.model.Serializer;
-import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.core.model.*;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import com.flipkart.ranger.core.signals.Signal;
 import com.flipkart.ranger.core.healthcheck.HealthcheckResult;
-import com.flipkart.ranger.core.model.ServiceNode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,12 +27,12 @@ import java.util.Collections;
 import java.util.List;
 
 @Slf4j
-public class ServiceProvider<T> {
+public class ServiceProvider<T, S extends Serializer<T>> {
 
     private final Service service;
     private final ServiceNode<T> serviceNode;
-    private final Serializer<T> serializer;
-    private final NodeDataSource<T> dataSource;
+    private final S serializer;
+    private final NodeDataSink<T, S> dataSink;
     @Getter
     private final ExternalTriggeredSignal<Void> startSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
     @Getter
@@ -44,19 +41,19 @@ public class ServiceProvider<T> {
     public ServiceProvider(
             Service service,
             ServiceNode<T> serviceNode,
-            Serializer<T> serializer,
-            NodeDataSource<T> dataSource,
+            S serializer,
+            NodeDataSink<T, S> dataSink,
             List<Signal<HealthcheckResult>> signalGenerators) {
         this.service = service;
         this.serviceNode = serviceNode;
         this.serializer = serializer;
-        this.dataSource = dataSource;
+        this.dataSink = dataSink;
         signalGenerators.forEach(signalGenerator -> signalGenerator.registerConsumer(this::handleHealthUpdate));
     }
 
     public void start() {
         startSignal.trigger();
-        dataSource.updateState(serializer, serviceNode);
+        dataSink.updateState(serializer, serviceNode);
         log.debug("Set initial node data on zookeeper for {}", service.getServiceName());
     }
 
@@ -71,7 +68,7 @@ public class ServiceProvider<T> {
         }
         serviceNode.setHealthcheckStatus(result.getStatus());
         serviceNode.setLastUpdatedTimeStamp(result.getUpdatedTime());
-        dataSource.updateState(serializer, serviceNode);
+        dataSink.updateState(serializer, serviceNode);
         log.debug("Updated node with health check result: {}", result);
     }
 

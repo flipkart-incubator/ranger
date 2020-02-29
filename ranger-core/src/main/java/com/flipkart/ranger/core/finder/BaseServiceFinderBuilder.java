@@ -36,13 +36,14 @@ public abstract class BaseServiceFinderBuilder
                 T,
                 R extends ServiceRegistry<T>,
                 F extends ServiceFinder<T, R>,
-                B extends BaseServiceFinderBuilder<T, R, F, B>> {
+                B extends BaseServiceFinderBuilder<T, R, F, B, D>,
+                D extends Deserializer<T>> {
 
     protected String namespace;
     protected String serviceName;
     protected int nodeRefreshIntervalMs;
     protected boolean disablePushUpdaters;
-    protected Deserializer<T> deserializer;
+    protected D deserializer;
     protected ShardSelector<T, R> shardSelector;
     protected ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<>();
     protected final List<Signal<T>> additionalRefreshSignals = new ArrayList<>();
@@ -59,7 +60,7 @@ public abstract class BaseServiceFinderBuilder
         return (B)this;
     }
 
-    public B withDeserializer(Deserializer<T> deserializer) {
+    public B withDeserializer(D deserializer) {
         this.deserializer = deserializer;
         return (B)this;
     }
@@ -140,7 +141,7 @@ public abstract class BaseServiceFinderBuilder
         val finder = buildFinder(service, shardSelector, nodeSelector);
         val registry = finder.getServiceRegistry();
         List<Signal<T>> signalGenerators = new ArrayList<>();
-        final NodeDataSource<T> nodeDataSource = dataSource(service);
+        final NodeDataSource<T, D> nodeDataSource = dataSource(service);
 
         signalGenerators.add(new ScheduledRegistryUpdateSignal<>(service, nodeRefreshIntervalMs));
         additionalRefreshSignals.addAll(implementationSpecificRefreshSignals(service, nodeDataSource));
@@ -149,7 +150,7 @@ public abstract class BaseServiceFinderBuilder
             log.debug("Added additional signal handlers");
         }
 
-        val updater = new ServiceRegistryUpdater<T>(registry, nodeDataSource, signalGenerators, deserializer);
+        val updater = new ServiceRegistryUpdater<T, D>(registry, nodeDataSource, signalGenerators, deserializer);
         finder.getStartSignal()
                 .registerConsumers(startSignalHandlers)
                 .registerConsumer(x -> nodeDataSource.start())
@@ -164,11 +165,11 @@ public abstract class BaseServiceFinderBuilder
         return finder;
     }
 
-    protected List<Signal<T>> implementationSpecificRefreshSignals(Service service, NodeDataSource<T> nodeDataSource) {
+    protected List<Signal<T>> implementationSpecificRefreshSignals(Service service, NodeDataSource<T, D> nodeDataSource) {
         return Collections.emptyList();
     }
 
-    protected abstract NodeDataSource<T> dataSource(Service service);
+    protected abstract NodeDataSource<T, D> dataSource(Service service);
 
     protected abstract F buildFinder(
             Service service,

@@ -6,16 +6,10 @@ import java.util.Optional;
 /**
  *
  */
-public interface NodeDataSource<T> {
-    void start();
+public interface NodeDataSource<T, D extends Deserializer<T>> extends NodeDataStoreConnector<T> {
+    Optional<List<ServiceNode<T>>> refresh(D deserializer);
 
-    void ensureConnected();
-
-    void stop();
-
-    Optional<List<ServiceNode<T>>> refresh(Deserializer<T> deserializer);
-
-    boolean isActive();
-
-    void updateState(Serializer<T> serializer, ServiceNode<T> serviceNode);
+    default long healthcheckZombieCheckThresholdTime(Service service) {
+        return System.currentTimeMillis() - 60000; //1 Minute
+    }
 }

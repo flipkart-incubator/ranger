@@ -22,10 +22,7 @@ import com.flipkart.ranger.core.healthcheck.HealthcheckResult;
 import com.flipkart.ranger.core.healthservice.HealthService;
 import com.flipkart.ranger.core.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
-import com.flipkart.ranger.core.model.NodeDataSource;
-import com.flipkart.ranger.core.model.Serializer;
-import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.model.*;
 import com.flipkart.ranger.core.signals.ScheduledSignal;
 import com.flipkart.ranger.core.signals.Signal;
 import com.google.common.base.Preconditions;
@@ -41,18 +38,18 @@ import java.util.function.Consumer;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProviderBuilder<T, B>> {
+public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProviderBuilder<T, B, S>, S extends Serializer<T>> {
 
     protected String namespace;
     protected String serviceName;
-    protected Serializer<T> serializer;
+    protected S serializer;
     protected String hostname;
     protected int port;
     protected T nodeData;
     protected int healthUpdateIntervalMs;
     protected int staleUpdateThresholdMs;
     protected List<Healthcheck> healthchecks = Lists.newArrayList();
-    protected NodeDataSource<T> nodeDataSource = null;
+    protected NodeDataSink<T, S> nodeDataSource = null;
     protected final List<Consumer<Void>> startSignalHandlers = Lists.newArrayList();
     protected final List<Consumer<Void>> stopSignalHandlers = Lists.newArrayList();
     protected final List<Signal<HealthcheckResult>> extraRefreshSignals = Lists.newArrayList();
@@ -70,8 +67,8 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
         return (B)this;
     }
 
-    public B withSerializer(Serializer<T> deserializer) {
-        this.serializer = deserializer;
+    public B withSerializer(S serializer) {
+        this.serializer = serializer;
         return (B)this;
     }
 
@@ -119,7 +116,7 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
         return (B)this;
     }
 
-    public B withNodeDataSource(NodeDataSource<T> nodeDataSource) {
+    public B withNodeDataSource(NodeDataSink<T, S> nodeDataSource) {
         this.nodeDataSource = nodeDataSource;
         return (B)this;
     }
@@ -154,7 +151,7 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
         return (B)this;
     }
 
-    protected final ServiceProvider<T> buildProvider() {
+    protected final ServiceProvider<T, S> buildProvider() {
         Preconditions.checkNotNull(namespace);
         Preconditions.checkNotNull(serviceName);
         Preconditions.checkNotNull(serializer);
@@ -186,7 +183,7 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
                 new HealthChecker(healthchecks, staleUpdateThresholdMs),
                 Collections.emptyList(),
                 healthUpdateIntervalMs);
-        final NodeDataSource<T> usableNodeDataSource = dataSource(service);
+        final NodeDataSink<T,S> usableNodeDataSource = dataSink(service);
         final List<HealthService> healthServices = Collections.singletonList(serviceHealthAggregator);
 
         final List<Signal<HealthcheckResult>> signalGenerators
@@ -194,8 +191,9 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
                 .add(healthcheckUpdateSignalGenerator)
                 .addAll(extraRefreshSignals)
                 .build();
-        final ServiceProvider<T> serviceProvider = new ServiceProvider<>(service,
+        final ServiceProvider<T, S> serviceProvider = new ServiceProvider<>(service,
                                                                          new ServiceNode<>(hostname, port, nodeData),
+                                                                         serializer,
                                                                          usableNodeDataSource,
                                                                          signalGenerators);
         final Signal<Void> startSignal = serviceProvider.getStartSignal();
@@ -215,7 +213,7 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
         return serviceProvider;
     }
 
-    public abstract ServiceProvider<T> build();
+    public abstract ServiceProvider<T,S> build();
 
-    protected abstract NodeDataSource<T> dataSource(final Service service);
+    protected abstract NodeDataSink<T,S> dataSink(final Service service);
 }

@@ -19,14 +19,13 @@ package com.flipkart.ranger.zookeeper.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
-import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
-import com.flipkart.ranger.core.model.Deserializer;
-import com.flipkart.ranger.core.model.Serializer;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
+import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
+import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
@@ -46,7 +45,7 @@ public class ServiceProviderExtCuratorTest {
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
-    private List<ServiceProvider<TestShardInfo>> serviceProviders = Lists.newArrayList();
+    private List<ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>>> serviceProviders = Lists.newArrayList();
     private CuratorFramework curatorFramework;
 
     @Before
@@ -66,7 +65,7 @@ public class ServiceProviderExtCuratorTest {
 
     @After
     public void stopTestCluster() throws Exception {
-        for(ServiceProvider<TestShardInfo> serviceProvider : serviceProviders) {
+        for(ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider : serviceProviders) {
             serviceProvider.stop();
         }
         curatorFramework.close();
@@ -117,18 +116,15 @@ public class ServiceProviderExtCuratorTest {
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withDeserializer(new Deserializer<TestShardInfo>() {
-                    @Override
-                    public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<TestShardInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
+                .withDeserializer(data -> {
+                    try {
+                        return objectMapper.readValue(data,
+                                new TypeReference<ServiceNode<TestShardInfo>>() {
+                                });
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    return null;
                 })
                 .build();
         serviceFinder.start();
@@ -158,21 +154,18 @@ public class ServiceProviderExtCuratorTest {
         //while (true);
     }
 
-    private void registerService(String host, int port, int shardId) throws Exception {
-        final ServiceProvider<TestShardInfo> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
+    private void registerService(String host, int port, int shardId) {
+        final ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withSerializer(new Serializer<TestShardInfo>() {
-                    @Override
-                    public byte[] serialize(ServiceNode<TestShardInfo> data) {
-                        try {
-                            return objectMapper.writeValueAsBytes(data);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
+                .withSerializer(data -> {
+                    try {
+                        return objectMapper.writeValueAsBytes(data);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
                     }
+                    return null;
                 })
                 .withHostname(host)
                 .withPort(port)

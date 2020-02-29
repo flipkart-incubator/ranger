@@ -10,6 +10,7 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import com.flipkart.ranger.core.util.Exceptions;
+import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.zookeeper.zk.ZkServiceDataSource;
 import com.flipkart.ranger.zookeeper.zk.ZkShardedServiceFinderFactory;
@@ -103,7 +104,7 @@ public class ServiceHubTest {
         refreshProviderSignal.trigger();
         refreshHubSignal.trigger();
 
-        Thread.sleep(3_000);
+        TestUtils.sleepForSeconds(3);
         val node = hub.finder(new Service(NAMESPACE, "s1"))
                 .map(finder -> finder.get(new TestShardInfo("prod")))
                 .orElse(null);

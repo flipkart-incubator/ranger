@@ -5,6 +5,7 @@ import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinderBuilder
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.Signal;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
@@ -18,7 +19,7 @@ import java.util.List;
  *
  */
 @Slf4j
-public class ZkSimpleShardedServiceFinderBuilder<T> extends SimpleShardedServiceFinderBuilder<T, ZkSimpleShardedServiceFinderBuilder<T>> {
+public class ZkSimpleShardedServiceFinderBuilder<T> extends SimpleShardedServiceFinderBuilder<T, ZkSimpleShardedServiceFinderBuilder<T>, ZkNodeDataDeserializer<T>> {
     protected CuratorFramework curatorFramework;
     protected String connectionString;
 
@@ -49,13 +50,12 @@ public class ZkSimpleShardedServiceFinderBuilder<T> extends SimpleShardedService
     }
 
     @Override
-    protected NodeDataSource<T> dataSource(
-            Service service) {
+    protected NodeDataSource<T, ZkNodeDataDeserializer<T>> dataSource(Service service) {
         return new ZkNodeDataSource<>(service, curatorFramework);
     }
 
     @Override
-    protected List<Signal<T>> implementationSpecificRefreshSignals(final Service service, final NodeDataSource<T> nodeDataSource) {
+    protected List<Signal<T>> implementationSpecificRefreshSignals(final Service service, final NodeDataSource<T, ZkNodeDataDeserializer<T>> nodeDataSource) {
         if (!disablePushUpdaters) {
             return Collections.singletonList(
                     new ZkWatcherRegistryUpdateSignal<>(service, nodeDataSource, curatorFramework));

@@ -16,7 +16,5 @@
 
 package com.flipkart.ranger.core.model;
 
-@FunctionalInterface
 public interface Deserializer<T> {
-    ServiceNode<T> deserialize(final byte[] data);
 }

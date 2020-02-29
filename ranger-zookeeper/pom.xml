@@ -36,7 +36,12 @@
             <version>${curator.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.flipkart.ranger</groupId>
+            <artifactId>ranger-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+        </dependency>
     </dependencies>
 
 </project>

@@ -16,7 +16,6 @@
 
 package com.flipkart.ranger.core.model;
 
-@FunctionalInterface
 public interface Serializer<T> {
-    byte[] serialize(final ServiceNode<T> data);
+//    byte[] serialize(final ServiceNode<T> data);
 }

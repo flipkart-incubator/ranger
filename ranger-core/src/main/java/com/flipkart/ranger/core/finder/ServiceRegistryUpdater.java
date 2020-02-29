@@ -38,11 +38,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
-public class ServiceRegistryUpdater<T> {
+public class ServiceRegistryUpdater<T, D extends Deserializer<T>> {
 
     private final ServiceRegistry<T> serviceRegistry;
-    private final NodeDataSource<T> nodeDataSource;
-    private final Deserializer<T> deserializer;
+    private final NodeDataSource<T,D> nodeDataSource;
+    private final D deserializer;
 
     private Lock checkLock = new ReentrantLock();
     private Condition checkCondition = checkLock.newCondition();
@@ -54,8 +54,9 @@ public class ServiceRegistryUpdater<T> {
 
     public ServiceRegistryUpdater(
             ServiceRegistry<T> serviceRegistry,
-            NodeDataSource<T> nodeDataSource,
-            List<Signal<T>> signalGenerators, Deserializer<T> deserializer) {
+            NodeDataSource<T,D> nodeDataSource,
+            List<Signal<T>> signalGenerators,
+            D deserializer) {
         this.serviceRegistry = serviceRegistry;
         this.nodeDataSource = nodeDataSource;
         this.deserializer = deserializer;

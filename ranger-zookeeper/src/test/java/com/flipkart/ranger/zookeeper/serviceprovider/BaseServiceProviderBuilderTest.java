@@ -18,12 +18,9 @@ package com.flipkart.ranger.zookeeper.serviceprovider;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
-import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterInfo;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
-import com.flipkart.ranger.core.model.Serializer;
-import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
+import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
+import lombok.val;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
@@ -60,20 +57,17 @@ public class BaseServiceProviderBuilderTest {
         final int port = 9000;
         Exception exception = null;
         try {
-            ServiceProvider<UnshardedClusterInfo> serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
+            val serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
                     .withConnectionString(testingCluster.getConnectString())
                     .withNamespace("test")
                     .withServiceName("test-service")
-                    .withSerializer(new Serializer<UnshardedClusterInfo>() {
-                        @Override
-                        public byte[] serialize(ServiceNode<UnshardedClusterInfo> data) {
-                            try {
-                                return objectMapper.writeValueAsBytes(data);
-                            } catch (JsonProcessingException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
+                    .withSerializer(data -> {
+                        try {
+                            return objectMapper.writeValueAsBytes(data);
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
                         }
+                        return null;
                     })
                     .withHostname(host)
                     .withPort(port)
@@ -84,20 +78,17 @@ public class BaseServiceProviderBuilderTest {
         }
         Assert.assertTrue(exception instanceof IllegalArgumentException);
 
-        ServiceProvider<UnshardedClusterInfo> serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
+        val serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withSerializer(new Serializer<UnshardedClusterInfo>() {
-                    @Override
-                    public byte[] serialize(ServiceNode<UnshardedClusterInfo> data) {
-                        try {
-                            return objectMapper.writeValueAsBytes(data);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
+                .withSerializer(data -> {
+                    try {
+                        return objectMapper.writeValueAsBytes(data);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
                     }
+                    return null;
                 })
                 .withHostname(host)
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())

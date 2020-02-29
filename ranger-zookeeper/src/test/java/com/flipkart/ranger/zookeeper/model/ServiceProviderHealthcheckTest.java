@@ -19,15 +19,15 @@ package com.flipkart.ranger.zookeeper.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
-import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthcheck;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
-import com.flipkart.ranger.core.model.Deserializer;
-import com.flipkart.ranger.core.model.Serializer;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
+import com.flipkart.ranger.core.utils.TestUtils;
+import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
+import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.google.common.collect.Maps;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
@@ -103,18 +103,15 @@ public class ServiceProviderHealthcheckTest {
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withDeserializer(new Deserializer<TestShardInfo>() {
-                    @Override
-                    public ServiceNode<TestShardInfo> deserialize(byte[] data) {
-                        try {
-                            return objectMapper.readValue(data,
-                                    new TypeReference<ServiceNode<TestShardInfo>>() {
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
+                .withDeserializer(data -> {
+                    try {
+                        return objectMapper.readValue(data,
+                                new TypeReference<ServiceNode<TestShardInfo>>() {
+                                });
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    return null;
                 })
                 .withNodeRefreshIntervalMs(1000)
                 .build();
@@ -124,7 +121,7 @@ public class ServiceProviderHealthcheckTest {
         Assert.assertEquals("localhost-1", node.getHost());
         TestServiceProvider testServiceProvider = serviceProviders.get(node.getHost());
         testServiceProvider.oor();
-        Thread.sleep(6000);
+        TestUtils.sleepForSeconds(6);
         Assert.assertNull(serviceFinder.get(new TestShardInfo(1)));
         serviceFinder.stop();
     }
@@ -172,20 +169,17 @@ public class ServiceProviderHealthcheckTest {
         }
 
         public void start() throws Exception {
-            final ServiceProvider<TestShardInfo> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
+            final ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
                     .withConnectionString(connectionString)
                     .withNamespace("test")
                     .withServiceName("test-service")
-                    .withSerializer(new Serializer<TestShardInfo>() {
-                        @Override
-                        public byte[] serialize(ServiceNode<TestShardInfo> data) {
-                            try {
-                                return objectMapper.writeValueAsBytes(data);
-                            } catch (JsonProcessingException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
+                    .withSerializer(data -> {
+                        try {
+                            return objectMapper.writeValueAsBytes(data);
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
                         }
+                        return null;
                     })
                     .withHostname(host)
                     .withPort(port)

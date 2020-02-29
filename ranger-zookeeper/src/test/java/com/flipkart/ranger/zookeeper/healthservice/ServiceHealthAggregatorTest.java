@@ -21,6 +21,7 @@ import com.flipkart.ranger.core.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.Monitor;
+import com.flipkart.ranger.core.utils.TestUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,7 +49,7 @@ public class ServiceHealthAggregatorTest {
         });
 
         serviceHealthAggregator.start();
-        Thread.sleep(1000);
+        TestUtils.sleepForSeconds(1);
     }
 
     @After
@@ -62,7 +63,7 @@ public class ServiceHealthAggregatorTest {
         testMonitor.run();
         testMonitor.setThreadSleep(2000);
 
-        Thread.sleep(4000);
+        TestUtils.sleepForSeconds(4);
 
         /* in the TestMonitor, thread was sleeping for 2 seconds, */
         /* so its state is supposed to be stale (>1 second) and service has to be unhealthy */
@@ -70,7 +71,7 @@ public class ServiceHealthAggregatorTest {
 
 
         testMonitor.setThreadSleep(10);
-        Thread.sleep(4000);
+        TestUtils.sleepForSeconds(4);
 
         /* in the TestMonitor, thread is sleeping only for 10 milliseconds, */
         /* so its state is supposed to be NOT stale (>1 second) and service has to be healthy */
