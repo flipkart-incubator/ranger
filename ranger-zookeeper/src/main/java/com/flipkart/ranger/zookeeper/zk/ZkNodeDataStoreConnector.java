@@ -5,6 +5,8 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.zookeeper.util.PathBuilder;
 import com.github.rholder.retry.*;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
@@ -19,9 +21,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class ZkNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> {
 
+    @Getter(AccessLevel.PROTECTED)
     protected final Service service;
+    @Getter(AccessLevel.PROTECTED)
     protected final CuratorFramework curatorFramework;
-    protected final Retryer<Boolean> discoveryRetrier = RetryerBuilder.<Boolean>newBuilder()
+
+    private final AtomicBoolean started = new AtomicBoolean(false);
+    private final AtomicBoolean stopped = new AtomicBoolean(false);
+
+    private final Retryer<Boolean> discoveryRetrier = RetryerBuilder.<Boolean>newBuilder()
             .retryIfException(e -> IllegalStateException.class.isAssignableFrom(e.getClass()))
             .retryIfResult(aBoolean -> false)
             .withAttemptTimeLimiter(AttemptTimeLimiters.noTimeLimit())
@@ -34,8 +42,6 @@ public class ZkNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> {
                 }
             })
             .build();
-    protected final AtomicBoolean started = new AtomicBoolean(false);
-    protected final AtomicBoolean stopped = new AtomicBoolean(false);
 
     protected ZkNodeDataStoreConnector(
             final Service service,
@@ -99,5 +105,13 @@ public class ZkNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> {
     public boolean isActive() {
         return curatorFramework != null
                 && (curatorFramework.getState() == CuratorFrameworkState.STARTED);
+    }
+
+    protected boolean isStarted() {
+        return started.get();
+    }
+
+    protected boolean isStopped() {
+        return stopped.get();
     }
 }

@@ -25,7 +25,7 @@ public class ZkNodeDataSink<T, S extends ZkNodeDataSerializer<T>> extends ZkNode
 
     @Override
     public void updateState(S serializer, ServiceNode<T> serviceNode) {
-        if (stopped.get()) {
+        if (isStopped()) {
             log.warn("Node has been stopped already for service: {}. No update will be possible.",
                      service.getServiceName());
             return;

@@ -33,12 +33,12 @@ public class ZkNodeDataSource<T, D extends ZkNodeDataDeserializer<T>> extends Zk
     }
 
     private Optional<List<ServiceNode<T>>> checkForUpdateOnZookeeper(D deserializer) {
-        if (!started.get()) {
+        if (!isStarted()) {
             log.warn("Data source is not yet started for service: {}. No nodes will be returned.",
                      service.getServiceName());
             return Optional.empty();
         }
-        if (stopped.get()) {
+        if (isStopped()) {
             log.warn("Data source is  stopped already for service: {}. No nodes will be returned.",
                      service.getServiceName());
             return Optional.empty();
@@ -58,25 +58,8 @@ public class ZkNodeDataSource<T, D extends ZkNodeDataDeserializer<T>> extends Zk
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());
             log.debug("Found {} nodes for [{}]", children.size(), serviceName);
             for (String child : children) {
-                final String path = String.format("%s/%s", parentPath, child);
-                boolean hasChild = null != curatorFramework.checkExists().forPath(path);
-                byte[] data = null;
-                boolean skipNode = false;
-                try {
-                    data = hasChild
-                           ? curatorFramework.getData().forPath(path)
-                           : null;
-                }
-                catch (KeeperException e) {
-                    log.error("Could not get data for node: " + path, e);
-                    skipNode = true;
-                }
-                if (null == data) {
-                    log.warn("No data present for node: {} of [{}]", path, serviceName);
-                    skipNode = true;
-                }
-                if (skipNode) {
-                    log.debug("Skipping node: {}", path);
+                byte[] data = readChild(parentPath, child).orElse(null);
+                if (data == null) {
                     continue;
                 }
                 final ServiceNode<T> node = deserializer.deserialize(data);
@@ -90,6 +73,21 @@ public class ZkNodeDataSource<T, D extends ZkNodeDataDeserializer<T>> extends Zk
             log.error("Error getting service data from zookeeper: ", e);
         }
         return Optional.empty();
+    }
+
+    private Optional<byte[]> readChild(String parentPath, String child) throws Exception {
+        final String path = String.format("%s/%s", parentPath, child);
+        try {
+            return Optional.ofNullable(curatorFramework.getData().forPath(path));
+        }
+        catch (KeeperException.NoNodeException e) {
+            log.warn("Node not found for path {}", path);
+            return Optional.empty();
+        }
+        catch (KeeperException e) {
+            log.error("Could not get data for node: " + path, e);
+            return Optional.empty();
+        }
     }
 
 }
