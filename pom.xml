@@ -12,6 +12,7 @@
         <module>ranger-core</module>
         <module>ranger-zookeeper</module>
         <module>ranger-http</module>
+        <module>ranger-server</module>
     </modules>
 
     <distributionManagement>

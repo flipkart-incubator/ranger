@@ -65,7 +65,6 @@ public class HttpNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> 
 
     @Override
     public boolean isActive() {
-//        return httpClient.connectionPool().connectionCount() > 0;
         return true;
     }
 }
