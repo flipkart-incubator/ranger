@@ -6,8 +6,14 @@
 
     <groupId>com.flipkart.ranger</groupId>
     <artifactId>ranger</artifactId>
-    <packaging>jar</packaging>
-    <version>0.6.3</version>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>ranger-core</module>
+        <module>ranger-zookeeper</module>
+        <module>ranger-http</module>
+        <module>ranger-server</module>
+    </modules>
 
     <distributionManagement>
         <repository>
@@ -50,38 +56,36 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <guava.version>26.0-jre</guava.version>
         <curator.version>4.0.1</curator.version>
-        <jackson.version>2.9.5</jackson.version>
+        <jackson.version>2.10.1</jackson.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <apache.httpclient.version>4.5.6</apache.httpclient.version>
 
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <java.version>1.8</java.version>
+        <lombok.version>1.18.4</lombok.version>
+
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+            <version>3.0.1</version>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-
-        <!--Curator-->
         <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-framework</artifactId>
-            <version>${curator.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-recipes</artifactId>
-            <version>${curator.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-test</artifactId>
-            <version>${curator.version}</version>
-            <scope>test</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.26</version>
         </dependency>
 
         <dependency>
@@ -108,9 +112,10 @@
             <version>2.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${apache.httpclient.version}</version>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.0.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
