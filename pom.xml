@@ -50,7 +50,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <guava.version>26.0-jre</guava.version>
         <curator.version>4.0.1</curator.version>
-        <jackson.version>2.9.5</jackson.version>
+        <jackson.version>2.9.10.4</jackson.version>
         <slf4j.version>1.7.25</slf4j.version>
         <apache.httpclient.version>4.5.6</apache.httpclient.version>
 
