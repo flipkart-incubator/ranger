@@ -160,7 +160,7 @@ public class ServiceRegistryUpdater<T> implements Callable<Void> {
 
     private void updateRegistry() {
         List<ServiceNode<T>> nodes = checkForUpdateOnZookeeper().orElse(null);
-        if(null != nodes) {
+        if(null != nodes && !nodes.isEmpty()) {
             logger.debug("Updating nodelist of size: {} for [{}]", nodes.size(),
                     serviceRegistry.getService().getServiceName());
             serviceRegistry.nodes(nodes);
