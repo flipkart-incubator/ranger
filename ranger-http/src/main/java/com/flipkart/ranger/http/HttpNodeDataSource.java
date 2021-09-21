@@ -9,24 +9,20 @@ import com.flipkart.ranger.core.util.FinderUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
  */
 @Slf4j
 public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> extends HttpNodeDataStoreConnector<T> implements NodeDataSource<T, D> {
-
-    private final AtomicBoolean firstCall = new AtomicBoolean(false);
-
     public HttpNodeDataSource(
             Service service,
             final HttpClientConfig config,
@@ -37,7 +33,7 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
 
     @Override
     public Optional<List<ServiceNode<T>>> refresh(D deserializer) {
-        final HttpUrl httpUrl = new HttpUrl.Builder()
+        val httpUrl = new HttpUrl.Builder()
                 .scheme(config.isSecure()
                         ? "https"
                         : "http")
@@ -47,32 +43,23 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                       : config.getPort())
                 .encodedPath(String.format("/ranger/nodes/v1/%s/%s", service.getNamespace(), service.getServiceName()))
                 .build();
-
-        try {
-            final Response response = httpClient.newCall(new Request.Builder()
-                                                                 .url(httpUrl)
-                                                                 .get()
-                                                                 .build())
-                    .execute();
+        val request = new Request.Builder()
+                .url(httpUrl)
+                .get()
+                .build();
+        try (val response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                final ResponseBody body = response.body();
-                if (null == body) {
-                    log.warn("HTTP call to {} returned empty body", httpUrl.toString());
-                }
-                else {
-                    final byte[] bytes;
-                    try {
-                        bytes = body.bytes();
+                try (final ResponseBody body = response.body()) {
+                    if (null == body) {
+                        log.warn("HTTP call to {} returned empty body", httpUrl);
                     }
-                    finally {
-                        if(null != body) {
-                            body.close();
-                        }
+                    else {
+                        final byte[] bytes = body.bytes();
+                        return Optional.of(FinderUtils.filterValidNodes(
+                                service,
+                                deserializer.deserialize(bytes),
+                                healthcheckZombieCheckThresholdTime(service)));
                     }
-                    return Optional.of(FinderUtils.filterValidNodes(
-                            service,
-                            deserializer.deserialize(bytes),
-                            healthcheckZombieCheckThresholdTime(service)));
                 }
             }
             else {
@@ -80,9 +67,10 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
             }
         }
         catch (IOException e) {
-            Exceptions.illegalState(e);
+            Exceptions.illegalState("Error fetching data from server: " + httpUrl, e);
         }
-        throw new IllegalStateException("No data received from server");
+        log.error("No data returned from server: " + httpUrl);
+        return Optional.empty();
     }
 
     @Override

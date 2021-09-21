@@ -6,7 +6,6 @@ import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import com.flipkart.ranger.core.signals.ScheduledSignal;
 import com.flipkart.ranger.core.signals.Signal;
-import com.flipkart.ranger.core.util.Exceptions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -111,7 +110,8 @@ public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
             }
             catch (InterruptedException e) {
                 log.info("Updater thread interrupted");
-                Exceptions.illegalState(e);
+                Thread.currentThread().interrupt();
+                break;
             }
             finally {
                 updateAvailable = false;

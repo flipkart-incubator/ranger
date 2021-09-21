@@ -73,14 +73,14 @@ public class ServiceRegistryUpdater<T, D extends Deserializer<T>> {
         try {
             RetryerBuilder.<Boolean>newBuilder()
                     .retryIfResult(r -> null == r || !r)
-                .build()
-            .call(initialRefreshCompleted::get);
+                    .build()
+                    .call(initialRefreshCompleted::get);
         }
         catch (Exception e) {
             Exceptions.illegalState("Could not perform initial state for service: " + serviceName, e);
         }
         log.info("Initial node list updated for service: {} in {}ms",
-                    serviceName, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+                 serviceName, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     public void stop() {
@@ -114,6 +114,7 @@ public class ServiceRegistryUpdater<T, D extends Deserializer<T>> {
             catch (InterruptedException e) {
                 log.info("Updater thread interrupted");
                 Thread.currentThread().interrupt();
+                return null;
             }
             catch (Exception e) {
                 log.error("Registry update failed for service: " + serviceRegistry.getService().name(), e);
@@ -141,8 +142,8 @@ public class ServiceRegistryUpdater<T, D extends Deserializer<T>> {
             initialRefreshCompleted.compareAndSet(false, true);
         }
         else {
-            log.warn("Null list returned from node data source. We are in a weird state. Keeping old list for {}",
-                        serviceRegistry.getService().getServiceName());
+            log.warn("Empty list returned from node data source. We are in a weird state. Keeping old list for {}",
+                     serviceRegistry.getService().getServiceName());
         }
     }
 

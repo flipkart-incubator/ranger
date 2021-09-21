@@ -137,11 +137,11 @@ public abstract class BaseServiceFinderBuilder
                      serviceName, nodeRefreshIntervalMs);
             nodeRefreshIntervalMs = 1000;
         }
-        Service service = new Service(namespace, serviceName);
+        val service = new Service(namespace, serviceName);
         val finder = buildFinder(service, shardSelector, nodeSelector);
         val registry = finder.getServiceRegistry();
-        List<Signal<T>> signalGenerators = new ArrayList<>();
-        final NodeDataSource<T, D> nodeDataSource = dataSource(service);
+        val signalGenerators = new ArrayList<Signal<T>>();
+        val nodeDataSource = dataSource(service);
 
         signalGenerators.add(new ScheduledRegistryUpdateSignal<>(service, nodeRefreshIntervalMs));
         additionalRefreshSignals.addAll(implementationSpecificRefreshSignals(service, nodeDataSource));

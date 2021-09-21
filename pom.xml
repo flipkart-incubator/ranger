@@ -54,15 +54,18 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <guava.version>26.0-jre</guava.version>
+        <guava.version>30.1.1-jre</guava.version>
         <curator.version>4.0.1</curator.version>
-        <jackson.version>2.10.1</jackson.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <jackson.version>2.12.5</jackson.version>
+        <slf4j.version>1.7.32</slf4j.version>
 
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <java.version>1.8</java.version>
-        <lombok.version>1.18.4</lombok.version>
+        <lombok.version>1.18.20</lombok.version>
 
+        <junit.version>4.13.2</junit.version>
+        <awaitility.version>4.1.0</awaitility.version>
+        <guava-retrying.version>2.0.0</guava-retrying.version>
     </properties>
 
     <dependencies>
@@ -75,7 +78,7 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.1u2</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -85,7 +88,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.26</version>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <dependency>
@@ -103,18 +106,18 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${junit.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.rholder</groupId>
             <artifactId>guava-retrying</artifactId>
-            <version>2.0.0</version>
+            <version>${guava-retrying.version}</version>
         </dependency>
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>4.0.2</version>
+            <version>${awaitility.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -152,6 +155,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -164,6 +168,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
