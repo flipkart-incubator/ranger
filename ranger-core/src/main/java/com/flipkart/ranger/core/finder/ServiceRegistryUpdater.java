@@ -113,7 +113,7 @@ public class ServiceRegistryUpdater<T, D extends Deserializer<T>> {
             }
             catch (InterruptedException e) {
                 log.info("Updater thread interrupted");
-                Exceptions.illegalState(e);
+                Thread.currentThread().interrupt();
             }
             catch (Exception e) {
                 log.error("Registry update failed for service: " + serviceRegistry.getService().name(), e);
