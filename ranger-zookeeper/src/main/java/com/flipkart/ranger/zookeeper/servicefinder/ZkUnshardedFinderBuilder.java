@@ -1,4 +1,4 @@
-package com.flipkart.ranger.zookeeper.zk;
+package com.flipkart.ranger.zookeeper.servicefinder;
 
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterFinder;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterInfo;
@@ -6,6 +6,7 @@ import com.flipkart.ranger.core.finder.unsharded.UnshardedFinderBuilder;
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.Signal;
+import com.flipkart.ranger.zookeeper.common.ZkWatcherRegistryUpdateSignal;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;

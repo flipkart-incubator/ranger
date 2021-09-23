@@ -1,4 +1,4 @@
-package com.flipkart.ranger.zookeeper.zk;
+package com.flipkart.ranger.zookeeper.serviceprovider;
 
 import com.flipkart.ranger.core.model.NodeDataSink;
 import com.flipkart.ranger.core.model.Service;

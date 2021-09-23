@@ -1,4 +1,4 @@
-package com.flipkart.ranger.http;
+package com.flipkart.ranger.http.servicefinder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.model.NodeDataSource;
@@ -6,6 +6,7 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.core.util.FinderUtils;
+import com.flipkart.ranger.http.common.HttpNodeDataStoreConnector;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import lombok.extern.slf4j.Slf4j;

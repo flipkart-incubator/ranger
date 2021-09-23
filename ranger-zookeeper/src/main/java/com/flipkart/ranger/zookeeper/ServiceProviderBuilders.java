@@ -16,7 +16,7 @@
 
 package com.flipkart.ranger.zookeeper;
 
-import com.flipkart.ranger.zookeeper.zk.ZkServiceProviderBuilder;
+import com.flipkart.ranger.zookeeper.serviceprovider.ZkServiceProviderBuilder;
 import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterInfo;
 
 public class ServiceProviderBuilders {

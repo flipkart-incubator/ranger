@@ -10,6 +10,7 @@ import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
+import com.flipkart.ranger.http.servicefinder.HttpShardedServiceFinderBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import lombok.Data;
 import lombok.val;

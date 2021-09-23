@@ -1,4 +1,4 @@
-package com.flipkart.ranger.zookeeper.zk;
+package com.flipkart.ranger.zookeeper.servicefinder;
 
 import com.flipkart.ranger.core.finder.sharded.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinder;

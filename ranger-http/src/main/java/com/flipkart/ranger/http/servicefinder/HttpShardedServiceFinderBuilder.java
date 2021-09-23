@@ -1,4 +1,4 @@
-package com.flipkart.ranger.http;
+package com.flipkart.ranger.http.servicefinder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinder;

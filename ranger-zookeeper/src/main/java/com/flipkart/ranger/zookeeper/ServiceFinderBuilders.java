@@ -16,8 +16,8 @@
 
 package com.flipkart.ranger.zookeeper;
 
-import com.flipkart.ranger.zookeeper.zk.ZkSimpleShardedServiceFinderBuilder;
-import com.flipkart.ranger.zookeeper.zk.ZkUnshardedFinderBuilder;
+import com.flipkart.ranger.zookeeper.servicefinder.ZkSimpleShardedServiceFinderBuilder;
+import com.flipkart.ranger.zookeeper.servicefinder.ZkUnshardedFinderBuilder;
 
 public class ServiceFinderBuilders {
     
