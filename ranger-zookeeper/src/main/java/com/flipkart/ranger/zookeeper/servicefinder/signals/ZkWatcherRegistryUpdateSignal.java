@@ -1,4 +1,4 @@
-package com.flipkart.ranger.zookeeper.common;
+package com.flipkart.ranger.zookeeper.servicefinder.signals;
 
 import com.flipkart.ranger.core.model.NodeDataStoreConnector;
 import com.flipkart.ranger.core.model.Service;

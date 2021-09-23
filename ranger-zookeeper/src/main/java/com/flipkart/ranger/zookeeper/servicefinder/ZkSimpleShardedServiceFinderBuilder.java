@@ -5,8 +5,8 @@ import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinderBuilder
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.Signal;
-import com.flipkart.ranger.zookeeper.common.ZkWatcherRegistryUpdateSignal;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
+import com.flipkart.ranger.zookeeper.servicefinder.signals.ZkWatcherRegistryUpdateSignal;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
