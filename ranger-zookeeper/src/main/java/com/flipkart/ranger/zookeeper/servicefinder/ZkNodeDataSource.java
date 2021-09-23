@@ -4,7 +4,7 @@ import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.util.FinderUtils;
-import com.flipkart.ranger.zookeeper.servicefinderhub.ZkNodeDataStoreConnector;
+import com.flipkart.ranger.zookeeper.common.ZkNodeDataStoreConnector;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.util.PathBuilder;
 import com.google.common.base.Preconditions;

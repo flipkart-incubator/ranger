@@ -21,7 +21,6 @@ public class HttpNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> 
     protected final HttpClientConfig config;
     protected final OkHttpClient httpClient;
     protected final ObjectMapper mapper;
-    protected final AtomicBoolean firstCall = new AtomicBoolean(false);
 
     public HttpNodeDataStoreConnector(
             Service service,

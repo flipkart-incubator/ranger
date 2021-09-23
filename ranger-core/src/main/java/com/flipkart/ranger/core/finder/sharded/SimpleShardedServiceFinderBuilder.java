@@ -36,5 +36,4 @@ public abstract class SimpleShardedServiceFinderBuilder<T, B extends SimpleShard
         final MapBasedServiceRegistry<T> serviceRegistry = new MapBasedServiceRegistry<>(service);
         return new SimpleShardedServiceFinder<>(serviceRegistry, shardSelector, nodeSelector);
     }
-
 }

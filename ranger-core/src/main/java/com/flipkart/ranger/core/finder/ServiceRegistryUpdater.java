@@ -134,11 +134,11 @@ public class ServiceRegistryUpdater<T, D extends Deserializer<T>> {
                         serviceRegistry.getService().getServiceName());
             return;
         }
-        val nodes = nodeDataSource.refresh(deserializer).orElse(null);
-        if (null != nodes) {
-            log.debug("Updating nodelist of size: {} for [{}]", nodes.size(),
+        val nodeList = nodeDataSource.refresh(deserializer);
+        if (nodeList.isPresent()) {
+            log.debug("Updating nodelist of size: {} for [{}]", nodeList.get().size(),
                          serviceRegistry.getService().getServiceName());
-            serviceRegistry.updateNodes(nodes);
+            serviceRegistry.updateNodes(nodeList.get());
             initialRefreshCompleted.compareAndSet(false, true);
         }
         else {

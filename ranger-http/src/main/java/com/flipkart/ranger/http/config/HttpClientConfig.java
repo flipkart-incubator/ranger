@@ -15,5 +15,4 @@ public class HttpClientConfig {
     private long connectionTimeoutMs;
     private long operationTimeoutMs;
     private String nodesRequestPath;
-
 }

@@ -29,8 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MapBasedServiceRegistry<T> extends ServiceRegistry<T> {
     private AtomicReference<ListMultimap<T, ServiceNode<T>>> nodes = new AtomicReference<>();
 
-    public MapBasedServiceRegistry(
-            Service service) {
+    public MapBasedServiceRegistry(Service service) {
         super(service);
     }
 
