@@ -32,7 +32,6 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
         super(service, config, mapper);
     }
 
-
     @Override
     public Optional<List<ServiceNode<T>>> refresh(D deserializer) {
         Preconditions.checkNotNull(config, "client config has not been set for node data");

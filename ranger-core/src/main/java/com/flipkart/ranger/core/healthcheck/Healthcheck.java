@@ -26,5 +26,5 @@ public interface Healthcheck {
      *
      * @return health status
      */
-    public HealthcheckStatus check();
+    HealthcheckStatus check();
 }

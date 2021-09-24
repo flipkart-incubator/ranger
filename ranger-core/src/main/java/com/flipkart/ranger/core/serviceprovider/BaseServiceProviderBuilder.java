@@ -53,7 +53,6 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
     protected int staleUpdateThresholdMs;
     protected NodeDataSink<T, S> nodeDataSource = null;
     protected List<Healthcheck> healthchecks = Lists.newArrayList();
-    protected List<Consumer<HealthcheckResult>> healthCheckHandlers = Lists.newArrayList();
     protected final List<Consumer<Void>> startSignalHandlers = Lists.newArrayList();
     protected final List<Consumer<Void>> stopSignalHandlers = Lists.newArrayList();
     protected final List<Signal<HealthcheckResult>> additionalRefreshSignals = Lists.newArrayList();
@@ -93,11 +92,6 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
 
     public B withHealthcheck(Healthcheck healthcheck) {
         this.healthchecks.add(healthcheck);
-        return (B)this;
-    }
-
-    public B withHealthcheckHandlers(List<Consumer<HealthcheckResult>> healthCheckHandlers){
-        this.healthCheckHandlers.addAll(healthCheckHandlers);
         return (B)this;
     }
 
@@ -187,14 +181,16 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
 
         healthchecks.add(serviceHealthAggregator);
         final Service service = new Service(namespace, serviceName);
+        final NodeDataSink<T,S> usableNodeDataSource = dataSink(service);
+
         final ScheduledSignal<HealthcheckResult> healthcheckUpdateSignalGenerator
                 = new ScheduledSignal<>(
                 service,
                 new HealthChecker(healthchecks, staleUpdateThresholdMs),
-                healthCheckHandlers,
+                Collections.emptyList(),
                 healthUpdateIntervalMs
         );
-        final NodeDataSink<T,S> usableNodeDataSource = dataSink(service);
+
         final List<HealthService> healthServices = Collections.singletonList(serviceHealthAggregator);
 
         final List<Signal<HealthcheckResult>> signalGenerators
