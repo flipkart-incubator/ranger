@@ -14,5 +14,5 @@ public class HttpClientConfig {
     private boolean secure;
     private long connectionTimeoutMs;
     private long operationTimeoutMs;
-    private String nodesRequestPath;
+    private long refreshIntervalMillis;
 }

@@ -51,11 +51,12 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
     protected T nodeData;
     protected int healthUpdateIntervalMs;
     protected int staleUpdateThresholdMs;
-    protected List<Healthcheck> healthchecks = Lists.newArrayList();
     protected NodeDataSink<T, S> nodeDataSource = null;
+    protected List<Healthcheck> healthchecks = Lists.newArrayList();
+    protected List<Consumer<HealthcheckResult>> healthCheckHandlers = Lists.newArrayList();
     protected final List<Consumer<Void>> startSignalHandlers = Lists.newArrayList();
     protected final List<Consumer<Void>> stopSignalHandlers = Lists.newArrayList();
-    protected final List<Signal<HealthcheckResult>> extraRefreshSignals = Lists.newArrayList();
+    protected final List<Signal<HealthcheckResult>> additionalRefreshSignals = Lists.newArrayList();
 
     /* list of isolated monitors */
     private List<IsolatedHealthMonitor> isolatedMonitors = Lists.newArrayList();
@@ -92,6 +93,11 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
 
     public B withHealthcheck(Healthcheck healthcheck) {
         this.healthchecks.add(healthcheck);
+        return (B)this;
+    }
+
+    public B withHealthcheckHandlers(List<Consumer<HealthcheckResult>> healthCheckHandlers){
+        this.healthCheckHandlers.addAll(healthCheckHandlers);
         return (B)this;
     }
 
@@ -144,13 +150,13 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
         return (B)this;
     }
 
-    public B withExtraRefreshSignal(Signal<HealthcheckResult> extraRefreshSignal) {
-        this.extraRefreshSignals.add(extraRefreshSignal);
+    public B withadditionalRefreshSignal(Signal<HealthcheckResult> additionalRefreshSignal) {
+        this.additionalRefreshSignals.add(additionalRefreshSignal);
         return (B)this;
     }
 
-    public B withExtraRefreshSignals(List<Signal<HealthcheckResult>> extraRefreshSignals) {
-        this.extraRefreshSignals.addAll(extraRefreshSignals);
+    public B withAdditionalRefreshSignals(List<Signal<HealthcheckResult>> additionalRefreshSignals) {
+        this.additionalRefreshSignals.addAll(additionalRefreshSignals);
         return (B)this;
     }
 
@@ -178,21 +184,23 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
         for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
             serviceHealthAggregator.addIsolatedMonitor(isolatedMonitor);
         }
+
         healthchecks.add(serviceHealthAggregator);
         final Service service = new Service(namespace, serviceName);
         final ScheduledSignal<HealthcheckResult> healthcheckUpdateSignalGenerator
                 = new ScheduledSignal<>(
                 service,
                 new HealthChecker(healthchecks, staleUpdateThresholdMs),
-                Collections.emptyList(),
-                healthUpdateIntervalMs);
+                healthCheckHandlers,
+                healthUpdateIntervalMs
+        );
         final NodeDataSink<T,S> usableNodeDataSource = dataSink(service);
         final List<HealthService> healthServices = Collections.singletonList(serviceHealthAggregator);
 
         final List<Signal<HealthcheckResult>> signalGenerators
                 = ImmutableList.<Signal<HealthcheckResult>>builder()
                 .add(healthcheckUpdateSignalGenerator)
-                .addAll(extraRefreshSignals)
+                .addAll(additionalRefreshSignals)
                 .build();
         final ServiceProvider<T, S> serviceProvider = new ServiceProvider<>(service,
                                                                          new ServiceNode<>(hostname, port, nodeData),

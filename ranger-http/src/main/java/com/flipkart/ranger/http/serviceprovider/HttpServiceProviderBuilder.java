@@ -32,9 +32,6 @@ public class HttpServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T,
 
     @Override
     protected NodeDataSink<T, HttpRequestDataSerializer<T>> dataSink(Service service) {
-        if(null == mapper){
-            mapper = new ObjectMapper();
-        }
         return new HttpNodeDataSink<>(service, clientConfig, mapper);
     }
 }

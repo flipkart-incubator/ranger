@@ -96,7 +96,7 @@ public class ServiceHubTest {
                 .withSerializer(this::write)
                 .withNodeData(new TestShardInfo("prod"))
                 .withHealthcheck(() -> HealthcheckStatus.healthy)
-                .withExtraRefreshSignal(refreshProviderSignal)
+                .withadditionalRefreshSignal(refreshProviderSignal)
                 .withCuratorFramework(curatorFramework)
                 .build();
         provider1.start();
