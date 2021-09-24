@@ -18,6 +18,7 @@ package com.flipkart.ranger.core.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data

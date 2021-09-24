@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.core.finder;
+package com.flipkart.ranger.core.finder.nodeselector;
 
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
