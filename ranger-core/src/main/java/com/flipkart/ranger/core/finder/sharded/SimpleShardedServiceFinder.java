@@ -16,9 +16,9 @@
 
 package com.flipkart.ranger.core.finder.sharded;
 
-import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
+import com.flipkart.ranger.core.model.ShardSelector;
 
 public class SimpleShardedServiceFinder<T> extends ServiceFinder<T, MapBasedServiceRegistry<T>> {
     public SimpleShardedServiceFinder(MapBasedServiceRegistry<T> serviceRegistry,

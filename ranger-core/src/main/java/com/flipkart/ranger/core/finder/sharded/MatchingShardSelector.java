@@ -16,8 +16,8 @@
 
 package com.flipkart.ranger.core.finder.sharded;
 
-import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.model.ShardSelector;
 
 import java.util.List;
 

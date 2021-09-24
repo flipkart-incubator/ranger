@@ -2,8 +2,8 @@ package com.flipkart.ranger.zookeeper.servicefinder.signals;
 
 import com.flipkart.ranger.core.model.NodeDataStoreConnector;
 import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.zookeeper.util.PathBuilder;
 import com.flipkart.ranger.core.signals.Signal;
+import com.flipkart.ranger.zookeeper.util.PathBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;

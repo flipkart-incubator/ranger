@@ -16,10 +16,10 @@
 
 package com.flipkart.ranger.core.healthservice.monitor;
 
+import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.sample.CountMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.sample.PingCheckMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.sample.RotationStatusMonitor;
-import com.flipkart.ranger.core.healthservice.TimeEntity;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -16,10 +16,10 @@
 
 package com.flipkart.ranger.core.healthservice;
 
-import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
-import com.flipkart.ranger.core.healthservice.monitor.Monitor;
 import com.flipkart.ranger.core.healthcheck.Healthcheck;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
+import com.flipkart.ranger.core.healthservice.monitor.Monitor;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 

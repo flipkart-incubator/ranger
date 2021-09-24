@@ -16,11 +16,11 @@
 
 package com.flipkart.ranger.core.finder.unsharded;
 
+import com.flipkart.ranger.core.finder.BaseServiceFinderBuilder;
 import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.model.ShardSelector;
-import com.flipkart.ranger.core.finder.BaseServiceFinderBuilder;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
+import com.flipkart.ranger.core.model.ShardSelector;
 
 public abstract class UnshardedFinderBuilder<B extends UnshardedFinderBuilder<B, D>, D extends Deserializer<UnshardedClusterInfo>>
         extends BaseServiceFinderBuilder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedClusterFinder, B, D> {

@@ -5,7 +5,6 @@ import com.flipkart.ranger.core.model.NodeDataSink;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.util.Exceptions;
-import com.flipkart.ranger.core.util.FinderUtils;
 import com.flipkart.ranger.http.common.HttpNodeDataStoreConnector;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceRegistrationResponse;
@@ -30,6 +29,9 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
 
     @Override
     public void updateState(S serializer, ServiceNode<T> serviceNode) {
+        Preconditions.checkNotNull(config, "client config has not been set for node data");
+        Preconditions.checkNotNull(mapper, "mapper has not been set for node data");
+
         val httpUrl = new HttpUrl.Builder()
                 .scheme(config.isSecure()
                         ? "https"
@@ -60,7 +62,9 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
                     }
                     else {
                         final byte[] bytes = body.bytes();
-                        return Optional.of(mapper.readValue(bytes, ServiceRegistrationResponse.class));
+                        return Optional.of(
+                                mapper.readValue(bytes, ServiceRegistrationResponse.class)
+                        );
                     }
                 }
             }

@@ -16,9 +16,9 @@
 
 package com.flipkart.ranger.core.healthservice.monitor.sample;
 
-import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
+import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
 
 /**
  * A monitor that can be used as a counting monitor to check if any countable entity breaches a threashhold

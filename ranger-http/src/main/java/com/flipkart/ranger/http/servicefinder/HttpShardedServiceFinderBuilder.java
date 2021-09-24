@@ -7,16 +7,23 @@ import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
+import com.google.common.base.Preconditions;
 
 /**
  *
  */
-public class HttpShardedServiceFinderBuilder<T, D extends HTTPResponseDataDeserializer<T>> extends SimpleShardedServiceFinderBuilder<T, HttpShardedServiceFinderBuilder<T, D>, D> {
+public class HttpShardedServiceFinderBuilder<T> extends SimpleShardedServiceFinderBuilder<T, HttpShardedServiceFinderBuilder<T>, HTTPResponseDataDeserializer<T>> {
 
     private HttpClientConfig clientConfig;
+    private ObjectMapper mapper;
 
-    public HttpShardedServiceFinderBuilder<T, D> withClientConfig(final HttpClientConfig clientConfig) {
+    public HttpShardedServiceFinderBuilder<T> withClientConfig(final HttpClientConfig clientConfig) {
         this.clientConfig = clientConfig;
+        return this;
+    }
+
+    public HttpShardedServiceFinderBuilder<T> withObjectMapper(final ObjectMapper mapper){
+        this.mapper = mapper;
         return this;
     }
 
@@ -26,7 +33,9 @@ public class HttpShardedServiceFinderBuilder<T, D extends HTTPResponseDataDeseri
     }
 
     @Override
-    protected NodeDataSource<T, D> dataSource(Service service) {
-        return new HttpNodeDataSource<>(service, clientConfig, new ObjectMapper());
+    protected NodeDataSource<T, HTTPResponseDataDeserializer<T>> dataSource(Service service) {
+        return new HttpNodeDataSource<>(service, clientConfig, mapper);
     }
+
+
 }

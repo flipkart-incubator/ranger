@@ -17,10 +17,10 @@
 package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
-import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

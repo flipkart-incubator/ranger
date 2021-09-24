@@ -20,7 +20,7 @@ public class HttpServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T,
         return this;
     }
 
-    public HttpServiceProviderBuilder<T> withObjectmapper(final ObjectMapper mapper){
+    public HttpServiceProviderBuilder<T> withObjectMapper(final ObjectMapper mapper){
         this.mapper = mapper;
         return this;
     }
@@ -32,6 +32,9 @@ public class HttpServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T,
 
     @Override
     protected NodeDataSink<T, HttpRequestDataSerializer<T>> dataSink(Service service) {
+        if(null == mapper){
+            mapper = new ObjectMapper();
+        }
         return new HttpNodeDataSink<>(service, clientConfig, mapper);
     }
 }
