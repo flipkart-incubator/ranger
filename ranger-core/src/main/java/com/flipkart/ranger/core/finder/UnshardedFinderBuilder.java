@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.core.finder.unsharded;
+package com.flipkart.ranger.core.finder;
 
-import com.flipkart.ranger.core.finder.BaseServiceFinderBuilder;
-import com.flipkart.ranger.core.model.Deserializer;
-import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.model.ServiceNodeSelector;
-import com.flipkart.ranger.core.model.ShardSelector;
+import com.flipkart.ranger.core.finder.serviceregistry.UnshardedClusterServiceRegistry;
+import com.flipkart.ranger.core.finder.shardselector.NoOpShardSelector;
+import com.flipkart.ranger.core.model.*;
 
 public abstract class UnshardedFinderBuilder<B extends UnshardedFinderBuilder<B, D>, D extends Deserializer<UnshardedClusterInfo>>
         extends BaseServiceFinderBuilder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedClusterFinder, B, D> {

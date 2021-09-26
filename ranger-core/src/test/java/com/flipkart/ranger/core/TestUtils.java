@@ -1,4 +1,4 @@
-package com.flipkart.ranger.core.utils;
+package com.flipkart.ranger.core;
 
 import java.util.concurrent.TimeUnit;
 

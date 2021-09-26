@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.core.finder.unsharded;
+package com.flipkart.ranger.core.model;
 
 public class UnshardedClusterInfo {
     @Override

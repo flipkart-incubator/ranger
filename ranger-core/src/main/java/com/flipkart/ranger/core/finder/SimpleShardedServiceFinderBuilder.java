@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.core.finder.sharded;
+package com.flipkart.ranger.core.finder;
 
-import com.flipkart.ranger.core.finder.BaseServiceFinderBuilder;
+import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
+import com.flipkart.ranger.core.finder.shardselector.MatchingShardSelector;
 import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;

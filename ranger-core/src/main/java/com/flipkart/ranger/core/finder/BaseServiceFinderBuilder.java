@@ -17,7 +17,8 @@
 package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.finder.nodeselector.RandomServiceNodeSelector;
-import com.flipkart.ranger.core.finder.signals.ScheduledRegistryUpdateSignal;
+import com.flipkart.ranger.core.finder.serviceregistry.ServiceRegistryUpdater;
+import com.flipkart.ranger.core.finder.serviceregistry.signal.ScheduledRegistryUpdateSignal;
 import com.flipkart.ranger.core.model.*;
 import com.flipkart.ranger.core.signals.Signal;
 import com.google.common.base.Preconditions;

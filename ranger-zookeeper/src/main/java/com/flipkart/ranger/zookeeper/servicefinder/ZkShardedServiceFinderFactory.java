@@ -1,7 +1,7 @@
 package com.flipkart.ranger.zookeeper.servicefinder;
 
-import com.flipkart.ranger.core.finder.sharded.MapBasedServiceRegistry;
-import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinder;
+import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
+import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;

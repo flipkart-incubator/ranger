@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.core.finder.sharded;
+package com.flipkart.ranger.core.finder.shardselector;
 
-import com.flipkart.ranger.core.finder.ServiceFinder;
-import com.flipkart.ranger.core.model.ServiceNodeSelector;
+import com.flipkart.ranger.core.model.UnshardedClusterInfo;
+import com.flipkart.ranger.core.finder.serviceregistry.UnshardedClusterServiceRegistry;
+import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
 
-public class SimpleShardedServiceFinder<T> extends ServiceFinder<T, MapBasedServiceRegistry<T>> {
-    public SimpleShardedServiceFinder(MapBasedServiceRegistry<T> serviceRegistry,
-                                      ShardSelector<T, MapBasedServiceRegistry<T>> shardSelector,
-                                      ServiceNodeSelector<T> nodeSelector) {
-        super(serviceRegistry, shardSelector, nodeSelector);
+import java.util.List;
+
+public class NoOpShardSelector implements ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry> {
+    @Override
+    public List<ServiceNode<UnshardedClusterInfo>> nodes(UnshardedClusterInfo criteria,
+                                                         UnshardedClusterServiceRegistry serviceRegistry) {
+        return serviceRegistry.nodes();
     }
 }

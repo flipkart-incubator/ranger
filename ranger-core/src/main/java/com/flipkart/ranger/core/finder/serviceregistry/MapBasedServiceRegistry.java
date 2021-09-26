@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.core.finder.sharded;
+package com.flipkart.ranger.core.finder.serviceregistry;
 
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;

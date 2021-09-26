@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.core.finder;
+package com.flipkart.ranger.core.finder.serviceregistry;
 
 import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.NodeDataSource;

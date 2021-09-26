@@ -1,4 +1,4 @@
-package com.flipkart.ranger.core.finder.signals;
+package com.flipkart.ranger.core.finder.serviceregistry.signal;
 
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.ScheduledSignal;

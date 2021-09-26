@@ -1,8 +1,8 @@
 package com.flipkart.ranger.zookeeper.servicefinder;
 
-import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterFinder;
-import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterInfo;
-import com.flipkart.ranger.core.finder.unsharded.UnshardedFinderBuilder;
+import com.flipkart.ranger.core.finder.UnshardedClusterFinder;
+import com.flipkart.ranger.core.model.UnshardedClusterInfo;
+import com.flipkart.ranger.core.finder.UnshardedFinderBuilder;
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.Signal;

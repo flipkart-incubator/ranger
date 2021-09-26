@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.flipkart.ranger.core.finder.unsharded;
+package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.finder.ServiceFinder;
+import com.flipkart.ranger.core.finder.serviceregistry.UnshardedClusterServiceRegistry;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
+import com.flipkart.ranger.core.model.UnshardedClusterInfo;
 
 public class UnshardedClusterFinder extends ServiceFinder<UnshardedClusterInfo, UnshardedClusterServiceRegistry> {
     public UnshardedClusterFinder(UnshardedClusterServiceRegistry serviceRegistry,
