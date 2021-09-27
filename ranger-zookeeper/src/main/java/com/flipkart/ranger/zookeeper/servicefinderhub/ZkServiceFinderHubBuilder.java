@@ -1,6 +1,7 @@
 package com.flipkart.ranger.zookeeper.servicefinderhub;
 
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
+import com.flipkart.ranger.core.finderhub.ServiceFinderHubBuilder;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;

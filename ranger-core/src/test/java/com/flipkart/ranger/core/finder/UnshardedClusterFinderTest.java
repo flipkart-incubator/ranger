@@ -1,6 +1,5 @@
 package com.flipkart.ranger.core.finder;
 
-import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.finder.serviceregistry.UnshardedClusterServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.NoOpShardSelector;
 import com.flipkart.ranger.core.model.ServiceNode;

@@ -12,7 +12,7 @@ import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
-import com.flipkart.ranger.zookeeper.servicefinder.ZkShardedServiceFinderFactory;
+import com.flipkart.ranger.zookeeper.servicefinderhub.ZkShardedServiceFinderFactory;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceDataSource;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceFinderHubBuilder;
 import lombok.Data;
@@ -68,7 +68,7 @@ public class ServiceHubTest {
     }
 
     @Test
-    public void testHub() throws InterruptedException {
+    public void testHub() {
         ExternalTriggeredSignal<Void> refreshHubSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
         val hub = new ZkServiceFinderHubBuilder<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>>()
                 .withCuratorFramework(curatorFramework)
