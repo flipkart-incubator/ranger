@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
     private final AtomicReference<Map<Service, ServiceFinder<T, R>>> finders = new AtomicReference<>(new HashMap<>());
-    private final ServiceFinderSelector<T, R> serviceFinderSelector;
     private final Lock updateLock = new ReentrantLock();
     private final Condition updateCond = updateLock.newCondition();
     private boolean updateAvailable = false;
@@ -51,19 +50,17 @@ public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
 
     public ServiceFinderHub(
             ServiceDataSource serviceDataSource,
-            ServiceFinderFactory<T, R> finderFactory,
-            ServiceFinderSelector<T, R> serviceFinderSelector) {
+            ServiceFinderFactory<T, R> finderFactory) {
         this.serviceDataSource = serviceDataSource;
         this.finderFactory = finderFactory;
         this.refreshSignals.add(new ScheduledSignal<>("service-hub-updater",
                                                       () -> null,
                                                       Collections.emptyList(),
                                                       10_000));
-        this.serviceFinderSelector = serviceFinderSelector;
     }
 
     public Optional<ServiceFinder<T, R>> finder(final Service service) {
-        return serviceFinderSelector.finder(service, finders.get());
+        return Optional.ofNullable(finders.get().get(service));
     }
 
     public void start() {

@@ -44,7 +44,7 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                 .port(config.getPort() == 0
                       ? defaultPort()
                       : config.getPort())
-                .encodedPath(String.format("/v1/ranger/nodes/%s/%s", service.getNamespace(), service.getServiceName()))
+                .encodedPath(String.format("/ranger/nodes/v1/%s/%s", service.getNamespace(), service.getServiceName()))
                 .build();
         val request = new Request.Builder()
                 .url(httpUrl)

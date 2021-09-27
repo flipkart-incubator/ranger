@@ -17,7 +17,6 @@ import java.util.function.Consumer;
 public abstract class ServiceFinderHubBuilder<T, R extends ServiceRegistry<T>> {
     private ServiceDataSource serviceDataSource;
     private ServiceFinderFactory<T, R> serviceFinderFactory;
-    private ServiceFinderSelector<T, R> serviceFinderSelector;
     private long refreshFrequencyMs = 10_000;
     private List<Consumer<Void>> extraStartSignalConsumers = new ArrayList<>();
     private List<Consumer<Void>> extraStopSignalConsumers = new ArrayList<>();
@@ -32,12 +31,7 @@ public abstract class ServiceFinderHubBuilder<T, R extends ServiceRegistry<T>> {
         this.serviceFinderFactory = serviceFinderFactory;
         return this;
     }
-
-    public ServiceFinderHubBuilder<T, R> withFinderSelector(ServiceFinderSelector<T, R> serviceFinderSelector){
-        this.serviceFinderSelector = serviceFinderSelector;
-        return this;
-    }
-
+    
     public ServiceFinderHubBuilder<T, R> withRefreshFrequencyMs(long refreshFrequencyMs) {
         this.refreshFrequencyMs = refreshFrequencyMs;
         return this;
@@ -61,11 +55,8 @@ public abstract class ServiceFinderHubBuilder<T, R extends ServiceRegistry<T>> {
     public ServiceFinderHub<T, R> build() {
         Preconditions.checkNotNull(serviceDataSource, "Provide a non-null service data source");
         Preconditions.checkNotNull(serviceFinderFactory, "Provide a non-null service finder factory");
-        if(null == serviceFinderSelector){
-            serviceFinderSelector = new SimpleFinderSelector<>();
-        }
 
-        val hub = new ServiceFinderHub<>(serviceDataSource, serviceFinderFactory, serviceFinderSelector);
+        val hub = new ServiceFinderHub<>(serviceDataSource, serviceFinderFactory);
         final ScheduledSignal<Void> refreshSignal = new ScheduledSignal<>("service-hub-refresh-timer",
                                                                           () -> null,
                                                                           Collections.emptyList(),
