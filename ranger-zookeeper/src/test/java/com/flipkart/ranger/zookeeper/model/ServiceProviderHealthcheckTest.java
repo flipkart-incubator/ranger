@@ -19,12 +19,12 @@ package com.flipkart.ranger.zookeeper.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthcheck;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
-import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
@@ -116,13 +116,13 @@ public class ServiceProviderHealthcheckTest {
                 .withNodeRefreshIntervalMs(1000)
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
+        ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1));
         Assert.assertNotNull(node);
         Assert.assertEquals("localhost-1", node.getHost());
         TestServiceProvider testServiceProvider = serviceProviders.get(node.getHost());
         testServiceProvider.oor();
         TestUtils.sleepForSeconds(6);
-        Assert.assertNull(serviceFinder.get(new TestShardInfo(1)));
+        Assert.assertNull(serviceFinder.get(() -> new TestShardInfo(1)));
         serviceFinder.stop();
     }
 

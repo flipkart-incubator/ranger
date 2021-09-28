@@ -2,6 +2,7 @@ package com.flipkart.ranger.zookeeper.servicefinderhub;
 
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
 import com.flipkart.ranger.core.finderhub.ServiceFinderHubBuilder;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -13,22 +14,22 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
  *
  */
 @Slf4j
-public class ZkServiceFinderHubBuilder<T, R extends ServiceRegistry<T>> extends ServiceFinderHubBuilder<T, R> {
+public class ZkServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U extends Criteria<T>> extends ServiceFinderHubBuilder<T, R, U> {
     private String namespace;
     private CuratorFramework curatorFramework;
     private String connectionString;
 
-    public ZkServiceFinderHubBuilder<T, R> withNamespace(final String namespace) {
+    public ZkServiceFinderHubBuilder<T, R, U> withNamespace(final String namespace) {
         this.namespace = namespace;
         return this;
     }
 
-    public ZkServiceFinderHubBuilder<T, R> withCuratorFramework(CuratorFramework curatorFramework) {
+    public ZkServiceFinderHubBuilder<T, R, U> withCuratorFramework(CuratorFramework curatorFramework) {
         this.curatorFramework = curatorFramework;
         return this;
     }
 
-    public ZkServiceFinderHubBuilder<T, R> withConnectionString(final String connectionString) {
+    public ZkServiceFinderHubBuilder<T, R, U> withConnectionString(final String connectionString) {
         this.connectionString = connectionString;
         return this;
     }
@@ -49,7 +50,7 @@ public class ZkServiceFinderHubBuilder<T, R extends ServiceRegistry<T>> extends 
     }
 
     @Override
-    protected void postBuild(ServiceFinderHub<T, R> serviceFinderHub) {
+    protected void postBuild(ServiceFinderHub<T, R, U> serviceFinderHub) {
         log.debug("No post build steps necessary");
     }
 }

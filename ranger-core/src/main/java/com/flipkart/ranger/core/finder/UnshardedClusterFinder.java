@@ -16,15 +16,15 @@
 
 package com.flipkart.ranger.core.finder;
 
-import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.finder.serviceregistry.UnshardedClusterServiceRegistry;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.model.UnshardedClusterInfo;
+import com.flipkart.ranger.core.model.UnshardedCriteria;
 
-public class UnshardedClusterFinder extends ServiceFinder<UnshardedClusterInfo, UnshardedClusterServiceRegistry> {
+public class UnshardedClusterFinder extends ServiceFinder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedCriteria> {
     public UnshardedClusterFinder(UnshardedClusterServiceRegistry serviceRegistry,
-                                  ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry> shardSelector,
+                                  ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedCriteria> shardSelector,
                                   ServiceNodeSelector<UnshardedClusterInfo> nodeSelector) {
         super(serviceRegistry, shardSelector, nodeSelector);
     }

@@ -16,17 +16,18 @@
 
 package com.flipkart.ranger.core.finder.shardselector;
 
-import com.flipkart.ranger.core.model.UnshardedClusterInfo;
 import com.flipkart.ranger.core.finder.serviceregistry.UnshardedClusterServiceRegistry;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
+import com.flipkart.ranger.core.model.UnshardedClusterInfo;
+import com.flipkart.ranger.core.model.UnshardedCriteria;
 
 import java.util.List;
 
-public class NoOpShardSelector implements ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry> {
+public class NoOpShardSelector implements ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedCriteria> {
+
     @Override
-    public List<ServiceNode<UnshardedClusterInfo>> nodes(UnshardedClusterInfo criteria,
-                                                         UnshardedClusterServiceRegistry serviceRegistry) {
+    public List<ServiceNode<UnshardedClusterInfo>> nodes(UnshardedCriteria criteria, UnshardedClusterServiceRegistry serviceRegistry) {
         return serviceRegistry.nodes();
     }
 }

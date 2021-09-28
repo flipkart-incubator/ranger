@@ -1,10 +1,11 @@
 package com.flipkart.ranger.zookeeper.servicefinder;
 
 import com.flipkart.ranger.core.finder.UnshardedClusterFinder;
-import com.flipkart.ranger.core.model.UnshardedClusterInfo;
 import com.flipkart.ranger.core.finder.UnshardedFinderBuilder;
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.core.model.UnshardedClusterInfo;
+import com.flipkart.ranger.core.model.UnshardedCriteria;
 import com.flipkart.ranger.core.signals.Signal;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinder.signals.ZkWatcherRegistryUpdateSignal;
@@ -21,7 +22,7 @@ import java.util.List;
  *
  */
 @Slf4j
-public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder<ZkUnshardedFinderBuilder, ZkNodeDataDeserializer<UnshardedClusterInfo>> {
+public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder<ZkUnshardedFinderBuilder, ZkNodeDataDeserializer<UnshardedClusterInfo>, UnshardedCriteria> {
     private CuratorFramework curatorFramework;
     private String connectionString;
 

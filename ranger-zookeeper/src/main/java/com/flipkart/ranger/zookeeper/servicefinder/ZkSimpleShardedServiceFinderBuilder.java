@@ -2,6 +2,7 @@ package com.flipkart.ranger.zookeeper.servicefinder;
 
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinderBuilder;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.Signal;
@@ -20,10 +21,9 @@ import java.util.List;
  *
  */
 @Slf4j
-public class ZkSimpleShardedServiceFinderBuilder<T> extends SimpleShardedServiceFinderBuilder<T, ZkSimpleShardedServiceFinderBuilder<T>, ZkNodeDataDeserializer<T>> {
+public class ZkSimpleShardedServiceFinderBuilder<T> extends SimpleShardedServiceFinderBuilder<T, ZkSimpleShardedServiceFinderBuilder<T>, ZkNodeDataDeserializer<T>, Criteria<T>> {
     protected CuratorFramework curatorFramework;
     protected String connectionString;
-
 
     public ZkSimpleShardedServiceFinderBuilder<T> withCuratorFramework(CuratorFramework curatorFramework) {
         this.curatorFramework = curatorFramework;

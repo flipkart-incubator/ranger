@@ -4,13 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.model.NodeDataStoreConnector;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.http.config.HttpClientConfig;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**

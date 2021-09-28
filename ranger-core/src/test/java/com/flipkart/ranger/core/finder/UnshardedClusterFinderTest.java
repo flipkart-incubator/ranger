@@ -5,6 +5,7 @@ import com.flipkart.ranger.core.finder.shardselector.NoOpShardSelector;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.UnshardedClusterInfo;
+import com.flipkart.ranger.core.model.UnshardedCriteria;
 import com.flipkart.ranger.core.utils.RegistryTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class UnshardedClusterFinderTest {
                 shardSelector,
                 new TestUnshardedNodeSelector()
         );
-        final ServiceNode<UnshardedClusterInfo> serviceNode = unshardedClusterFinder.get(unshardedClusterInfo);
+        final ServiceNode<UnshardedClusterInfo> serviceNode = unshardedClusterFinder.get(new UnshardedCriteria(unshardedClusterInfo));
         Assert.assertNotNull(serviceNode);
         Assert.assertEquals("localhost-1", serviceNode.getHost());
     }

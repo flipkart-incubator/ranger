@@ -16,10 +16,10 @@
 
 package com.flipkart.ranger.core.finder.serviceregistry;
 
-import com.flipkart.ranger.core.model.UnshardedClusterInfo;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ServiceRegistry;
+import com.flipkart.ranger.core.model.UnshardedClusterInfo;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;

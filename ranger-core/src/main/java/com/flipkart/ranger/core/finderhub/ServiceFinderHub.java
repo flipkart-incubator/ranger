@@ -1,6 +1,7 @@
 package com.flipkart.ranger.core.finderhub;
 
 import com.flipkart.ranger.core.finder.ServiceFinder;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
@@ -26,8 +27,8 @@ import java.util.stream.Collectors;
  *
  */
 @Slf4j
-public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
-    private final AtomicReference<Map<Service, ServiceFinder<T, R>>> finders = new AtomicReference<>(new HashMap<>());
+public class ServiceFinderHub<T, R extends ServiceRegistry<T>, U extends Criteria<T>> {
+    private final AtomicReference<Map<Service, ServiceFinder<T, R, U>>> finders = new AtomicReference<>(new HashMap<>());
     private final Lock updateLock = new ReentrantLock();
     private final Condition updateCond = updateLock.newCondition();
     private boolean updateAvailable = false;
@@ -43,14 +44,14 @@ public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
     private final List<Signal<Void>> refreshSignals = new ArrayList<>();
 
     private final ServiceDataSource serviceDataSource;
-    private final ServiceFinderFactory<T, R> finderFactory;
+    private final ServiceFinderFactory<T, R, U> finderFactory;
 
     private AtomicBoolean alreadyUpdating = new AtomicBoolean(false);
     private Future<?> monitorFuture = null;
 
     public ServiceFinderHub(
             ServiceDataSource serviceDataSource,
-            ServiceFinderFactory<T, R> finderFactory) {
+            ServiceFinderFactory<T, R, U> finderFactory) {
         this.serviceDataSource = serviceDataSource;
         this.finderFactory = finderFactory;
         this.refreshSignals.add(new ScheduledSignal<>("service-hub-updater",
@@ -59,7 +60,7 @@ public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
                                                       10_000));
     }
 
-    public Optional<ServiceFinder<T, R>> finder(final Service service) {
+    public Optional<ServiceFinder<T, R, U>> finder(final Service service) {
         return Optional.ofNullable(finders.get().get(service));
     }
 
@@ -126,10 +127,10 @@ public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
             return;
         }
         alreadyUpdating.set(true);
-        final Map<Service, ServiceFinder<T, R>> updatedFinders = new HashMap<>();
+        final Map<Service, ServiceFinder<T, R, U>> updatedFinders = new HashMap<>();
         try {
             final Collection<Service> services = serviceDataSource.services();
-            final Map<Service, ServiceFinder<T, R>> knownServiceFinders = finders.get();
+            final Map<Service, ServiceFinder<T, R, U>> knownServiceFinders = finders.get();
             val newFinders = services.stream()
                     .filter(service -> !knownServiceFinders.containsKey(service))
                     .collect(Collectors.toMap(Function.identity(), finderFactory::buildFinder));

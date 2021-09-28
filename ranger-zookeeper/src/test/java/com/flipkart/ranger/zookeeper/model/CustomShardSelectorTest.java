@@ -19,9 +19,10 @@ package com.flipkart.ranger.zookeeper.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
+import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
@@ -113,14 +114,14 @@ public class CustomShardSelectorTest {
         }
     }
 
-    private static final class TestShardSelector implements ShardSelector<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>> {
+    private static final class TestShardSelector implements ShardSelector<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>, Criteria<TestShardInfo>> {
 
         @Override
-        public List<ServiceNode<TestShardInfo>> nodes(TestShardInfo criteria, MapBasedServiceRegistry<TestShardInfo> serviceRegistry) {
+        public List<ServiceNode<TestShardInfo>> nodes(Criteria<TestShardInfo> criteria, MapBasedServiceRegistry<TestShardInfo> serviceRegistry) {
             List<ServiceNode<TestShardInfo>> nodes = Lists.newArrayList();
             for(Map.Entry<TestShardInfo, ServiceNode<TestShardInfo>> entry : serviceRegistry.nodes().entries()) {
                 TestShardInfo shardInfo = entry.getKey();
-                if((shardInfo.getA() + shardInfo.getB()) == (criteria.getA() + criteria.getB())) {
+                if((shardInfo.getA() + shardInfo.getB()) == (criteria.getCriteria().getA() + criteria.getCriteria().getB())) {
                     nodes.add(entry.getValue());
                 }
             }
@@ -147,18 +148,18 @@ public class CustomShardSelectorTest {
                 .build();
         serviceFinder.start();
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1, 10));
+            ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1, 10));
             Assert.assertNull(node);
         }
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1, 2));
+            ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1, 2));
             Assert.assertNotNull(node);
             Assert.assertEquals(new TestShardInfo(1, 2), node.getNodeData());
         }
         serviceFinder.stop();
     }
 
-    private void registerService(String host, int port, int a, int b) throws Exception {
+    private void registerService(String host, int port, int a, int b) {
         final ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")

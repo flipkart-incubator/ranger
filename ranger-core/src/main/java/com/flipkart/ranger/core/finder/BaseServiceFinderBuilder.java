@@ -37,16 +37,17 @@ public abstract class BaseServiceFinderBuilder
         <
                 T,
                 R extends ServiceRegistry<T>,
-                F extends ServiceFinder<T, R>,
-                B extends BaseServiceFinderBuilder<T, R, F, B, D>,
-                D extends Deserializer<T>> {
+                F extends ServiceFinder<T, R, U>,
+                B extends BaseServiceFinderBuilder<T, R, F, B, D, U>,
+                D extends Deserializer<T>,
+                U extends Criteria<T>> {
 
     protected String namespace;
     protected String serviceName;
     protected int nodeRefreshIntervalMs;
     protected boolean disablePushUpdaters;
     protected D deserializer;
-    protected ShardSelector<T, R> shardSelector;
+    protected ShardSelector<T, R, U> shardSelector;
     protected ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<>();
     protected final List<Signal<T>> additionalRefreshSignals = new ArrayList<>();
     protected final List<Consumer<Void>> startSignalHandlers = Lists.newArrayList();
@@ -67,7 +68,7 @@ public abstract class BaseServiceFinderBuilder
         return (B)this;
     }
 
-    public B withShardSelector(ShardSelector<T, R> shardSelector) {
+    public B withShardSelector(ShardSelector<T, R, U> shardSelector) {
         this.shardSelector = shardSelector;
         return (B)this;
     }
@@ -175,7 +176,7 @@ public abstract class BaseServiceFinderBuilder
 
     protected abstract F buildFinder(
             Service service,
-            ShardSelector<T, R> shardSelector,
+            ShardSelector<T, R, U> shardSelector,
             ServiceNodeSelector<T> nodeSelector);
 
 }

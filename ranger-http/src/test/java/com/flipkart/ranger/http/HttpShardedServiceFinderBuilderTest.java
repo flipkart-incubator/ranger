@@ -3,10 +3,10 @@ package com.flipkart.ranger.http;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.servicefinder.HttpShardedServiceFinderBuilder;
@@ -84,13 +84,13 @@ public class HttpShardedServiceFinderBuilderTest {
                         .nodes()
                         .entries()
                         .stream()
-                        .filter(e -> e.getKey().getName().equals(criteria.getName()))
+                        .filter(e -> e.getKey().getName().equals(criteria.getCriteria().getName()))
                         .map(Map.Entry::getValue)
                         .collect(Collectors.toList()))
                 .build();
         finder.start();
         TestUtils.sleepForSeconds(3);
-        Assert.assertNotNull(finder.get(testNode));
+        Assert.assertNotNull(finder.get(() -> testNode));
     }
 
 }

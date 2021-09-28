@@ -1,8 +1,9 @@
 package com.flipkart.ranger.zookeeper.servicefinderhub;
 
-import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
+import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
@@ -15,13 +16,13 @@ import org.apache.curator.framework.CuratorFramework;
 /**
  *
  */
-public class ZkShardedServiceFinderFactory<T> implements ServiceFinderFactory<T, MapBasedServiceRegistry<T>> {
+public class ZkShardedServiceFinderFactory<T> implements ServiceFinderFactory<T, MapBasedServiceRegistry<T>, Criteria<T>> {
     private final CuratorFramework curatorFramework;
     private final String connectionString;
     private final int nodeRefreshIntervalMs;
     private final boolean disablePushUpdaters;
     private final ZkNodeDataDeserializer<T> deserializer;
-    private final ShardSelector<T, MapBasedServiceRegistry<T>> shardSelector;
+    private final ShardSelector<T, MapBasedServiceRegistry<T>, Criteria<T>> shardSelector;
     private final ServiceNodeSelector<T> nodeSelector;
 
     @Builder
@@ -31,7 +32,7 @@ public class ZkShardedServiceFinderFactory<T> implements ServiceFinderFactory<T,
             int nodeRefreshIntervalMs,
             boolean disablePushUpdaters,
             ZkNodeDataDeserializer<T> deserializer,
-            ShardSelector<T, MapBasedServiceRegistry<T>> shardSelector,
+            ShardSelector<T, MapBasedServiceRegistry<T>, Criteria<T>> shardSelector,
             ServiceNodeSelector<T> nodeSelector) {
         this.curatorFramework = curatorFramework;
         this.connectionString = connectionString;

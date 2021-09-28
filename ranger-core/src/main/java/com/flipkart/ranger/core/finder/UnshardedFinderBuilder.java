@@ -20,13 +20,13 @@ import com.flipkart.ranger.core.finder.serviceregistry.UnshardedClusterServiceRe
 import com.flipkart.ranger.core.finder.shardselector.NoOpShardSelector;
 import com.flipkart.ranger.core.model.*;
 
-public abstract class UnshardedFinderBuilder<B extends UnshardedFinderBuilder<B, D>, D extends Deserializer<UnshardedClusterInfo>>
-        extends BaseServiceFinderBuilder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedClusterFinder, B, D> {
+public abstract class UnshardedFinderBuilder<B extends UnshardedFinderBuilder<B, D, U>, D extends Deserializer<UnshardedClusterInfo>, U extends Criteria<UnshardedClusterInfo>>
+        extends BaseServiceFinderBuilder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedClusterFinder, B, D, UnshardedCriteria> {
 
     @Override
     protected UnshardedClusterFinder buildFinder(
             Service service,
-            ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry> shardSelector,
+            ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedCriteria> shardSelector,
             ServiceNodeSelector<UnshardedClusterInfo> nodeSelector) {
         final UnshardedClusterServiceRegistry unshardedClusterServiceRegistry
                 = new UnshardedClusterServiceRegistry(service);

@@ -1,6 +1,7 @@
 package com.flipkart.ranger.core.finder.shardselector;
 
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RegistryTestUtils;
@@ -15,8 +16,9 @@ public class MatchingShardSelectorTest {
     public void testMatchingShardSelector(){
         final MapBasedServiceRegistry<TestNodeData> serviceRegistry = RegistryTestUtils.getServiceRegistry();
         final MatchingShardSelector<TestNodeData> shardSelector = new MatchingShardSelector<>();
+        Criteria<TestNodeData> criteria = () -> TestNodeData.builder().nodeId(1).build();
         final List<ServiceNode<TestNodeData>> nodes = shardSelector.nodes(
-                TestNodeData.builder().nodeId(1).build(), serviceRegistry);
+                criteria, serviceRegistry);
         Assert.assertFalse(nodes.isEmpty());
         Assert.assertEquals("localhost-1", nodes.get(0).getHost());
     }

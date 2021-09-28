@@ -16,12 +16,12 @@
 
 package com.flipkart.ranger.zookeeper.healthservice;
 
+import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.Monitor;
-import com.flipkart.ranger.core.TestUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

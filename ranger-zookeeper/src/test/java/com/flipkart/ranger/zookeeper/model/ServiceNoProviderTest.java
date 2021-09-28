@@ -18,8 +18,8 @@ package com.flipkart.ranger.zookeeper.model;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
+import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import lombok.val;
@@ -114,7 +114,7 @@ public class ServiceNoProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
+        ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1));
         Assert.assertNull(node);
         serviceFinder.stop();
 
@@ -140,7 +140,7 @@ public class ServiceNoProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
+        ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1));
         Assert.assertNull(node);
         serviceFinder.stop();
     }
