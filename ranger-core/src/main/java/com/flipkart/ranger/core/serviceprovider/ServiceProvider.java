@@ -35,6 +35,7 @@ public class ServiceProvider<T, S extends Serializer<T>> {
     private final Service service;
     private final ServiceNode<T> serviceNode;
     private final S serializer;
+    @Getter
     private final NodeDataSink<T, S> dataSink;
     @Getter
     private final ExternalTriggeredSignal<Void> startSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());

@@ -1,13 +1,15 @@
 package com.flipkart.ranger.http.config;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 /**
  *
  */
 @Data
+@AllArgsConstructor
 @Builder
+@ToString
+@NoArgsConstructor
 public class HttpClientConfig {
     private String host;
     private int port;

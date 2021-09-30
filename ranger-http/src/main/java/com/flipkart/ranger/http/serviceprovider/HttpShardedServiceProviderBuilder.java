@@ -10,17 +10,17 @@ import com.flipkart.ranger.http.serde.HttpRequestDataSerializer;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class HttpServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T, HttpServiceProviderBuilder<T>, HttpRequestDataSerializer<T>> {
+public class HttpShardedServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T, HttpShardedServiceProviderBuilder<T>, HttpRequestDataSerializer<T>> {
 
     private HttpClientConfig clientConfig;
     private ObjectMapper mapper;
 
-    public HttpServiceProviderBuilder<T> withClientConfiguration(final HttpClientConfig clientConfig) {
+    public HttpShardedServiceProviderBuilder<T> withClientConfiguration(final HttpClientConfig clientConfig) {
         this.clientConfig = clientConfig;
         return this;
     }
 
-    public HttpServiceProviderBuilder<T> withObjectMapper(final ObjectMapper mapper){
+    public HttpShardedServiceProviderBuilder<T> withObjectMapper(final ObjectMapper mapper){
         this.mapper = mapper;
         return this;
     }

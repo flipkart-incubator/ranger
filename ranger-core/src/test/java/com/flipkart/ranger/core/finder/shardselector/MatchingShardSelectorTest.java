@@ -16,9 +16,8 @@ public class MatchingShardSelectorTest {
     public void testMatchingShardSelector(){
         final MapBasedServiceRegistry<TestNodeData> serviceRegistry = RegistryTestUtils.getServiceRegistry();
         final MatchingShardSelector<TestNodeData> shardSelector = new MatchingShardSelector<>();
-        Criteria<TestNodeData> criteria = () -> TestNodeData.builder().nodeId(1).build();
         final List<ServiceNode<TestNodeData>> nodes = shardSelector.nodes(
-                criteria, serviceRegistry);
+                () -> TestNodeData.builder().nodeId(1).build(), serviceRegistry);
         Assert.assertFalse(nodes.isEmpty());
         Assert.assertEquals("localhost-1", nodes.get(0).getHost());
     }

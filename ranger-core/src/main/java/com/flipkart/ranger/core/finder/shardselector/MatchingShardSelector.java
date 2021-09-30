@@ -29,4 +29,5 @@ public class MatchingShardSelector<T> implements ShardSelector<T, MapBasedServic
     public List<ServiceNode<T>> nodes(Criteria<T> criteria, MapBasedServiceRegistry<T> serviceRegistry) {
         return serviceRegistry.nodes().get(criteria.getCriteria());
     }
+
 }

@@ -1,4 +1,4 @@
-package com.flipkart.ranger.http;
+package com.flipkart.ranger.http.servicefinder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
