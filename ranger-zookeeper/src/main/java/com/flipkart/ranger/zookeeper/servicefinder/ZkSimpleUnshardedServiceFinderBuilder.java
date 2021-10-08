@@ -1,11 +1,8 @@
 package com.flipkart.ranger.zookeeper.servicefinder;
 
-import com.flipkart.ranger.core.finder.UnshardedClusterFinder;
-import com.flipkart.ranger.core.finder.UnshardedFinderBuilder;
-import com.flipkart.ranger.core.model.NodeDataSource;
-import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.model.UnshardedClusterInfo;
-import com.flipkart.ranger.core.model.UnshardedCriteria;
+import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
+import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinderBuilder;
+import com.flipkart.ranger.core.model.*;
 import com.flipkart.ranger.core.signals.Signal;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinder.signals.ZkWatcherRegistryUpdateSignal;
@@ -22,22 +19,22 @@ import java.util.List;
  *
  */
 @Slf4j
-public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder<ZkUnshardedFinderBuilder, ZkNodeDataDeserializer<UnshardedClusterInfo>, UnshardedCriteria> {
+public class ZkSimpleUnshardedServiceFinderBuilder<T> extends SimpleUnshardedServiceFinderBuilder<T, ZkSimpleUnshardedServiceFinderBuilder<T>, ZkNodeDataDeserializer<T>, UnshardedCriteria<T>> {
     private CuratorFramework curatorFramework;
     private String connectionString;
 
-    public ZkUnshardedFinderBuilder withCuratorFramework(CuratorFramework curatorFramework) {
+    public ZkSimpleUnshardedServiceFinderBuilder<T> withCuratorFramework(CuratorFramework curatorFramework) {
         this.curatorFramework = curatorFramework;
         return this;
     }
 
-    public ZkUnshardedFinderBuilder withConnectionString(final String connectionString) {
+    public ZkSimpleUnshardedServiceFinderBuilder<T> withConnectionString(final String connectionString) {
         this.connectionString = connectionString;
         return this;
     }
 
     @Override
-    public UnshardedClusterFinder build() {
+    public SimpleUnshardedServiceFinder<T> build() {
         boolean curatorProvided = curatorFramework != null;
         if (!curatorProvided) {
             Preconditions.checkNotNull(connectionString);
@@ -52,15 +49,15 @@ public class ZkUnshardedFinderBuilder extends UnshardedFinderBuilder<ZkUnsharded
     }
 
     @Override
-    protected NodeDataSource<UnshardedClusterInfo, ZkNodeDataDeserializer<UnshardedClusterInfo>> dataSource(
+    protected NodeDataSource<T, ZkNodeDataDeserializer<T>> dataSource(
             Service service) {
         return new ZkNodeDataSource<>(service, curatorFramework);
     }
 
 
     @Override
-    protected List<Signal<UnshardedClusterInfo>> implementationSpecificRefreshSignals(
-            final Service service, final NodeDataSource<UnshardedClusterInfo, ZkNodeDataDeserializer<UnshardedClusterInfo>> nodeDataSource) {
+    protected List<Signal<T>> implementationSpecificRefreshSignals(
+            final Service service, final NodeDataSource<T, ZkNodeDataDeserializer<T>> nodeDataSource) {
         if (!disablePushUpdaters) {
             return Collections.singletonList(
                     new ZkWatcherRegistryUpdateSignal<>(service, nodeDataSource, curatorFramework));

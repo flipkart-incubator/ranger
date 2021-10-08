@@ -17,8 +17,9 @@
 package com.flipkart.ranger.core.model;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public interface ShardSelector<T, ServiceRegistryType extends ServiceRegistry<T>, U extends Criteria<T>> {
+public interface ShardSelector<T, ServiceRegistryType extends ServiceRegistry<T>, U extends Criteria<T, ServiceRegistryType>> {
 
     List<ServiceNode<T>> nodes(U criteria, ServiceRegistryType serviceRegistry);
 

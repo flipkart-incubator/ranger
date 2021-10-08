@@ -19,10 +19,14 @@ package com.flipkart.ranger.zookeeper.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.finder.UnshardedClusterFinder;
+import com.flipkart.ranger.core.finder.ServiceFinder;
+import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
+import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
+import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.model.UnshardedClusterInfo;
+import com.flipkart.ranger.core.model.ShardedCriteria;
+import com.flipkart.ranger.core.model.UnshardedCriteria;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.google.common.collect.HashMultiset;
@@ -58,27 +62,45 @@ public class SimpleServiceProviderTest {
         }
     }
 
+    private static class UnshardedInfo {
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj);
+        }
+    }
+
     @Test
-    public void testBasicDiscovery() throws Exception {
-        UnshardedClusterFinder serviceFinder = ServiceFinderBuilders.unshardedFinderBuilder()
+    public void testBasicDiscovery() {
+        SimpleUnshardedServiceFinder<UnshardedInfo> serviceFinder = ServiceFinderBuilders.<UnshardedInfo>unshardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
+                .withDisableWatchers()
                 .withDeserializer(data -> {
                     try {
                         return objectMapper.readValue(data,
-                                new TypeReference<ServiceNode<UnshardedClusterInfo>>() {
+                                new TypeReference<ServiceNode<UnshardedInfo>>() {
                                 });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                     return null;
                 })
-                .withDisableWatchers()
                 .build();
         serviceFinder.start();
         {
-            ServiceNode node = serviceFinder.get(null);
+            ServiceNode node = serviceFinder.get(new UnshardedCriteria<UnshardedInfo>() {
+                @Override
+                public boolean apply(UnshardedInfo nodeData) {
+                    return true;
+                }
+            });
             Assert.assertNotNull(node);
             System.out.println(node.getHost());
         }
@@ -86,7 +108,12 @@ public class SimpleServiceProviderTest {
         long startTime = System.currentTimeMillis();
         for(long i = 0; i <1000000; i++)
         {
-            ServiceNode node = serviceFinder.get(null);
+            ServiceNode node = serviceFinder.get(new UnshardedCriteria<UnshardedInfo>() {
+                @Override
+                public boolean apply(UnshardedInfo nodeData) {
+                    return true;
+                }
+            });
             Assert.assertNotNull(node);
             frequency.add(node.getHost());
         }
@@ -96,7 +123,7 @@ public class SimpleServiceProviderTest {
     }
 
     private void registerService(String host, int port, int shardId) throws Exception {
-        val serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
+        val serviceProvider = ServiceProviderBuilders.<UnshardedInfo>unshardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")

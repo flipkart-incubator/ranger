@@ -8,7 +8,7 @@ import com.flipkart.ranger.core.model.ServiceRegistry;
 /**
  *
  */
-public interface ServiceFinderFactory<T, R extends ServiceRegistry<T>, U extends Criteria<T>> {
+public interface ServiceFinderFactory<T, R extends ServiceRegistry<T>, U extends Criteria<T, R>> {
 
     ServiceFinder<T, R, U> buildFinder(final Service service);
 

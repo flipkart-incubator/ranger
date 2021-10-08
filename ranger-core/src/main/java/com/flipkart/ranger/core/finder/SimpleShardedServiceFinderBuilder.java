@@ -20,13 +20,13 @@ import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.MatchingShardSelector;
 import com.flipkart.ranger.core.model.*;
 
-public abstract class SimpleShardedServiceFinderBuilder<T, B extends SimpleShardedServiceFinderBuilder<T,B, D, U>, D extends Deserializer<T>, U extends Criteria<T>>
-        extends BaseServiceFinderBuilder<T, MapBasedServiceRegistry<T>, SimpleShardedServiceFinder<T>, B, D, Criteria<T>> {
+public abstract class SimpleShardedServiceFinderBuilder<T, B extends SimpleShardedServiceFinderBuilder<T,B, D, U>, D extends Deserializer<T>, U extends ShardedCriteria<T>>
+        extends BaseServiceFinderBuilder<T, MapBasedServiceRegistry<T>, SimpleShardedServiceFinder<T>, B, D, ShardedCriteria<T>> {
 
     @Override
     protected SimpleShardedServiceFinder<T> buildFinder(
             Service service,
-            ShardSelector<T, MapBasedServiceRegistry<T>, Criteria<T>> shardSelector,
+            ShardSelector<T, MapBasedServiceRegistry<T>, ShardedCriteria<T>> shardSelector,
             ServiceNodeSelector<T> nodeSelector
     ) {
         if (null == shardSelector) {

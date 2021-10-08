@@ -24,6 +24,7 @@ import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthcheck;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
@@ -95,6 +96,17 @@ public class ServiceProviderHealthcheckTest {
         public int hashCode() {
             return shardId;
         }
+
+        protected static ShardedCriteria<TestShardInfo> getCriteria(int shardId){
+            return new ShardedCriteria<TestShardInfo>() {
+                @Override
+                public TestShardInfo getShard() {
+                    return new
+
+                            TestShardInfo(shardId);
+                }
+            };
+        }
     }
 
     @Test
@@ -116,13 +128,13 @@ public class ServiceProviderHealthcheckTest {
                 .withNodeRefreshIntervalMs(1000)
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1));
+        ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
         Assert.assertNotNull(node);
         Assert.assertEquals("localhost-1", node.getHost());
         TestServiceProvider testServiceProvider = serviceProviders.get(node.getHost());
         testServiceProvider.oor();
         TestUtils.sleepForSeconds(6);
-        Assert.assertNull(serviceFinder.get(() -> new TestShardInfo(1)));
+        Assert.assertNull(serviceFinder.get(TestShardInfo.getCriteria(1)));
         serviceFinder.stop();
     }
 

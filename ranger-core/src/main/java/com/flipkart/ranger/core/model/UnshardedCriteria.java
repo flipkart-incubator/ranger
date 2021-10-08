@@ -1,14 +1,9 @@
 package com.flipkart.ranger.core.model;
 
-import lombok.Data;
+import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 
-@Data
-public class UnshardedCriteria implements Criteria<UnshardedClusterInfo> {
+public abstract class UnshardedCriteria<T> implements Criteria<T, ListBasedServiceRegistry<T>> {
 
-    private final UnshardedClusterInfo unshardedClusterInfo;
+    public abstract boolean apply(T nodeData);
 
-    @Override
-    public UnshardedClusterInfo getCriteria() {
-        return unshardedClusterInfo;
-    }
 }

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
@@ -108,6 +109,15 @@ public class ServiceProviderExtCuratorTest {
         public int hashCode() {
             return shardId;
         }
+
+        protected static ShardedCriteria<TestShardInfo> getCriteria(int shardId){
+            return new ShardedCriteria<TestShardInfo>() {
+                @Override
+                public TestShardInfo getShard() {
+                    return new TestShardInfo(shardId);
+                }
+            };
+        }
     }
 
     @Test
@@ -129,25 +139,25 @@ public class ServiceProviderExtCuratorTest {
                 .build();
         serviceFinder.start();
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1));
+            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
             Assert.assertNotNull(node);
             Assert.assertEquals(1, node.getNodeData().getShardId());
         }
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1));
+            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
             Assert.assertNotNull(node);
             Assert.assertEquals(1, node.getNodeData().getShardId());
         }
         long startTime = System.currentTimeMillis();
         for(long i = 0; i <1000000; i++)
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(2));
+            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(2));
             Assert.assertNotNull(node);
             Assert.assertEquals(2, node.getNodeData().getShardId());
         }
         log.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(99));
+            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(99));
             Assert.assertNull(node);
         }
         serviceFinder.stop();

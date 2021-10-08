@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
+import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
@@ -40,6 +40,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 
 @Slf4j
 public class CustomShardSelectorTest {
@@ -112,16 +113,25 @@ public class CustomShardSelectorTest {
             result = 31 * result + b;
             return result;
         }
+
+        protected static ShardedCriteria<TestShardInfo> getCriteria(int a, int b){
+            return new ShardedCriteria<TestShardInfo>() {
+                @Override
+                public TestShardInfo getShard() {
+                    return new TestShardInfo(a, b);
+                }
+            };
+        }
     }
 
-    private static final class TestShardSelector implements ShardSelector<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>, Criteria<TestShardInfo>> {
+    private static final class TestShardSelector implements ShardSelector<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>, ShardedCriteria<TestShardInfo>> {
 
         @Override
-        public List<ServiceNode<TestShardInfo>> nodes(Criteria<TestShardInfo> criteria, MapBasedServiceRegistry<TestShardInfo> serviceRegistry) {
+        public List<ServiceNode<TestShardInfo>> nodes(ShardedCriteria<TestShardInfo> criteria, MapBasedServiceRegistry<TestShardInfo> serviceRegistry) {
             List<ServiceNode<TestShardInfo>> nodes = Lists.newArrayList();
             for(Map.Entry<TestShardInfo, ServiceNode<TestShardInfo>> entry : serviceRegistry.nodes().entries()) {
                 TestShardInfo shardInfo = entry.getKey();
-                if((shardInfo.getA() + shardInfo.getB()) == (criteria.getCriteria().getA() + criteria.getCriteria().getB())) {
+                if((shardInfo.getA() + shardInfo.getB()) == (criteria.getShard().getA() + criteria.getShard().getB())) {
                     nodes.add(entry.getValue());
                 }
             }
@@ -148,11 +158,11 @@ public class CustomShardSelectorTest {
                 .build();
         serviceFinder.start();
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1, 10));
+            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1, 10));
             Assert.assertNull(node);
         }
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1, 2));
+            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1, 2));
             Assert.assertNotNull(node);
             Assert.assertEquals(new TestShardInfo(1, 2), node.getNodeData());
         }

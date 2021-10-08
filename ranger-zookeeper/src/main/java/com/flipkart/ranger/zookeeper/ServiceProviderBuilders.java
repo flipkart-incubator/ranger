@@ -16,7 +16,6 @@
 
 package com.flipkart.ranger.zookeeper;
 
-import com.flipkart.ranger.core.model.UnshardedClusterInfo;
 import com.flipkart.ranger.zookeeper.serviceprovider.ZkServiceProviderBuilder;
 
 public class ServiceProviderBuilders {
@@ -29,7 +28,7 @@ public class ServiceProviderBuilders {
         return new ZkServiceProviderBuilder<>();
     }
 
-    public static ZkServiceProviderBuilder<UnshardedClusterInfo> unshardedServiceProviderBuilder() {
+    public static <T> ZkServiceProviderBuilder<T> unshardedServiceProviderBuilder() {
         return new ZkServiceProviderBuilder<>();
     }
 }

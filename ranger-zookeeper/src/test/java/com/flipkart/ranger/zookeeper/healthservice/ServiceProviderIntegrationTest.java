@@ -20,12 +20,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.TestUtils;
-import com.flipkart.ranger.core.finder.UnshardedClusterFinder;
+import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.sample.RotationStatusMonitor;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.model.UnshardedClusterInfo;
+import com.flipkart.ranger.core.model.UnshardedCriteria;
 import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
@@ -50,8 +50,19 @@ public class ServiceProviderIntegrationTest {
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
 
-    UnshardedClusterFinder serviceFinder;
+    SimpleUnshardedServiceFinder serviceFinder;
 
+    private static final class UnshardedClusterInfo {
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj);
+        }
+    }
     @Before
     public void startTestCluster() throws Exception {
         objectMapper = new ObjectMapper();
@@ -65,7 +76,7 @@ public class ServiceProviderIntegrationTest {
 
         registerService("localhost-4", 9000, 2, anotherFile);
 
-        serviceFinder = ServiceFinderBuilders.unshardedFinderBuilder()
+        serviceFinder = ServiceFinderBuilders.<UnshardedClusterInfo>unshardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -101,7 +112,12 @@ public class ServiceProviderIntegrationTest {
         boolean filecreate = file.createNewFile();
         System.out.println("created file");
         TestUtils.sleepForSeconds(8);
-        List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll(null);
+        List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll(new UnshardedCriteria() {
+            @Override
+            public boolean apply(Object nodeData) {
+                return true;
+            }
+        });
         System.out.println("all = " + all);
         Assert.assertEquals(3, all.size());
 
@@ -109,7 +125,12 @@ public class ServiceProviderIntegrationTest {
         delete = file.delete();
         System.out.println("deleted file");
         TestUtils.sleepForSeconds(8);
-        all = serviceFinder.getAll(null);
+        all = serviceFinder.getAll(new UnshardedCriteria() {
+            @Override
+            public boolean apply(Object nodeData) {
+                return true;
+            }
+        });
         System.out.println("all = " + all);
         Assert.assertEquals(0, all.size());
 
@@ -117,7 +138,12 @@ public class ServiceProviderIntegrationTest {
         filecreate = anotherFile.createNewFile();
         System.out.println("created anotherFile");
         TestUtils.sleepForSeconds(6);
-        all = serviceFinder.getAll(null);
+        all = serviceFinder.getAll(new UnshardedCriteria() {
+            @Override
+            public boolean apply(Object nodeData) {
+                return true;
+            }
+        });
         System.out.println("all = " + all);
         Assert.assertEquals(1, all.size());
 

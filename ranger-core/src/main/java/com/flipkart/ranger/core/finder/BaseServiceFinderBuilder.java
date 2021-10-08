@@ -40,7 +40,7 @@ public abstract class BaseServiceFinderBuilder
                 F extends ServiceFinder<T, R, U>,
                 B extends BaseServiceFinderBuilder<T, R, F, B, D, U>,
                 D extends Deserializer<T>,
-                U extends Criteria<T>> {
+                U extends Criteria<T, R>> {
 
     protected String namespace;
     protected String serviceName;

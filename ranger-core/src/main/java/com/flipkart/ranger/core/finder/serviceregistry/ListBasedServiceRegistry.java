@@ -19,33 +19,27 @@ package com.flipkart.ranger.core.finder.serviceregistry;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ServiceRegistry;
-import com.flipkart.ranger.core.model.UnshardedClusterInfo;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ListBasedServiceRegistry extends ServiceRegistry<UnshardedClusterInfo> {
-    private AtomicReference<List<ServiceNode<UnshardedClusterInfo>>> nodes
+public class ListBasedServiceRegistry<T> extends ServiceRegistry<T> {
+    private AtomicReference<List<ServiceNode<T>>> nodes
                                         = new AtomicReference<>();
 
     public ListBasedServiceRegistry(Service service) {
         super(service);
     }
 
-    public List<ServiceNode<UnshardedClusterInfo>> nodes() {
-        return nodes.get();
-    }
-
-    @Override
-    public List<ServiceNode<UnshardedClusterInfo>> nodeList() {
-        List<ServiceNode<UnshardedClusterInfo>> nodes = this.nodes.get();
+    public List<ServiceNode<T>> nodeList() {
+        List<ServiceNode<T>> nodes = this.nodes.get();
         return null == nodes ? Collections.emptyList() : nodes;
     }
 
     @Override
-    public void updateNodes(List<ServiceNode<UnshardedClusterInfo>> serviceNodes) {
+    public void updateNodes(List<ServiceNode<T>> serviceNodes) {
         nodes.set(ImmutableList.copyOf(serviceNodes));
     }
 }

@@ -5,7 +5,9 @@ import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
+import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.flipkart.ranger.core.units.TestNodeData;
+import com.flipkart.ranger.core.utils.CriteriaUtils;
 import com.flipkart.ranger.core.utils.RegistryTestUtils;
 import com.google.common.collect.Lists;
 import lombok.val;
@@ -16,10 +18,10 @@ import java.util.List;
 
 public class SimpleShardFinderTest {
 
-    static class TestSimpleShardSelector<T> implements ShardSelector<T, MapBasedServiceRegistry<T>, Criteria<T>>{
-        
+    static class TestSimpleShardSelector<T> implements ShardSelector<T, MapBasedServiceRegistry<T>, ShardedCriteria<T>>{
+
         @Override
-        public List<ServiceNode<T>> nodes(Criteria<T> criteria, MapBasedServiceRegistry<T> serviceRegistry) {
+        public List<ServiceNode<T>> nodes(ShardedCriteria<T> criteria, MapBasedServiceRegistry<T> serviceRegistry) {
             return Lists.newArrayList();
         }
     }
@@ -29,10 +31,10 @@ public class SimpleShardFinderTest {
         final MapBasedServiceRegistry<TestNodeData> serviceRegistry = RegistryTestUtils.getServiceRegistry();
         final TestSimpleShardSelector<TestNodeData> shardSelector = new TestSimpleShardSelector<>();
         final RoundRobinServiceNodeSelector<TestNodeData> roundRobinServiceNodeSelector = new RoundRobinServiceNodeSelector<>();
-        val simpleShardedFinder = new SimpleShardedServiceFinder<>(
+        val simpleShardedFinder = new SimpleShardedServiceFinder<TestNodeData>(
                 serviceRegistry, shardSelector, roundRobinServiceNodeSelector);
         val testNodeDataServiceNode = simpleShardedFinder.get(
-                () -> TestNodeData.builder().nodeId(2).build());
+                CriteriaUtils.getShardedCriteria(2));
         Assert.assertNull(testNodeDataServiceNode);
     }
 }

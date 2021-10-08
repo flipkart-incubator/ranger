@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import lombok.val;
 import org.apache.curator.test.TestingCluster;
@@ -93,7 +94,17 @@ public class ServiceNoProviderTest {
         public int hashCode() {
             return shardId;
         }
+
+        protected static ShardedCriteria<TestShardInfo> getCriteria(int shardId){
+            return new ShardedCriteria<TestShardInfo>() {
+                @Override
+                public TestShardInfo getShard() {
+                    return new TestShardInfo(shardId);
+                }
+            };
+        }
     }
+
 
     @Test
     public void testBasicDiscovery() throws Exception {
@@ -114,7 +125,7 @@ public class ServiceNoProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1));
+        ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
         Assert.assertNull(node);
         serviceFinder.stop();
 
@@ -140,7 +151,7 @@ public class ServiceNoProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(() -> new TestShardInfo(1));
+        ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
         Assert.assertNull(node);
         serviceFinder.stop();
     }

@@ -17,7 +17,7 @@
 package com.flipkart.ranger.zookeeper;
 
 import com.flipkart.ranger.zookeeper.servicefinder.ZkSimpleShardedServiceFinderBuilder;
-import com.flipkart.ranger.zookeeper.servicefinder.ZkUnshardedFinderBuilder;
+import com.flipkart.ranger.zookeeper.servicefinder.ZkSimpleUnshardedServiceFinderBuilder;
 
 public class ServiceFinderBuilders {
     
@@ -29,7 +29,7 @@ public class ServiceFinderBuilders {
         return new ZkSimpleShardedServiceFinderBuilder<>();
     }
 
-    public static ZkUnshardedFinderBuilder unshardedFinderBuilder() {
-        return new ZkUnshardedFinderBuilder();
+    public static <T> ZkSimpleUnshardedServiceFinderBuilder<T> unshardedFinderBuilder() {
+        return new ZkSimpleUnshardedServiceFinderBuilder<>();
     }
 }

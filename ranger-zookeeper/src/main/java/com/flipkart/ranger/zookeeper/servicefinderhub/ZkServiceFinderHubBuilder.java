@@ -14,7 +14,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
  *
  */
 @Slf4j
-public class ZkServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U extends Criteria<T>> extends ServiceFinderHubBuilder<T, R, U> {
+public class ZkServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U extends Criteria<T, R>> extends ServiceFinderHubBuilder<T, R, U> {
     private String namespace;
     private CuratorFramework curatorFramework;
     private String connectionString;
