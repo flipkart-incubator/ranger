@@ -16,20 +16,20 @@
 
 package com.flipkart.ranger.core.finder;
 
-import com.flipkart.ranger.core.finder.serviceregistry.UnshardedClusterServiceRegistry;
+import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.NoOpShardSelector;
 import com.flipkart.ranger.core.model.*;
 
 public abstract class UnshardedFinderBuilder<B extends UnshardedFinderBuilder<B, D, U>, D extends Deserializer<UnshardedClusterInfo>, U extends Criteria<UnshardedClusterInfo>>
-        extends BaseServiceFinderBuilder<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedClusterFinder, B, D, UnshardedCriteria> {
+        extends BaseServiceFinderBuilder<UnshardedClusterInfo, ListBasedServiceRegistry, UnshardedClusterFinder, B, D, UnshardedCriteria> {
 
     @Override
     protected UnshardedClusterFinder buildFinder(
             Service service,
-            ShardSelector<UnshardedClusterInfo, UnshardedClusterServiceRegistry, UnshardedCriteria> shardSelector,
+            ShardSelector<UnshardedClusterInfo, ListBasedServiceRegistry, UnshardedCriteria> shardSelector,
             ServiceNodeSelector<UnshardedClusterInfo> nodeSelector) {
-        final UnshardedClusterServiceRegistry unshardedClusterServiceRegistry
-                = new UnshardedClusterServiceRegistry(service);
-        return new UnshardedClusterFinder(unshardedClusterServiceRegistry, new NoOpShardSelector(), nodeSelector);
+        final ListBasedServiceRegistry listBasedServiceRegistry
+                = new ListBasedServiceRegistry(service);
+        return new UnshardedClusterFinder(listBasedServiceRegistry, new NoOpShardSelector(), nodeSelector);
     }
 }

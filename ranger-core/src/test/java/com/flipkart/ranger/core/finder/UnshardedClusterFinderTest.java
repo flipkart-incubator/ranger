@@ -1,6 +1,6 @@
 package com.flipkart.ranger.core.finder;
 
-import com.flipkart.ranger.core.finder.serviceregistry.UnshardedClusterServiceRegistry;
+import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.NoOpShardSelector;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
@@ -23,7 +23,7 @@ public class UnshardedClusterFinderTest {
     }
     @Test
     public void unshardedClusterFinder(){
-        final UnshardedClusterServiceRegistry unshardedRegistry = RegistryTestUtils.getUnshardedRegistry();
+        final ListBasedServiceRegistry unshardedRegistry = RegistryTestUtils.getUnshardedRegistry();
         final NoOpShardSelector shardSelector = new NoOpShardSelector();
         final UnshardedClusterInfo unshardedClusterInfo = new UnshardedClusterInfo();
         UnshardedClusterFinder unshardedClusterFinder = new UnshardedClusterFinder(

@@ -1,7 +1,7 @@
 package com.flipkart.ranger.core.utils;
 
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
-import com.flipkart.ranger.core.finder.serviceregistry.UnshardedClusterServiceRegistry;
+import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.UnshardedClusterInfo;
@@ -23,9 +23,9 @@ public class RegistryTestUtils {
         return serviceRegistry;
     }
 
-    public static UnshardedClusterServiceRegistry getUnshardedRegistry(){
+    public static ListBasedServiceRegistry getUnshardedRegistry(){
         final Service service = new Service("test", "test-service");
-        final UnshardedClusterServiceRegistry serviceRegistry = new UnshardedClusterServiceRegistry(service);
+        final ListBasedServiceRegistry serviceRegistry = new ListBasedServiceRegistry(service);
         List<ServiceNode<UnshardedClusterInfo>> serviceNodes = Lists.newArrayList();
         serviceNodes.add(new ServiceNode<>("localhost-1", 9000, new UnshardedClusterInfo()));
         serviceNodes.add(new ServiceNode<>("localhost-2", 9001, new UnshardedClusterInfo()));

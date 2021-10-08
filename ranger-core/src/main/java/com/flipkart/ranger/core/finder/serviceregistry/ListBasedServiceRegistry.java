@@ -25,11 +25,11 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class UnshardedClusterServiceRegistry extends ServiceRegistry<UnshardedClusterInfo> {
+public class ListBasedServiceRegistry extends ServiceRegistry<UnshardedClusterInfo> {
     private AtomicReference<List<ServiceNode<UnshardedClusterInfo>>> nodes
                                         = new AtomicReference<>();
 
-    public UnshardedClusterServiceRegistry(Service service) {
+    public ListBasedServiceRegistry(Service service) {
         super(service);
     }
 
