@@ -23,8 +23,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class MapBasedServiceRegistry<T> extends ServiceRegistry<T> {
     private AtomicReference<ListMultimap<T, ServiceNode<T>>> nodes = new AtomicReference<>();
@@ -36,6 +39,12 @@ public class MapBasedServiceRegistry<T> extends ServiceRegistry<T> {
     public ListMultimap<T, ServiceNode<T>> nodes() {
         final ListMultimap<T, ServiceNode<T>> nodeList = nodes.get();
         return null == nodeList ? ImmutableListMultimap.of() : nodeList;
+    }
+
+    @Override
+    public List<ServiceNode<T>> nodeList() {
+        final ListMultimap<T, ServiceNode<T>> nodeList = nodes.get();
+        return null == nodeList ? Collections.emptyList() : new ArrayList<>(nodeList.values());
     }
 
     @Override

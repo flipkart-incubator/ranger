@@ -22,6 +22,7 @@ import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.model.UnshardedClusterInfo;
 import com.google.common.collect.ImmutableList;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,6 +36,12 @@ public class ListBasedServiceRegistry extends ServiceRegistry<UnshardedClusterIn
 
     public List<ServiceNode<UnshardedClusterInfo>> nodes() {
         return nodes.get();
+    }
+
+    @Override
+    public List<ServiceNode<UnshardedClusterInfo>> nodeList() {
+        List<ServiceNode<UnshardedClusterInfo>> nodes = this.nodes.get();
+        return null == nodes ? Collections.emptyList() : nodes;
     }
 
     @Override

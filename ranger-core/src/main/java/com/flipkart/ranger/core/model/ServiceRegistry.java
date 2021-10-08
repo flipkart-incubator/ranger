@@ -27,5 +27,7 @@ import java.util.List;
 public abstract class ServiceRegistry<T> {
     private final Service service;
 
+    public abstract List<ServiceNode<T>> nodeList();
+
     public abstract void updateNodes(List<ServiceNode<T>> nodes);
 }
