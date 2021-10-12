@@ -8,6 +8,7 @@ import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.core.util.FinderUtils;
 import com.flipkart.ranger.http.common.HttpNodeDataStoreConnector;
 import com.flipkart.ranger.http.config.HttpClientConfig;
+import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import okhttp3.Request;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,11 +27,15 @@ import java.util.Optional;
  */
 @Slf4j
 public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> extends HttpNodeDataStoreConnector<T> implements NodeDataSource<T, D> {
+
+    private final Service service;
+
     public HttpNodeDataSource(
             Service service,
             final HttpClientConfig config,
             ObjectMapper mapper) {
-        super(service, config, mapper);
+        super(config, mapper);
+        this.service = service;
     }
 
     @Override
@@ -42,37 +48,39 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                         : "http")
                 .host(config.getHost())
                 .port(config.getPort() == 0
-                      ? defaultPort()
-                      : config.getPort())
+                        ? defaultPort()
+                        : config.getPort())
                 .encodedPath(String.format("/ranger/nodes/v1/%s/%s", service.getNamespace(), service.getServiceName()))
                 .build();
         val request = new Request.Builder()
                 .url(httpUrl)
                 .get()
                 .build();
+        ServiceNodesResponse<T> serviceNodesResponse = null;
         try (val response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 try (final ResponseBody body = response.body()) {
                     if (null == body) {
                         log.warn("HTTP call to {} returned empty body", httpUrl);
-                    }
-                    else {
+                    } else {
                         final byte[] bytes = body.bytes();
-                        return Optional.of(FinderUtils.filterValidNodes(
-                                service,
-                                deserializer.deserialize(bytes),
-                                healthcheckZombieCheckThresholdTime(service)));
+                        serviceNodesResponse = deserializer.deserialize(bytes);
                     }
                 }
+            } else {
+                log.warn("HTTP call to {} returned: {}", httpUrl, response.code());
             }
-            else {
-                log.warn("HTTP call to {} returned: {}", httpUrl.toString(), response.code());
-            }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Exceptions.illegalState("Error fetching data from server: " + httpUrl, e);
         }
-        log.error("No data returned from server: " + httpUrl);
+
+        if (null != serviceNodesResponse && null != serviceNodesResponse.getNodes() &&
+                !serviceNodesResponse.getNodes().isEmpty()) {
+            return Optional.of(FinderUtils.filterValidNodes(
+                    service,
+                    serviceNodesResponse.getNodes(),
+                    healthcheckZombieCheckThresholdTime(service)));
+        }
         return Optional.empty();
     }
 

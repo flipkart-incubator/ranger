@@ -23,8 +23,10 @@ import lombok.Data;
 @Data
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class Service {
-    private final String namespace;
-    private final String serviceName;
+    private String namespace;
+    private String serviceName;
+
+    public Service(){}
 
     public String name() {
         return String.format("%s/%s", namespace, serviceName);

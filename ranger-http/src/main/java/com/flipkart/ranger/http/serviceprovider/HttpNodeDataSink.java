@@ -23,8 +23,11 @@ import java.util.Optional;
 @Slf4j
 public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends HttpNodeDataStoreConnector<T> implements NodeDataSink<T, S> {
 
+    private final Service service;
+
     public HttpNodeDataSink(Service service, HttpClientConfig config, ObjectMapper mapper) {
-        super(service, config, mapper);
+        super(config, mapper);
+        this.service = service;
     }
 
     @Override

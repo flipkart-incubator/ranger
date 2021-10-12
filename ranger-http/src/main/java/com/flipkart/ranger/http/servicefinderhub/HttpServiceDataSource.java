@@ -24,8 +24,8 @@ import java.util.Collections;
 @Slf4j
 public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> implements ServiceDataSource {
 
-    public HttpServiceDataSource(Service service, HttpClientConfig config, ObjectMapper mapper) {
-        super(service, config, mapper);
+    public HttpServiceDataSource(HttpClientConfig config, ObjectMapper mapper) {
+        super(config, mapper);
     }
 
     @Override

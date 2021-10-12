@@ -10,7 +10,7 @@ import java.util.List;
  *
  */
 @Data
-public class ServiceNodesResponse<T> {
+public class  ServiceNodesResponse<T> {
     private final boolean success;
     final List<ServiceNode<T>> nodes;
 

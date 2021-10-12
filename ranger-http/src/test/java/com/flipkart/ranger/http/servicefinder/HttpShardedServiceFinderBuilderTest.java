@@ -72,14 +72,12 @@ public class HttpShardedServiceFinderBuilderTest {
                 .withServiceName("test")
                 .withObjectMapper(MAPPER)
                 .withDeserializer(data -> {
-                    final ServiceNodesResponse<NodeData> response;
                     try {
-                        response = MAPPER.readValue(data, new TypeReference<ServiceNodesResponse<NodeData>>() {});
+                        return MAPPER.readValue(data, new TypeReference<ServiceNodesResponse<NodeData>>() {});
                     }
                     catch (IOException e) {
                         throw new IllegalArgumentException(e);
                     }
-                    return response.isSuccess() ? response.getNodes() : Collections.emptyList();
                 })
                 .withShardSelector((criteria, registry) -> registry
                         .nodes()

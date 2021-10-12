@@ -10,13 +10,12 @@ public class HttpNodeDataStoreConnectorTest {
     
     @Test
     public void testHttpNodeDataStoreConnector(){
-        final Service service = new Service("test", "test-service");
         final ObjectMapper objectMapper = new ObjectMapper();
         final HttpClientConfig httpClientConfig = HttpClientConfig.builder()
                 .host("localhost-1")
                 .port(80)
                 .build();
-        HttpNodeDataStoreConnector httpNodeDataStoreConnector = new HttpNodeDataStoreConnector(service, httpClientConfig, objectMapper);
+        HttpNodeDataStoreConnector httpNodeDataStoreConnector = new HttpNodeDataStoreConnector(httpClientConfig, objectMapper);
         Assert.assertNotNull(httpNodeDataStoreConnector);
         Assert.assertTrue(httpNodeDataStoreConnector.isActive());
     }
