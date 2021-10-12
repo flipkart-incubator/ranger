@@ -54,6 +54,7 @@ public abstract class ServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U
     }
 
     public ServiceFinderHub<T, R, U> build() {
+        preBuild();
         Preconditions.checkNotNull(serviceDataSource, "Provide a non-null service data source");
         Preconditions.checkNotNull(serviceFinderFactory, "Provide a non-null service finder factory");
 
@@ -73,6 +74,7 @@ public abstract class ServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U
                 .registerConsumers(extraStopSignalConsumers)
                 .registerConsumer(x -> refreshSignal.stop())
                 .registerConsumer(x -> serviceDataSource.stop());
+        postBuild(hub);
         return hub;
     }
 
