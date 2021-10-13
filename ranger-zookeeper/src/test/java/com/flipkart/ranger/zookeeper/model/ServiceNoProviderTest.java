@@ -95,13 +95,8 @@ public class ServiceNoProviderTest {
             return shardId;
         }
 
-        protected static ShardedCriteria<TestShardInfo> getCriteria(int shardId){
-            return new ShardedCriteria<TestShardInfo>() {
-                @Override
-                public TestShardInfo getShard() {
-                    return new TestShardInfo(shardId);
-                }
-            };
+        private static ShardedCriteria<TestShardInfo> getCriteria(int shardId){
+            return () -> new TestShardInfo(shardId);
         }
     }
 

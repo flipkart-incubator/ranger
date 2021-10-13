@@ -108,12 +108,7 @@ public class ServiceHubTest {
 
         TestUtils.sleepForSeconds(3);
         val node = hub.finder(new Service(NAMESPACE, "s1"))
-                .map(finder -> finder.get(new ShardedCriteria<TestShardInfo>() {
-                            @Override
-                            public TestShardInfo getShard() {
-                                return new TestShardInfo("prod");
-                            }
-                        }))
+                .map(finder -> finder.get(() -> new TestShardInfo("prod")))
                 .orElse(null);
         Assert.assertNotNull(node);
         hub.stop();

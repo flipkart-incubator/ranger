@@ -89,12 +89,7 @@ public class HttpShardedServiceFinderBuilderTest {
                 .build();
         finder.start();
         TestUtils.sleepForSeconds(3);
-        Assert.assertNotNull(finder.get(new ShardedCriteria<NodeData>() {
-            @Override
-            public NodeData getShard() {
-                return testNode;
-            }
-        }));
+        Assert.assertNotNull(finder.get(() -> testNode));
     }
 
 }

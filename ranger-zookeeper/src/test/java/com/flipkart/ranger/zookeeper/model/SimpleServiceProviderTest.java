@@ -95,12 +95,7 @@ public class SimpleServiceProviderTest {
                 .build();
         serviceFinder.start();
         {
-            ServiceNode node = serviceFinder.get(new UnshardedCriteria<UnshardedInfo>() {
-                @Override
-                public boolean apply(UnshardedInfo nodeData) {
-                    return true;
-                }
-            });
+            ServiceNode node = serviceFinder.get(nodeData -> true);
             Assert.assertNotNull(node);
             System.out.println(node.getHost());
         }

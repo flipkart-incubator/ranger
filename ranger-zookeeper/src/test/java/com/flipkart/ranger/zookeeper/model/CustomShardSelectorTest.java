@@ -114,13 +114,8 @@ public class CustomShardSelectorTest {
             return result;
         }
 
-        protected static ShardedCriteria<TestShardInfo> getCriteria(int a, int b){
-            return new ShardedCriteria<TestShardInfo>() {
-                @Override
-                public TestShardInfo getShard() {
-                    return new TestShardInfo(a, b);
-                }
-            };
+        private static ShardedCriteria<TestShardInfo> getCriteria(int a, int b){
+            return () -> new TestShardInfo(a, b);
         }
     }
 

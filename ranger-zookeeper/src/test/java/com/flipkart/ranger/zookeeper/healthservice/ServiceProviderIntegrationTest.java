@@ -112,12 +112,7 @@ public class ServiceProviderIntegrationTest {
         boolean filecreate = file.createNewFile();
         System.out.println("created file");
         TestUtils.sleepForSeconds(8);
-        List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll(new UnshardedCriteria() {
-            @Override
-            public boolean apply(Object nodeData) {
-                return true;
-            }
-        });
+        List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll((UnshardedCriteria) nodeData -> true);
         System.out.println("all = " + all);
         Assert.assertEquals(3, all.size());
 
