@@ -2,21 +2,16 @@ package com.flipkart.ranger.http.serviceprovider;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.TestUtils;
-import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.http.config.HttpClientConfig;
-import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.model.ServiceRegistrationResponse;
 import com.flipkart.ranger.http.serde.HttpRequestDataSerializer;
-import com.flipkart.ranger.http.servicefinder.HttpShardedServiceFinderBuilderTest;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import lombok.Builder;
 import lombok.Data;
 import lombok.val;
-import okhttp3.RequestBody;
 import org.junit.Rule;
 import org.junit.Test;
 

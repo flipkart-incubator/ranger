@@ -2,7 +2,6 @@ package com.flipkart.ranger.http.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.model.NodeDataStoreConnector;
-import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ConnectionPool;

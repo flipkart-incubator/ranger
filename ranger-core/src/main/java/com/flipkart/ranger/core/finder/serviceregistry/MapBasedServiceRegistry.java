@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class MapBasedServiceRegistry<T> extends ServiceRegistry<T> {
     private AtomicReference<ListMultimap<T, ServiceNode<T>>> nodes = new AtomicReference<>();

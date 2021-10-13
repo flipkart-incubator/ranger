@@ -2,7 +2,9 @@ package com.flipkart.ranger.zookeeper.servicefinder;
 
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinderBuilder;
-import com.flipkart.ranger.core.model.*;
+import com.flipkart.ranger.core.model.NodeDataSource;
+import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.core.model.UnshardedCriteria;
 import com.flipkart.ranger.core.signals.Signal;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinder.signals.ZkWatcherRegistryUpdateSignal;

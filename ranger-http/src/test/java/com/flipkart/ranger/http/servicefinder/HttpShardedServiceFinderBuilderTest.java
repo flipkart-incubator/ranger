@@ -7,10 +7,8 @@ import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
-import com.flipkart.ranger.http.servicefinder.HttpShardedServiceFinderBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import lombok.Data;
 import lombok.val;
@@ -19,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 

@@ -17,8 +17,9 @@
 package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
-import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
-import com.flipkart.ranger.core.model.*;
+import com.flipkart.ranger.core.model.ServiceNodeSelector;
+import com.flipkart.ranger.core.model.ShardSelector;
+import com.flipkart.ranger.core.model.UnshardedCriteria;
 
 public class SimpleUnshardedServiceFinder<T> extends ServiceFinder<T, ListBasedServiceRegistry<T>, UnshardedCriteria<T>> {
     public SimpleUnshardedServiceFinder(ListBasedServiceRegistry<T> serviceRegistry,

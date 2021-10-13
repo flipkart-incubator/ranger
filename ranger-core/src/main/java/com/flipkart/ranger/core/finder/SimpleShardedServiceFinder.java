@@ -17,7 +17,6 @@
 package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.model.ShardedCriteria;

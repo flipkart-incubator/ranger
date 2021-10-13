@@ -2,7 +2,6 @@ package com.flipkart.ranger.zookeeper.servicefinder;
 
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinderBuilder;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ShardedCriteria;

@@ -1,12 +1,9 @@
 package com.flipkart.ranger.http.servicefinderhub;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.util.Exceptions;
-import com.flipkart.ranger.core.util.FinderUtils;
 import com.flipkart.ranger.http.common.HttpNodeDataStoreConnector;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceDataSourceResponse;

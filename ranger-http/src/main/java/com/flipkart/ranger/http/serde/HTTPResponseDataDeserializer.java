@@ -1,10 +1,7 @@
 package com.flipkart.ranger.http.serde;
 
 import com.flipkart.ranger.core.model.Deserializer;
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
-
-import java.util.Collection;
 
 /**
  *

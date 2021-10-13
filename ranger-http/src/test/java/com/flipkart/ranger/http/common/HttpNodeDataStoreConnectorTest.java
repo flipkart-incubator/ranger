@@ -1,7 +1,6 @@
 package com.flipkart.ranger.http.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import org.junit.Assert;
 import org.junit.Test;

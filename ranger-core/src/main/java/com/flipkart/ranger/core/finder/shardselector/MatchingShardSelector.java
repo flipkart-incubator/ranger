@@ -17,15 +17,12 @@
 package com.flipkart.ranger.core.finder.shardselector;
 
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.google.common.base.Preconditions;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class MatchingShardSelector<T> implements ShardSelector<T, MapBasedServiceRegistry<T>, ShardedCriteria<T>> {
 

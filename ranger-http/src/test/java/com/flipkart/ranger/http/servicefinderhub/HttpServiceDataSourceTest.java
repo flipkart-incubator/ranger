@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 
 public class HttpServiceDataSourceTest {
 

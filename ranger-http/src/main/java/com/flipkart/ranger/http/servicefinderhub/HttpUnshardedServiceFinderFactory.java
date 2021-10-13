@@ -2,7 +2,6 @@ package com.flipkart.ranger.http.servicefinderhub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.ServiceFinder;
-import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
 import com.flipkart.ranger.core.model.Service;
