@@ -76,7 +76,7 @@ public class ServiceHubTest {
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withRefreshFrequencyMs(1000)
-                .withServiceDataSource(new ZkServiceDataSource("test", curatorFramework))
+                .withServiceDataSource(new ZkServiceDataSource("test", testingCluster.getConnectString()))
                 .withServiceFinderFactory(ZkShardedServiceFinderFactory.<TestShardInfo>builder()
                                                   .curatorFramework(curatorFramework)
                                                   .deserializer(this::read)
