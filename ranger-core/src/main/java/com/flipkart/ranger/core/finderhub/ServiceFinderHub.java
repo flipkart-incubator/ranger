@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  *
  */
 @Slf4j
-public class ServiceFinderHub<T, R extends ServiceRegistry<T>, U extends Criteria<T, R>> {
+public class ServiceFinderHub<T, R extends ServiceRegistry<T>, U extends Criteria<T>> {
     private final AtomicReference<Map<Service, ServiceFinder<T, R, U>>> finders = new AtomicReference<>(new HashMap<>());
     private final Lock updateLock = new ReentrantLock();
     private final Condition updateCond = updateLock.newCondition();

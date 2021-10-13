@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 /**
  *
  */
-public abstract class ServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U extends Criteria<T, R>> {
+public abstract class ServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U extends Criteria<T>> {
     private ServiceDataSource serviceDataSource;
     private ServiceFinderFactory<T, R, U> serviceFinderFactory;
     private long refreshFrequencyMs = 10_000;

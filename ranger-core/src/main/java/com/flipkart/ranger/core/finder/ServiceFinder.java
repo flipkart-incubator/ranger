@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Slf4j
-public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>, U extends Criteria<T, ServiceRegistryType>> {
+public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>, U extends Criteria<T>> {
     @Getter
     private final ServiceRegistryType serviceRegistry;
     private final ShardSelector<T, ServiceRegistryType, U> shardSelector;

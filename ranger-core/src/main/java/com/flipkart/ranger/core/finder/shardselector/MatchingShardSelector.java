@@ -35,4 +35,5 @@ public class MatchingShardSelector<T> implements ShardSelector<T, MapBasedServic
         return serviceRegistry.nodes().get(criteria.getShard());
     }
 
+
 }

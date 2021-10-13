@@ -7,7 +7,7 @@ import com.flipkart.ranger.core.model.ServiceRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class HttpServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U extends Criteria<T, R>> extends ServiceFinderHubBuilder<T, R, U> {
+public class HttpServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U extends Criteria<T>> extends ServiceFinderHubBuilder<T, R, U> {
 
     @Override
     protected void preBuild() {
