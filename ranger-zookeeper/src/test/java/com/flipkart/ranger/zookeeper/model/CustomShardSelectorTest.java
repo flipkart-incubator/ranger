@@ -122,7 +122,10 @@ public class CustomShardSelectorTest {
     private static final class TestShardSelector implements ShardSelector<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>, ShardedCriteria<TestShardInfo>> {
 
         @Override
-        public List<ServiceNode<TestShardInfo>> nodes(ShardedCriteria<TestShardInfo> criteria, MapBasedServiceRegistry<TestShardInfo> serviceRegistry) {
+        public List<ServiceNode<TestShardInfo>> nodes(
+                ShardedCriteria<TestShardInfo> criteria,
+                MapBasedServiceRegistry<TestShardInfo> serviceRegistry
+        ) {
             List<ServiceNode<TestShardInfo>> nodes = Lists.newArrayList();
             for(Map.Entry<TestShardInfo, ServiceNode<TestShardInfo>> entry : serviceRegistry.nodes().entries()) {
                 TestShardInfo shardInfo = entry.getKey();
