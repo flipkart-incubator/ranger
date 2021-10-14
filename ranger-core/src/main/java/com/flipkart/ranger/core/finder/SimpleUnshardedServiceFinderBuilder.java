@@ -17,7 +17,7 @@
 package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
-import com.flipkart.ranger.core.finder.shardselector.ListBasedShardSelector;
+import com.flipkart.ranger.core.finder.shardselector.FilterShardSelector;
 import com.flipkart.ranger.core.model.*;
 
 public abstract class SimpleUnshardedServiceFinderBuilder<T, B extends SimpleUnshardedServiceFinderBuilder<T,B, D, U>, D extends Deserializer<T>, U extends UnshardedCriteria<T>>
@@ -30,7 +30,7 @@ public abstract class SimpleUnshardedServiceFinderBuilder<T, B extends SimpleUns
             ServiceNodeSelector<T> nodeSelector
     ) {
         if (null == shardSelector) {
-            shardSelector = new ListBasedShardSelector<>();
+            shardSelector = new FilterShardSelector<>();
         }
         final ListBasedServiceRegistry<T> serviceRegistry = new ListBasedServiceRegistry<>(service);
         return new SimpleUnshardedServiceFinder<>(serviceRegistry, shardSelector, nodeSelector);

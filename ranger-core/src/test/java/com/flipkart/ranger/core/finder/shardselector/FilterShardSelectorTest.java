@@ -10,12 +10,12 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class ListBasedShardSelectorTest {
+public class FilterShardSelectorTest {
 
     @Test
     public void testNoOpShardSelector(){
         final ListBasedServiceRegistry serviceRegistry = RegistryTestUtils.getUnshardedRegistry();
-        final ListBasedShardSelector<TestNodeData> shardSelector = new ListBasedShardSelector<>();
+        final FilterShardSelector<TestNodeData> shardSelector = new FilterShardSelector<>();
         final List<ServiceNode<TestNodeData>> nodes = shardSelector.nodes(CriteriaUtils.getUnshardedCriteria(1), serviceRegistry);
         Assert.assertFalse(nodes.isEmpty());
         Assert.assertEquals("localhost-1", nodes.get(0).getHost());
