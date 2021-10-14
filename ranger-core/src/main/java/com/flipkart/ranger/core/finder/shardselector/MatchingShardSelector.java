@@ -17,20 +17,26 @@
 package com.flipkart.ranger.core.finder.shardselector;
 
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
-import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.google.common.base.Preconditions;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class MatchingShardSelector<T> implements ShardSelector<T, MapBasedServiceRegistry<T>, ShardedCriteria<T>> {
+public class MatchingShardSelector<T> implements ShardSelector<T, MapBasedServiceRegistry<T>, Criteria<T>> {
+
 
     @Override
-    public List<ServiceNode<T>> nodes(ShardedCriteria<T> criteria, MapBasedServiceRegistry<T> serviceRegistry) {
+    public List<ServiceNode<T>> nodes(Criteria<T> criteria, MapBasedServiceRegistry<T> serviceRegistry) {
         Preconditions.checkNotNull(criteria, "Criteria can't be null");
-        return serviceRegistry.nodes().get(criteria.getShard());
+
+        return serviceRegistry.nodes()
+                .entries()
+                .stream()
+                .filter(e -> criteria.apply(e.getKey()))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
     }
-
-
 }

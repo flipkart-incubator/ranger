@@ -17,13 +17,13 @@
 package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
-import com.flipkart.ranger.core.model.ShardedCriteria;
 
-public class SimpleShardedServiceFinder<T> extends ServiceFinder<T, MapBasedServiceRegistry<T>, ShardedCriteria<T>> {
+public class SimpleShardedServiceFinder<T> extends ServiceFinder<T, MapBasedServiceRegistry<T>, Criteria<T>> {
     public SimpleShardedServiceFinder(MapBasedServiceRegistry<T> serviceRegistry,
-                                      ShardSelector<T, MapBasedServiceRegistry<T>, ShardedCriteria<T>> shardSelector,
+                                      ShardSelector<T, MapBasedServiceRegistry<T>, Criteria<T>> shardSelector,
                                       ServiceNodeSelector<T> nodeSelector) {
         super(serviceRegistry, shardSelector, nodeSelector);
     }

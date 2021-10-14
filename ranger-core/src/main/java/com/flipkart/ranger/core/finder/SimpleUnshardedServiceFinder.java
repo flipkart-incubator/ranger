@@ -17,13 +17,13 @@
 package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
-import com.flipkart.ranger.core.model.FilterCriteria;
 
-public class SimpleUnshardedServiceFinder<T> extends ServiceFinder<T, ListBasedServiceRegistry<T>, FilterCriteria<T>> {
+public class SimpleUnshardedServiceFinder<T> extends ServiceFinder<T, ListBasedServiceRegistry<T>, Criteria<T>> {
     public SimpleUnshardedServiceFinder(ListBasedServiceRegistry<T> serviceRegistry,
-                                      ShardSelector<T, ListBasedServiceRegistry<T>, FilterCriteria<T>> shardSelector,
+                                      ShardSelector<T, ListBasedServiceRegistry<T>, Criteria<T>> shardSelector,
                                       ServiceNodeSelector<T> nodeSelector) {
         super(serviceRegistry, shardSelector, nodeSelector);
     }

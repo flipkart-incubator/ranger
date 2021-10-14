@@ -23,8 +23,8 @@ import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthcheck;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
@@ -97,9 +97,8 @@ public class ServiceProviderHealthcheckTest {
             return shardId;
         }
 
-        private static ShardedCriteria<TestShardInfo> getCriteria(int shardId){
-            return () -> new
-                    TestShardInfo(shardId);
+        private static Criteria<TestShardInfo> getCriteria(int shardId){
+            return nodeData -> nodeData.getShardId() == shardId;
         }
     }
 

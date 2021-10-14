@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
-import com.flipkart.ranger.core.model.FilterCriteria;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import com.flipkart.ranger.http.servicefinder.HttpUnshardedServiceFinderBuilider;
@@ -16,12 +16,12 @@ import lombok.Getter;
 import lombok.val;
 
 @Getter
-public class HttpUnshardedServiceFinderFactory<T> implements ServiceFinderFactory<T, ListBasedServiceRegistry<T>, FilterCriteria<T>> {
+public class HttpUnshardedServiceFinderFactory<T> implements ServiceFinderFactory<T, ListBasedServiceRegistry<T>, Criteria<T>> {
 
     private final HttpClientConfig clientConfig;
     private final ObjectMapper mapper;
     private final HTTPResponseDataDeserializer<T> deserializer;
-    private final ShardSelector<T, ListBasedServiceRegistry<T>, FilterCriteria<T>> shardSelector;
+    private final ShardSelector<T, ListBasedServiceRegistry<T>, Criteria<T>> shardSelector;
     private final ServiceNodeSelector<T> nodeSelector;
     private final int nodeRefreshIntervalMs;
 
@@ -30,7 +30,7 @@ public class HttpUnshardedServiceFinderFactory<T> implements ServiceFinderFactor
             HttpClientConfig httpClientConfig,
             ObjectMapper mapper,
             HTTPResponseDataDeserializer<T> deserializer,
-            ShardSelector<T, ListBasedServiceRegistry<T>, FilterCriteria<T>> shardSelector,
+            ShardSelector<T, ListBasedServiceRegistry<T>, Criteria<T>> shardSelector,
             ServiceNodeSelector<T> nodeSelector,
             int nodeRefreshIntervalMs)
     {
@@ -43,7 +43,7 @@ public class HttpUnshardedServiceFinderFactory<T> implements ServiceFinderFactor
     }
 
     @Override
-    public ServiceFinder<T, ListBasedServiceRegistry<T>, FilterCriteria<T>> buildFinder(Service service) {
+    public ServiceFinder<T, ListBasedServiceRegistry<T>, Criteria<T>> buildFinder(Service service) {
         val serviceFinder = new HttpUnshardedServiceFinderBuilider<T>()
                 .withClientConfig(clientConfig)
                 .withObjectMapper(mapper)

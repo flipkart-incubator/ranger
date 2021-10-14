@@ -1,7 +1,7 @@
 package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
-import com.flipkart.ranger.core.finder.shardselector.FilterShardSelector;
+import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.units.TestNodeData;
@@ -24,13 +24,13 @@ public class UnshardedClusterFinderTest {
     @Test
     public void unshardedClusterFinder(){
         final ListBasedServiceRegistry<TestNodeData> unshardedRegistry = RegistryTestUtils.getUnshardedRegistry();
-        final FilterShardSelector<TestNodeData> shardSelector = new FilterShardSelector<>();
+        final ListShardSelector<TestNodeData> shardSelector = new ListShardSelector<>();
         SimpleUnshardedServiceFinder<TestNodeData> simpleUnshardedServiceFinder = new SimpleUnshardedServiceFinder<TestNodeData>(
                 unshardedRegistry,
                 shardSelector,
                 new TestUnshardedNodeSelector()
         );
-        final ServiceNode<TestNodeData> serviceNode = simpleUnshardedServiceFinder.get(CriteriaUtils.getFilterCriteria(1));
+        final ServiceNode<TestNodeData> serviceNode = simpleUnshardedServiceFinder.get(CriteriaUtils.getCriteria(1));
         Assert.assertNotNull(serviceNode);
         Assert.assertEquals("localhost-1", serviceNode.getHost());
     }

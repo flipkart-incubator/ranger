@@ -24,8 +24,8 @@ import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.sample.RotationStatusMonitor;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.model.FilterCriteria;
 import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
@@ -112,7 +112,7 @@ public class ServiceProviderIntegrationTest {
         boolean filecreate = file.createNewFile();
         System.out.println("created file");
         TestUtils.sleepForSeconds(8);
-        List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll((FilterCriteria) nodeData -> true);
+        List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll(nodeData -> true);
         System.out.println("all = " + all);
         Assert.assertEquals(3, all.size());
 
@@ -120,12 +120,7 @@ public class ServiceProviderIntegrationTest {
         delete = file.delete();
         System.out.println("deleted file");
         TestUtils.sleepForSeconds(8);
-        all = serviceFinder.getAll(new FilterCriteria() {
-            @Override
-            public boolean apply(Object nodeData) {
-                return true;
-            }
-        });
+        all = serviceFinder.getAll(nodeData -> true);
         System.out.println("all = " + all);
         Assert.assertEquals(0, all.size());
 
@@ -133,12 +128,7 @@ public class ServiceProviderIntegrationTest {
         filecreate = anotherFile.createNewFile();
         System.out.println("created anotherFile");
         TestUtils.sleepForSeconds(6);
-        all = serviceFinder.getAll(new FilterCriteria() {
-            @Override
-            public boolean apply(Object nodeData) {
-                return true;
-            }
-        });
+        all = serviceFinder.getAll(nodeData -> true);
         System.out.println("all = " + all);
         Assert.assertEquals(1, all.size());
 

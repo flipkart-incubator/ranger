@@ -16,7 +16,7 @@ public class MapBasedServiceRegistryTest {
         Assert.assertTrue(null != serviceRegistry.nodes() && !serviceRegistry.nodes().isEmpty());
         final MatchingShardSelector<TestNodeData> matchingShardSelector = new MatchingShardSelector<>();
         val nodes = matchingShardSelector.nodes(
-                CriteriaUtils.getShardedCriteria(1), serviceRegistry);
+                CriteriaUtils.getCriteria(1), serviceRegistry);
         Assert.assertFalse(nodes.isEmpty());
         Assert.assertEquals("localhost-1", nodes.get(0).getHost());
     }

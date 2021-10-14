@@ -3,16 +3,16 @@ package com.flipkart.ranger.http.servicefinder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinderBuilder;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 
 /**
  *
  */
-public class HttpShardedServiceFinderBuilder<T> extends SimpleShardedServiceFinderBuilder<T, HttpShardedServiceFinderBuilder<T>, HTTPResponseDataDeserializer<T>, ShardedCriteria<T>> {
+public class HttpShardedServiceFinderBuilder<T> extends SimpleShardedServiceFinderBuilder<T, HttpShardedServiceFinderBuilder<T>, HTTPResponseDataDeserializer<T>, Criteria<T>> {
 
     private HttpClientConfig clientConfig;
     private ObjectMapper mapper;

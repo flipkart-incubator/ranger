@@ -80,13 +80,13 @@ public class HttpShardedServiceFinderBuilderTest {
                         .nodes()
                         .entries()
                         .stream()
-                        .filter(e -> e.getKey().getName().equals(criteria.getShard().getName()))
+                        .filter(e -> criteria.apply(e.getKey()))
                         .map(Map.Entry::getValue)
                         .collect(Collectors.toList()))
                 .build();
         finder.start();
         TestUtils.sleepForSeconds(3);
-        Assert.assertNotNull(finder.get(() -> testNode));
+        Assert.assertNotNull(finder.get(nodeData -> true));
     }
 
 }

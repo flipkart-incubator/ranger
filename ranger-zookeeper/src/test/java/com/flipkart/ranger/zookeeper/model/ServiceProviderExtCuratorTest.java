@@ -21,8 +21,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.model.ShardedCriteria;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
@@ -110,9 +110,10 @@ public class ServiceProviderExtCuratorTest {
             return shardId;
         }
 
-        private static ShardedCriteria<TestShardInfo> getCriteria(int shardId){
-            return () -> new TestShardInfo(shardId);
+        private static Criteria<TestShardInfo> getCriteria(int shardId){
+            return nodeData -> nodeData.getShardId() == shardId;
         }
+
     }
 
     @Test

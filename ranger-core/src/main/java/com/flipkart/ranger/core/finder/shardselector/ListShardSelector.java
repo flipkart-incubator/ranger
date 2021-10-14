@@ -1,17 +1,17 @@
 package com.flipkart.ranger.core.finder.shardselector;
 
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
-import com.flipkart.ranger.core.model.FilterCriteria;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FilterShardSelector<T> implements ShardSelector<T, ListBasedServiceRegistry<T>, FilterCriteria<T>> {
+public class ListShardSelector<T> implements ShardSelector<T, ListBasedServiceRegistry<T>, Criteria<T>> {
 
     @Override
-    public List<ServiceNode<T>> nodes(FilterCriteria<T> criteria, ListBasedServiceRegistry<T> serviceRegistry) {
+    public List<ServiceNode<T>> nodes(Criteria<T> criteria, ListBasedServiceRegistry<T> serviceRegistry) {
         if(null == criteria){
             return serviceRegistry.nodeList();
         }
