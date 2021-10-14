@@ -30,7 +30,7 @@ public class UnshardedClusterFinderTest {
                 shardSelector,
                 new TestUnshardedNodeSelector()
         );
-        final ServiceNode<TestNodeData> serviceNode = simpleUnshardedServiceFinder.get(CriteriaUtils.getUnshardedCriteria(1));
+        final ServiceNode<TestNodeData> serviceNode = simpleUnshardedServiceFinder.get(CriteriaUtils.getFilterCriteria(1));
         Assert.assertNotNull(serviceNode);
         Assert.assertEquals("localhost-1", serviceNode.getHost());
     }

@@ -6,7 +6,7 @@ import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
-import com.flipkart.ranger.core.model.UnshardedCriteria;
+import com.flipkart.ranger.core.model.FilterCriteria;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinder.ZkSimpleUnshardedServiceFinderBuilder;
 import lombok.Builder;
@@ -16,14 +16,14 @@ import org.apache.curator.framework.CuratorFramework;
 
 
 @Getter
-public class ZKUnshardedServiceFinderFactory<T> implements ServiceFinderFactory<T, ListBasedServiceRegistry<T>, UnshardedCriteria<T>>{
+public class ZKUnshardedServiceFinderFactory<T> implements ServiceFinderFactory<T, ListBasedServiceRegistry<T>, FilterCriteria<T>>{
 
     private final CuratorFramework curatorFramework;
     private final String connectionString;
     private final int nodeRefreshIntervalMs;
     private final boolean disablePushUpdaters;
     private final ZkNodeDataDeserializer<T> deserializer;
-    private final ShardSelector<T, ListBasedServiceRegistry<T>, UnshardedCriteria<T>> shardSelector;
+    private final ShardSelector<T, ListBasedServiceRegistry<T>, FilterCriteria<T>> shardSelector;
     private final ServiceNodeSelector<T> nodeSelector;
 
     @Builder
@@ -33,7 +33,7 @@ public class ZKUnshardedServiceFinderFactory<T> implements ServiceFinderFactory<
             int nodeRefreshIntervalMs,
             boolean disablePushUpdaters,
             ZkNodeDataDeserializer<T> deserializer,
-            ShardSelector<T, ListBasedServiceRegistry<T>, UnshardedCriteria<T>> shardSelector,
+            ShardSelector<T, ListBasedServiceRegistry<T>, FilterCriteria<T>> shardSelector,
             ServiceNodeSelector<T> nodeSelector) {
         this.curatorFramework = curatorFramework;
         this.connectionString = connectionString;

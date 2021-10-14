@@ -16,7 +16,7 @@ public class FilterShardSelectorTest {
     public void testNoOpShardSelector(){
         final ListBasedServiceRegistry serviceRegistry = RegistryTestUtils.getUnshardedRegistry();
         final FilterShardSelector<TestNodeData> shardSelector = new FilterShardSelector<>();
-        final List<ServiceNode<TestNodeData>> nodes = shardSelector.nodes(CriteriaUtils.getUnshardedCriteria(1), serviceRegistry);
+        final List<ServiceNode<TestNodeData>> nodes = shardSelector.nodes(CriteriaUtils.getFilterCriteria(1), serviceRegistry);
         Assert.assertFalse(nodes.isEmpty());
         Assert.assertEquals("localhost-1", nodes.get(0).getHost());
     }

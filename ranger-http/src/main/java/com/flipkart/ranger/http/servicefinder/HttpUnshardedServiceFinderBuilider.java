@@ -5,11 +5,11 @@ import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinderBuilder;
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.model.UnshardedCriteria;
+import com.flipkart.ranger.core.model.FilterCriteria;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 
-public class HttpUnshardedServiceFinderBuilider<T> extends SimpleUnshardedServiceFinderBuilder<T, HttpUnshardedServiceFinderBuilider<T>, HTTPResponseDataDeserializer<T>, UnshardedCriteria<T>> {
+public class HttpUnshardedServiceFinderBuilider<T> extends SimpleUnshardedServiceFinderBuilder<T, HttpUnshardedServiceFinderBuilider<T>, HTTPResponseDataDeserializer<T>, FilterCriteria<T>> {
 
     private HttpClientConfig clientConfig;
     private ObjectMapper mapper;
