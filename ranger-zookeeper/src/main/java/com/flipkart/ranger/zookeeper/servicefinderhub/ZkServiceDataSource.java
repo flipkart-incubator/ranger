@@ -19,12 +19,16 @@ import java.util.stream.Collectors;
 public class ZkServiceDataSource implements ServiceDataSource {
 
     private final String namespace;
-    private final String connectionString;
+    private String connectionString;
     private CuratorFramework curatorFramework;
+    private boolean manageCurator;
 
-    public ZkServiceDataSource(String namespace, String connectionString){
+    public ZkServiceDataSource(String namespace,
+                               String connectionString,
+                               CuratorFramework curatorFramework){
         this.namespace = namespace;
         this.connectionString = connectionString;
+        this.curatorFramework = curatorFramework;
     }
 
     @Override
@@ -38,14 +42,17 @@ public class ZkServiceDataSource implements ServiceDataSource {
 
     @Override
     public void start() {
-        Preconditions.checkNotNull(connectionString);
-        log.info("Building custom curator framework");
-        curatorFramework = CuratorFrameworkFactory.builder()
-                .namespace(namespace)
-                .connectString(connectionString)
-                .retryPolicy(new ExponentialBackoffRetry(1000, 100))
-                .build();
-        curatorFramework.start();
+        if(null == curatorFramework){
+            Preconditions.checkNotNull(connectionString);
+            log.info("Building custom curator framework");
+            curatorFramework = CuratorFrameworkFactory.builder()
+                    .namespace(namespace)
+                    .connectString(connectionString)
+                    .retryPolicy(new ExponentialBackoffRetry(1000, 100))
+                    .build();
+            curatorFramework.start();
+            manageCurator = true;
+        }
         try {
             curatorFramework.blockUntilConnected();
         }
@@ -58,7 +65,7 @@ public class ZkServiceDataSource implements ServiceDataSource {
     @Override
     public void stop() {
         log.info("Service data stopped");
-        curatorFramework.close();
+        if(manageCurator) curatorFramework.close();
         log.info("Service data source stopped");
     }
 }
