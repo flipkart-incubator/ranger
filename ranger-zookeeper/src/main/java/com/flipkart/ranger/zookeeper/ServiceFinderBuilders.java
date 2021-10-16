@@ -16,6 +16,7 @@
 
 package com.flipkart.ranger.zookeeper;
 
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.zookeeper.servicefinder.ZkSimpleShardedServiceFinderBuilder;
 import com.flipkart.ranger.zookeeper.servicefinder.ZkSimpleUnshardedServiceFinderBuilder;
 
@@ -25,11 +26,11 @@ public class ServiceFinderBuilders {
         throw new InstantiationError("Must not instantiate this class");
     }
     
-    public static <T> ZkSimpleShardedServiceFinderBuilder<T> shardedFinderBuilder() {
+    public static <T> ZkSimpleShardedServiceFinderBuilder<T, Criteria<T>> shardedFinderBuilder() {
         return new ZkSimpleShardedServiceFinderBuilder<>();
     }
 
-    public static <T> ZkSimpleUnshardedServiceFinderBuilder<T> unshardedFinderBuilder() {
+    public static <T> ZkSimpleUnshardedServiceFinderBuilder<T, Criteria<T>> unshardedFinderBuilder() {
         return new ZkSimpleUnshardedServiceFinderBuilder<>();
     }
 }

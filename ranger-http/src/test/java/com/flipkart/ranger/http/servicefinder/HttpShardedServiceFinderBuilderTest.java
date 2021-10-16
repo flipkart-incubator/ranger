@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -63,7 +65,7 @@ public class HttpShardedServiceFinderBuilderTest {
                 .operationTimeoutMs(30_000)
                 .build();
 
-        final SimpleShardedServiceFinder<NodeData> finder = new HttpShardedServiceFinderBuilder<NodeData>()
+        final SimpleShardedServiceFinder<NodeData, Criteria<NodeData>> finder = new HttpShardedServiceFinderBuilder<NodeData, Criteria<NodeData>>()
                 .withClientConfig(clientConfig)
                 .withNamespace("testns")
                 .withServiceName("test")
@@ -76,16 +78,11 @@ public class HttpShardedServiceFinderBuilderTest {
                         throw new IllegalArgumentException(e);
                     }
                 })
-                .withShardSelector((criteria, registry) -> registry
-                        .nodes()
-                        .entries()
-                        .stream()
-                        .map(Map.Entry::getValue)
-                        .collect(Collectors.toList()))
+                .withShardSelector((criteria, registry) -> registry.nodeList())
                 .build();
         finder.start();
         TestUtils.sleepForSeconds(3);
-        Assert.assertNotNull(finder.get(testNode));
+        Assert.assertNotNull(finder.get(nodeData -> true));
     }
 
 }

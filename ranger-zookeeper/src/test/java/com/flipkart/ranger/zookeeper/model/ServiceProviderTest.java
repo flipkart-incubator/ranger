@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
@@ -107,14 +108,14 @@ public class ServiceProviderTest {
             return shardId;
         }
 
-        private static TestShardInfo getCriteria(int shardId){
-            return new TestShardInfo(shardId);
+        private static Criteria<TestShardInfo> getCriteria(int shardId){
+            return nodeData -> nodeData.getShardId() == shardId;
         }
     }
 
     @Test
     public void testBasicDiscovery() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -156,7 +157,7 @@ public class ServiceProviderTest {
 
     @Test
     public void testBasicDiscoveryRR() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo> serviceFinder
+        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder
                 = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
@@ -201,8 +202,8 @@ public class ServiceProviderTest {
     }
 
     @Test
-    public void testVisibility() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+    public void testVisibility() {
+        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")

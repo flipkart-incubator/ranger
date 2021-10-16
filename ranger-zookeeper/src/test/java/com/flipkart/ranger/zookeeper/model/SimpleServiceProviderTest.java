@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
@@ -72,7 +73,7 @@ public class SimpleServiceProviderTest {
 
     @Test
     public void testBasicDiscovery() {
-        SimpleUnshardedServiceFinder<UnshardedInfo> serviceFinder = ServiceFinderBuilders.<UnshardedInfo>unshardedFinderBuilder()
+        SimpleUnshardedServiceFinder<UnshardedInfo, Criteria<UnshardedInfo>> serviceFinder = ServiceFinderBuilders.<UnshardedInfo>unshardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -107,7 +108,7 @@ public class SimpleServiceProviderTest {
         //while (true);
     }
 
-    private void registerService(String host, int port, int shardId) throws Exception {
+    private void registerService(String host, int port, int shardId) {
         val serviceProvider = ServiceProviderBuilders.<UnshardedInfo>unshardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")

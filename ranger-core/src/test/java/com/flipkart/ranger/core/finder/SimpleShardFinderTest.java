@@ -2,7 +2,9 @@ package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.CriteriaUtils;
@@ -16,10 +18,10 @@ import java.util.List;
 
 public class SimpleShardFinderTest {
 
-    static class TestSimpleShardSelector<T> implements ShardSelector<T, MapBasedServiceRegistry<T>>{
+    static class TestSimpleShardSelector<T, C extends Criteria<T>> implements ShardSelector<T, C, MapBasedServiceRegistry<T>>{
 
         @Override
-        public List<ServiceNode<T>> nodes(T criteria, MapBasedServiceRegistry<T> serviceRegistry) {
+        public List<ServiceNode<T>> nodes(C criteria, MapBasedServiceRegistry<T> serviceRegistry) {
             return Lists.newArrayList();
         }
     }
@@ -27,9 +29,9 @@ public class SimpleShardFinderTest {
     @Test
     public void testSimpleShardedFinder(){
         final MapBasedServiceRegistry<TestNodeData> serviceRegistry = RegistryTestUtils.getServiceRegistry();
-        final TestSimpleShardSelector<TestNodeData> shardSelector = new TestSimpleShardSelector<>();
+        final TestSimpleShardSelector<TestNodeData, Criteria<TestNodeData>> shardSelector = new TestSimpleShardSelector<>();
         final RoundRobinServiceNodeSelector<TestNodeData> roundRobinServiceNodeSelector = new RoundRobinServiceNodeSelector<>();
-        val simpleShardedFinder = new SimpleShardedServiceFinder<TestNodeData>(
+        val simpleShardedFinder = new SimpleShardedServiceFinder<>(
                 serviceRegistry, shardSelector, roundRobinServiceNodeSelector);
         val testNodeDataServiceNode = simpleShardedFinder.get(
                 CriteriaUtils.getCriteria(2));

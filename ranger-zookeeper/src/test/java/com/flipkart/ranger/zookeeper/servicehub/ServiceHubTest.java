@@ -7,6 +7,7 @@ import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.healthcheck.HealthcheckResult;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
@@ -70,12 +71,12 @@ public class ServiceHubTest {
     @Test
     public void testHub() {
         ExternalTriggeredSignal<Void> refreshHubSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
-        val hub = new ZkServiceFinderHubBuilder<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>>()
+        val hub = new ZkServiceFinderHubBuilder<TestShardInfo, Criteria<TestShardInfo>, MapBasedServiceRegistry<TestShardInfo>>()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withRefreshFrequencyMs(1000)
                 .withServiceDataSource(new ZkServiceDataSource("test", testingCluster.getConnectString(), curatorFramework))
-                .withServiceFinderFactory(ZkShardedServiceFinderFactory.<TestShardInfo>builder()
+                .withServiceFinderFactory(ZkShardedServiceFinderFactory.<TestShardInfo, Criteria<TestShardInfo>>builder()
                                                   .curatorFramework(curatorFramework)
                                                   .deserializer(this::read)
                                                   .build())
@@ -106,7 +107,7 @@ public class ServiceHubTest {
 
         TestUtils.sleepForSeconds(3);
         val node = hub.finder(new Service(NAMESPACE, "s1"))
-                .map(finder -> finder.get(new TestShardInfo("prod")))
+                .map(finder -> finder.get(nodeData -> nodeData.getEnvironment().equalsIgnoreCase("prod")))
                 .orElse(null);
         Assert.assertNotNull(node);
         hub.stop();
