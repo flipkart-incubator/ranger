@@ -10,11 +10,11 @@ public class HttpServiceFinderBuilders {
         throw new InstantiationError("Must not instantiate this class");
     }
 
-    public static <T> HttpShardedServiceFinderBuilder<T, Criteria<T>> httpShardedServiceFinderBuilder(){
+    public static <T, C extends Criteria<T>> HttpShardedServiceFinderBuilder<T, C> httpShardedServiceFinderBuilder(){
         return new HttpShardedServiceFinderBuilder<>();
     }
 
-    public static <T> HttpUnshardedServiceFinderBuilider<T, Criteria<T>> httpUnshardedServiceFinderBuilider(){
+    public static <T, C extends Criteria<T>> HttpUnshardedServiceFinderBuilider<T, C> httpUnshardedServiceFinderBuilider(){
         return new HttpUnshardedServiceFinderBuilider<>();
     }
 }

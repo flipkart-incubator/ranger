@@ -17,4 +17,6 @@ public class ListShardSelector<T, C extends Criteria<T>> implements ShardSelecto
         }
         return serviceRegistry.nodeList().stream().filter(node -> criteria.apply(node.getNodeData())).collect(Collectors.toList());
     }
+
+
 }

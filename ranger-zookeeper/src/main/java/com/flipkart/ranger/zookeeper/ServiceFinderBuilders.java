@@ -26,11 +26,11 @@ public class ServiceFinderBuilders {
         throw new InstantiationError("Must not instantiate this class");
     }
     
-    public static <T> ZkSimpleShardedServiceFinderBuilder<T, Criteria<T>> shardedFinderBuilder() {
+    public static <T, C extends Criteria<T>> ZkSimpleShardedServiceFinderBuilder<T, C> shardedFinderBuilder() {
         return new ZkSimpleShardedServiceFinderBuilder<>();
     }
 
-    public static <T> ZkSimpleUnshardedServiceFinderBuilder<T, Criteria<T>> unshardedFinderBuilder() {
+    public static <T, C extends Criteria<T>> ZkSimpleUnshardedServiceFinderBuilder<T, Criteria<T>> unshardedFinderBuilder() {
         return new ZkSimpleUnshardedServiceFinderBuilder<>();
     }
 }
