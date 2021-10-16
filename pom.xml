@@ -49,6 +49,11 @@
             <name>Tushar Naik</name>
             <email>tushar.naik@flipkart.com</email>
         </developer>
+        <developer>
+            <id>koushikr</id>
+            <name>Koushik Ramachandra</name>
+            <email>rkoushik.14@gmail.com</email>
+        </developer>
     </developers>
 
     <properties>

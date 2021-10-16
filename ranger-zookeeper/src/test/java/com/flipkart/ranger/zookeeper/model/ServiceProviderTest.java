@@ -115,7 +115,7 @@ public class ServiceProviderTest {
 
     @Test
     public void testBasicDiscovery() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -158,7 +158,7 @@ public class ServiceProviderTest {
     @Test
     public void testBasicDiscoveryRR() throws Exception {
         SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder
-                = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+                = ServiceFinderBuilders.<TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -203,7 +203,8 @@ public class ServiceProviderTest {
 
     @Test
     public void testVisibility() {
-        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.
+                <TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")

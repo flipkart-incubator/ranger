@@ -24,6 +24,7 @@ import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.sample.RotationStatusMonitor;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
@@ -75,7 +76,7 @@ public class ServiceProviderIntegrationTest {
 
         registerService("localhost-4", 9000, 2, anotherFile);
 
-        serviceFinder = ServiceFinderBuilders.<UnshardedClusterInfo>unshardedFinderBuilder()
+        serviceFinder = ServiceFinderBuilders.<UnshardedClusterInfo, Criteria<UnshardedClusterInfo>>unshardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")

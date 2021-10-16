@@ -118,7 +118,7 @@ public class ServiceProviderExtCuratorTest {
 
     @Test
     public void testBasicDiscovery() {
-        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withServiceName("test-service")

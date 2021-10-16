@@ -30,7 +30,7 @@ public class ServiceFinderBuilders {
         return new ZkSimpleShardedServiceFinderBuilder<>();
     }
 
-    public static <T, C extends Criteria<T>> ZkSimpleUnshardedServiceFinderBuilder<T, Criteria<T>> unshardedFinderBuilder() {
+    public static <T, C extends Criteria<T>> ZkSimpleUnshardedServiceFinderBuilder<T, C> unshardedFinderBuilder() {
         return new ZkSimpleUnshardedServiceFinderBuilder<>();
     }
 }

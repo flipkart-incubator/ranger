@@ -73,7 +73,7 @@ public class SimpleServiceProviderTest {
 
     @Test
     public void testBasicDiscovery() {
-        SimpleUnshardedServiceFinder<UnshardedInfo, Criteria<UnshardedInfo>> serviceFinder = ServiceFinderBuilders.<UnshardedInfo>unshardedFinderBuilder()
+        SimpleUnshardedServiceFinder<UnshardedInfo, Criteria<UnshardedInfo>> serviceFinder = ServiceFinderBuilders.<UnshardedInfo, Criteria<UnshardedInfo>>unshardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
