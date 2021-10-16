@@ -1,6 +1,7 @@
 package com.flipkart.ranger.http;
 
 import com.flipkart.ranger.http.servicefinder.HttpShardedServiceFinderBuilder;
+import com.flipkart.ranger.http.servicefinder.HttpUnshardedServiceFinderBuilider;
 
 public class HttpServiceFinderBuilders {
 
@@ -12,4 +13,7 @@ public class HttpServiceFinderBuilders {
         return new HttpShardedServiceFinderBuilder<>();
     }
 
+    public static <T> HttpUnshardedServiceFinderBuilider<T> httpUnshardedServiceFinderBuilider(){
+        return new HttpUnshardedServiceFinderBuilider<>();
+    }
 }

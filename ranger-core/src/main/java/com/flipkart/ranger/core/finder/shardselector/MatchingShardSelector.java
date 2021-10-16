@@ -30,7 +30,9 @@ public class MatchingShardSelector<T> implements ShardSelector<T, MapBasedServic
 
     @Override
     public List<ServiceNode<T>> nodes(Criteria<T> criteria, MapBasedServiceRegistry<T> serviceRegistry) {
-        Preconditions.checkNotNull(criteria, "Criteria can't be null");
+        if(criteria == null){
+            return serviceRegistry.nodeList();
+        }
 
         return serviceRegistry.nodes()
                 .entries()
