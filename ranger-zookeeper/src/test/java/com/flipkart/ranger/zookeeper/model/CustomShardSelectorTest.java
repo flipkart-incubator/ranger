@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
@@ -114,22 +113,19 @@ public class CustomShardSelectorTest {
             return result;
         }
 
-        private static Criteria<TestShardInfo> getCriteria(int a, int b){
-            return nodeData -> nodeData.getA() == a && nodeData.getB() == b;
+        private static TestShardInfo getCriteria(int a, int b){
+            return new TestShardInfo(a, b);
         }
     }
 
-    private static final class TestShardSelector implements ShardSelector<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>, Criteria<TestShardInfo>> {
+    private static final class TestShardSelector implements ShardSelector<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>> {
 
         @Override
-        public List<ServiceNode<TestShardInfo>> nodes(
-                Criteria<TestShardInfo> criteria,
-                MapBasedServiceRegistry<TestShardInfo> serviceRegistry
-        ) {
+        public List<ServiceNode<TestShardInfo>> nodes(TestShardInfo criteria, MapBasedServiceRegistry<TestShardInfo> serviceRegistry) {
             List<ServiceNode<TestShardInfo>> nodes = Lists.newArrayList();
             for(Map.Entry<TestShardInfo, ServiceNode<TestShardInfo>> entry : serviceRegistry.nodes().entries()) {
                 TestShardInfo shardInfo = entry.getKey();
-                if(criteria.apply(shardInfo)) {
+                if(criteria.equals(shardInfo)){
                     nodes.add(entry.getValue());
                 }
             }

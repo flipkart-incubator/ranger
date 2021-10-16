@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
@@ -91,7 +90,7 @@ public class SimpleServiceProviderTest {
                 .build();
         serviceFinder.start();
         {
-            ServiceNode node = serviceFinder.get(nodeData -> true);
+            ServiceNode node = serviceFinder.get(null);
             Assert.assertNotNull(node);
             System.out.println(node.getHost());
         }
@@ -99,7 +98,7 @@ public class SimpleServiceProviderTest {
         long startTime = System.currentTimeMillis();
         for(long i = 0; i <1000000; i++)
         {
-            ServiceNode node = serviceFinder.get(nodeData -> true);
+            ServiceNode node = serviceFinder.get(null);
             Assert.assertNotNull(node);
             frequency.add(node.getHost());
         }

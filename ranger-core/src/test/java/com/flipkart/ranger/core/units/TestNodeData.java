@@ -1,9 +1,11 @@
 package com.flipkart.ranger.core.units;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 @Builder
 public class TestNodeData {
     private int nodeId;

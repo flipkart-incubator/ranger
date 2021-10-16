@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
@@ -108,8 +107,8 @@ public class ServiceProviderTest {
             return shardId;
         }
 
-        private static Criteria<TestShardInfo> getCriteria(int shardId){
-            return nodeData -> nodeData.getShardId() == shardId;
+        private static TestShardInfo getCriteria(int shardId){
+            return new TestShardInfo(shardId);
         }
     }
 

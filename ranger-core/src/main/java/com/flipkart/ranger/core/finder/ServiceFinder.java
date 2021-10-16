@@ -16,7 +16,10 @@
 
 package com.flipkart.ranger.core.finder;
 
-import com.flipkart.ranger.core.model.*;
+import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.model.ServiceNodeSelector;
+import com.flipkart.ranger.core.model.ServiceRegistry;
+import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +28,10 @@ import java.util.Collections;
 import java.util.List;
 
 @Slf4j
-public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>, U extends Criteria<T>> {
+public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
     @Getter
     private final ServiceRegistryType serviceRegistry;
-    private final ShardSelector<T, ServiceRegistryType, U> shardSelector;
+    private final ShardSelector<T, ServiceRegistryType> shardSelector;
     private final ServiceNodeSelector<T> nodeSelector;
     @Getter
     private final ExternalTriggeredSignal<Void> startSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
@@ -37,14 +40,14 @@ public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegist
 
     protected ServiceFinder(
             ServiceRegistryType serviceRegistry,
-            ShardSelector<T, ServiceRegistryType, U> shardSelector,
+            ShardSelector<T, ServiceRegistryType> shardSelector,
             ServiceNodeSelector<T> nodeSelector) {
         this.serviceRegistry = serviceRegistry;
         this.shardSelector = shardSelector;
         this.nodeSelector = nodeSelector;
     }
 
-    public ServiceNode<T> get(U criteria) {
+    public ServiceNode<T> get(T criteria) {
         List<ServiceNode<T>> nodes = shardSelector.nodes(criteria, serviceRegistry);
         if (null == nodes || nodes.isEmpty()) {
             return null;
@@ -52,7 +55,7 @@ public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegist
         return nodeSelector.select(nodes);
     }
 
-    public List<ServiceNode<T>> getAll(U criteria) {
+    public List<ServiceNode<T>> getAll(T criteria) {
         return shardSelector.nodes(criteria, serviceRegistry);
     }
 

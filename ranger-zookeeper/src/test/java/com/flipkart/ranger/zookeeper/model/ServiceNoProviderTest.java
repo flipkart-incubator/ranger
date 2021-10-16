@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import lombok.val;
@@ -95,8 +94,8 @@ public class ServiceNoProviderTest {
             return shardId;
         }
 
-        private static Criteria<TestShardInfo> getCriteria(int shardId){
-            return nodeData -> nodeData.getShardId() == shardId;
+        private static TestShardInfo getCriteria(int shardId){
+            return new TestShardInfo(shardId);
         }
     }
 

@@ -1,6 +1,5 @@
 package com.flipkart.ranger.core.finderhub;
 
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.signals.ScheduledSignal;
 import com.flipkart.ranger.core.signals.Signal;
@@ -15,45 +14,45 @@ import java.util.function.Consumer;
 /**
  *
  */
-public abstract class ServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U extends Criteria<T>> {
+public abstract class ServiceFinderHubBuilder<T, R extends ServiceRegistry<T>> {
     private ServiceDataSource serviceDataSource;
-    private ServiceFinderFactory<T, R, U> serviceFinderFactory;
+    private ServiceFinderFactory<T, R> serviceFinderFactory;
     private long refreshFrequencyMs = 10_000;
     private List<Consumer<Void>> extraStartSignalConsumers = new ArrayList<>();
     private List<Consumer<Void>> extraStopSignalConsumers = new ArrayList<>();
     private List<Signal<Void>> extraRefreshSignals = new ArrayList<>();
 
-    public ServiceFinderHubBuilder<T, R, U> withServiceDataSource(ServiceDataSource serviceDataSource) {
+    public ServiceFinderHubBuilder<T, R> withServiceDataSource(ServiceDataSource serviceDataSource) {
         this.serviceDataSource = serviceDataSource;
         return this;
     }
 
-    public ServiceFinderHubBuilder<T, R, U> withServiceFinderFactory(ServiceFinderFactory<T, R, U> serviceFinderFactory) {
+    public ServiceFinderHubBuilder<T, R> withServiceFinderFactory(ServiceFinderFactory<T, R> serviceFinderFactory) {
         this.serviceFinderFactory = serviceFinderFactory;
         return this;
     }
     
-    public ServiceFinderHubBuilder<T, R, U> withRefreshFrequencyMs(long refreshFrequencyMs) {
+    public ServiceFinderHubBuilder<T, R> withRefreshFrequencyMs(long refreshFrequencyMs) {
         this.refreshFrequencyMs = refreshFrequencyMs;
         return this;
     }
 
-    public ServiceFinderHubBuilder<T, R, U> withExtraStartSignalConsumer(Consumer<Void> consumer) {
+    public ServiceFinderHubBuilder<T, R> withExtraStartSignalConsumer(Consumer<Void> consumer) {
         this.extraStartSignalConsumers.add(consumer);
         return this;
     }
 
-    public ServiceFinderHubBuilder<T, R, U> withExtraStopSignalConsumer(Consumer<Void> consumer) {
+    public ServiceFinderHubBuilder<T, R> withExtraStopSignalConsumer(Consumer<Void> consumer) {
         this.extraStopSignalConsumers.add(consumer);
         return this;
     }
 
-    public ServiceFinderHubBuilder<T, R, U> withExtraRefreshSignal(Signal<Void> extraRefreshSignal) {
+    public ServiceFinderHubBuilder<T, R> withExtraRefreshSignal(Signal<Void> extraRefreshSignal) {
         this.extraRefreshSignals.add(extraRefreshSignal);
         return this;
     }
 
-    public ServiceFinderHub<T, R, U> build() {
+    public ServiceFinderHub<T, R> build() {
         preBuild();
         Preconditions.checkNotNull(serviceDataSource, "Provide a non-null service data source");
         Preconditions.checkNotNull(serviceFinderFactory, "Provide a non-null service finder factory");
@@ -79,5 +78,5 @@ public abstract class ServiceFinderHubBuilder<T, R extends ServiceRegistry<T>, U
     }
 
     protected abstract void preBuild();
-    protected abstract void postBuild(ServiceFinderHub<T,R, U> serviceFinderHub);
+    protected abstract void postBuild(ServiceFinderHub<T,R> serviceFinderHub);
 }
