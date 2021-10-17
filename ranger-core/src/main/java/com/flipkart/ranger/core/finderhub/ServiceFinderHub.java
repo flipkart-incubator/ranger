@@ -58,6 +58,7 @@ public class ServiceFinderHub<T, C extends Criteria<T>, R extends ServiceRegistr
 
     private final List<Signal<Void>> refreshSignals = new ArrayList<>();
 
+    @Getter
     private final ServiceDataSource serviceDataSource;
     private final ServiceFinderFactory<T,C, R> finderFactory;
 

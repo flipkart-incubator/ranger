@@ -55,7 +55,7 @@ public class HttpServiceDataSourceTest {
     public void testServiceDataSource() throws IOException {
         val responseObj = ServiceDataSourceResponse.builder()
                 .success(true)
-                .services(Lists.newArrayList(
+                .data(Lists.newArrayList(
                         new Service("test-n", "test-s"),
                         new Service("test-n", "test-s1"),
                         new Service("test-n", "test-s2")

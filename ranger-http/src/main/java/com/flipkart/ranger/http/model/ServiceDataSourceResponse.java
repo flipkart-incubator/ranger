@@ -27,5 +27,5 @@ import java.util.List;
 @Builder
 public class ServiceDataSourceResponse {
     private boolean success;
-    private List<Service> services;
+    private List<Service> data;
 }

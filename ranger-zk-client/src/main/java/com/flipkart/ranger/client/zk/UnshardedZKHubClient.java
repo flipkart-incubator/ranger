@@ -38,7 +38,6 @@ public class UnshardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHu
     @Builder
     public UnshardedZKHubClient(
             String namespace,
-            String environment,
             ObjectMapper mapper,
             int refreshTimeMs,
             boolean disablePushUpdaters,
@@ -49,7 +48,6 @@ public class UnshardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHu
     ) {
             super(
                     namespace,
-                    environment,
                     mapper,
                     refreshTimeMs,
                     disablePushUpdaters,

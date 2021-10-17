@@ -58,7 +58,7 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
                 .port(config.getPort() == 0
                         ? defaultPort()
                         : config.getPort())
-                .encodedPath(String.format("/ranger/nodes/v1/add/%s/%s", service.getNamespace(), service.getServiceName()))
+                .encodedPath(String.format("/v1/ranger/nodes/add/%s/%s", service.getNamespace(), service.getServiceName()))
                 .build();
         val requestBody = RequestBody.create(serializer.serialize(serviceNode));
         val serviceRegistrationResponse = registerService(httpUrl, requestBody);

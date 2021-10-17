@@ -64,7 +64,7 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                 .port(config.getPort() == 0
                         ? defaultPort()
                         : config.getPort())
-                .encodedPath(String.format("/ranger/nodes/v1/%s/%s", service.getNamespace(), service.getServiceName()))
+                .encodedPath(String.format("/v1/ranger/nodes/%s/%s", service.getNamespace(), service.getServiceName()))
                 .build();
         val request = new Request.Builder()
                 .url(httpUrl)
@@ -88,11 +88,11 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
             Exceptions.illegalState("Error fetching data from server: " + httpUrl, e);
         }
 
-        if (null != serviceNodesResponse && null != serviceNodesResponse.getNodes() &&
-                !serviceNodesResponse.getNodes().isEmpty()) {
+        if (null != serviceNodesResponse && null != serviceNodesResponse.getData() &&
+                !serviceNodesResponse.getData().isEmpty()) {
             return Optional.of(FinderUtils.filterValidNodes(
                     service,
-                    serviceNodesResponse.getNodes(),
+                    serviceNodesResponse.getData(),
                     healthcheckZombieCheckThresholdTime(service)));
         }
         return Optional.empty();

@@ -38,7 +38,6 @@ public class ShardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHubC
     @Builder
     public ShardedZKHubClient(
             String namespace,
-            String environment,
             ObjectMapper mapper,
             int refreshTimeMs,
             boolean disablePushUpdaters,
@@ -49,7 +48,6 @@ public class ShardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHubC
     ) {
         super(
                 namespace,
-                environment,
                 mapper,
                 refreshTimeMs,
                 disablePushUpdaters,

@@ -53,7 +53,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                 .port(config.getPort() == 0
                         ? defaultPort()
                         : config.getPort())
-                .encodedPath("/ranger/services")
+                .encodedPath("/v1/ranger/services")
                 .build();
         val request = new Request.Builder()
                 .url(httpUrl)
@@ -70,7 +70,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                         final byte[] bytes = body.bytes();
                         val serviceDataSourceResponse = mapper.readValue(bytes, ServiceDataSourceResponse.class);
                         if(serviceDataSourceResponse.isSuccess()){
-                            return serviceDataSourceResponse.getServices();
+                            return serviceDataSourceResponse.getData();
                         }
                     }
                 }

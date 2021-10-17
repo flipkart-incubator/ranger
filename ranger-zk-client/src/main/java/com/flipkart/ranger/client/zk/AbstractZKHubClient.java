@@ -44,7 +44,6 @@ public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends Se
 
     public AbstractZKHubClient(
             String namespace,
-            String environment,
             ObjectMapper mapper,
             int refreshTimeMs,
             boolean disablePushUpdaters,
@@ -53,7 +52,7 @@ public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends Se
             C criteria,
             List<Service> services
     ) {
-        super(namespace, environment, mapper, refreshTimeMs, criteria);
+        super(namespace, mapper, refreshTimeMs, criteria);
         this.disablePushUpdaters = disablePushUpdaters;
         this.connectionString = connectionString;
         this.curatorFramework = null != curatorFramework ? curatorFramework :
@@ -72,7 +71,7 @@ public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends Se
                 .withConnectionString(connectionString)
                 .withNamespace(getNamespace())
                 .withRefreshFrequencyMs(getRefreshTimeMs())
-                .withServiceDataSource(getServiceDataSource())
+                .withServiceDataSource(buildServiceDataSource())
                 .withServiceFinderFactory(getFinderFactory())
                 .withExtraStartSignalConsumer(x -> curatorFramework.start())
                 .withExtraStopSignalConsumer(x -> curatorFramework.start())
@@ -80,7 +79,7 @@ public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends Se
     }
 
     @Override
-    public ServiceDataSource getServiceDataSource() {
+    public ServiceDataSource buildServiceDataSource() {
         return null != services && !services.isEmpty() ?
                 new StaticDataSource(services) :
                 new ZkServiceDataSource(getNamespace(), connectionString, curatorFramework);

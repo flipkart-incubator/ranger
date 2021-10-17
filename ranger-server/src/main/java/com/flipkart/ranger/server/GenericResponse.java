@@ -13,29 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flipkart.ranger.http.model;
+package com.flipkart.ranger.server;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.flipkart.ranger.core.model.ServiceNode;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Singular;
+import lombok.*;
 
-import java.util.List;
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class GenericResponse<T> {
 
-/**
- *
- */
-@Data
-public class  ServiceNodesResponse<T> {
-    private final boolean success;
-    final List<ServiceNode<T>> data;
-
-    @Builder
-    public ServiceNodesResponse(
-            @JsonProperty("success") boolean success,
-            @JsonProperty("data") @Singular List<ServiceNode<T>> data) {
-        this.success = success;
-        this.data = data;
-    }
+    private boolean success;
+    private T data;
 }

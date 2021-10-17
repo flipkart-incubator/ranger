@@ -21,7 +21,6 @@ import java.util.Optional;
 public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>> implements RangerHubClient<T, C> {
 
     private final String namespace;
-    private final String environment;
     private final ObjectMapper mapper;
     private final C criteria;
 
@@ -30,13 +29,11 @@ public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends Serv
 
     public AbstractHubClient(
             String namespace,
-            String environment,
             ObjectMapper mapper,
             int refreshTimeMs,
             C criteria
     ){
         this.namespace = namespace;
-        this.environment =environment;
         this.mapper = mapper;
         this.refreshTimeMs = refreshTimeMs;
         this.criteria = criteria;
@@ -45,7 +42,6 @@ public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends Serv
     public void start(){
         Preconditions.checkNotNull(mapper, "Mapper can't be null");
         Preconditions.checkNotNull(namespace, "namespace can't be null");
-        Preconditions.checkNotNull(environment, "Environment can't be null");
 
         if (this.refreshTimeMs < Constants.MINIMUM_REFRESH_TIME) {
             log.warn("Node info update interval too low: {} ms. Has been upgraded to {} ms ",
@@ -91,7 +87,7 @@ public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends Serv
 
     public abstract ServiceFinderHub<T, C, R> buildHub();
 
-    public abstract ServiceDataSource getServiceDataSource();
+    public abstract ServiceDataSource buildServiceDataSource();
 
     public abstract ServiceFinderFactory<T,C, R> getFinderFactory();
 

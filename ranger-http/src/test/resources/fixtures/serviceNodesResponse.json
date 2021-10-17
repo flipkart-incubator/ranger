@@ -1,6 +1,6 @@
 {
   "success" : true,
-  "nodes" : [
+  "data" : [
     {
       "host" : "localhost-1",
       "port" : 80,
