@@ -15,7 +15,6 @@
  */
 package com.flipkart.ranger.client.zk;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
@@ -23,14 +22,12 @@ import com.flipkart.ranger.core.finder.shardselector.MatchingShardSelector;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkShardedServiceFinderFactory;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j

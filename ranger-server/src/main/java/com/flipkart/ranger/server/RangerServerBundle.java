@@ -19,6 +19,7 @@ import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.server.config.RangerConfiguration;
 import com.flipkart.ranger.server.manager.RangerClientManager;
 import com.flipkart.ranger.server.resources.RangerResource;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.setup.Bootstrap;
@@ -27,9 +28,15 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 @Slf4j
-public abstract class RangerServerBundle<T, C extends Criteria<T>, U extends Configuration> implements ConfiguredBundle<U> {
+public abstract class RangerServerBundle<
+        T,
+        C extends Criteria<T>,
+        U extends Configuration,
+        D extends ZkNodeDataDeserializer<T>> implements ConfiguredBundle<U> {
 
-    protected abstract RangerConfiguration getRangerConfiguration(U configuration);
+    protected abstract RangerConfiguration withRangerConfiguration(U configuration);
+
+    protected abstract D withDeserializer(U configuration);
 
     @Override
     public void initialize(Bootstrap<?> bootstrap) {
@@ -38,8 +45,12 @@ public abstract class RangerServerBundle<T, C extends Criteria<T>, U extends Con
 
     @Override
     public void run(U configuration, Environment environment) {
-        val rangerConfiguration = getRangerConfiguration(configuration);
-        val clientManager = new RangerClientManager<T, C>(rangerConfiguration, environment.getObjectMapper());
+        val rangerConfiguration = withRangerConfiguration(configuration);
+        val clientManager = new RangerClientManager<T, C, D>(
+                rangerConfiguration,
+                environment.getObjectMapper(),
+                withDeserializer(configuration)
+        );
         val rangerResource = new RangerResource<>(clientManager);
         environment.lifecycle().manage(clientManager);
         environment.jersey().register(rangerResource);

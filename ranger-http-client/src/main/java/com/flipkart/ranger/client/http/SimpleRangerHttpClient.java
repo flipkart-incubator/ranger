@@ -15,23 +15,19 @@
  */
 package com.flipkart.ranger.client.http;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.RangerClient;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
 import com.flipkart.ranger.core.model.Criteria;
-import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.HttpServiceFinderBuilders;
 import com.flipkart.ranger.http.config.HttpClientConfig;
-import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import com.google.common.base.Preconditions;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 

@@ -22,6 +22,7 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.server.manager.RangerClientManager;
 import com.flipkart.ranger.server.model.GenericResponse;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -38,11 +39,11 @@ import java.util.Optional;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/v1/ranger")
-public class RangerResource<T, C extends Criteria<T>> {
+public class RangerResource<T, C extends Criteria<T>, D extends ZkNodeDataDeserializer<T>> {
 
-    private final RangerClientManager<T, C> clientManager;
+    private final RangerClientManager<T, C, D> clientManager;
 
-    public RangerResource(RangerClientManager<T, C> clientManager){
+    public RangerResource(RangerClientManager<T, C, D> clientManager){
         this.clientManager = clientManager;
     }
 

@@ -20,7 +20,6 @@ import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
-import com.google.common.collect.Lists;
 
 import java.util.List;
 import java.util.Map;

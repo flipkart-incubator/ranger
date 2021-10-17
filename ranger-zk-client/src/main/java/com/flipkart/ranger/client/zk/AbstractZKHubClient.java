@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.AbstractHubClient;
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
-import com.flipkart.ranger.core.finderhub.ServiceFinderHubBuilder;
 import com.flipkart.ranger.core.finderhub.StaticDataSource;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;

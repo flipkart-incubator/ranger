@@ -19,7 +19,6 @@ import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
-import com.flipkart.ranger.core.utils.CriteriaUtils;
 import com.flipkart.ranger.core.utils.RegistryTestUtils;
 import org.junit.Assert;
 import org.junit.Test;

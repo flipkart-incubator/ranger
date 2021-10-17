@@ -19,7 +19,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.Constants;
 import com.flipkart.ranger.client.zk.UnshardedZKHubClient;
 import com.flipkart.ranger.core.model.Criteria;
+import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.server.config.RangerConfiguration;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.google.common.base.Preconditions;
 import io.dropwizard.lifecycle.Managed;
 import lombok.Getter;
@@ -34,7 +36,7 @@ import javax.inject.Singleton;
 @Slf4j
 @Singleton
 @Getter
-public class RangerClientManager<T, C extends Criteria<T>> implements Managed {
+public class RangerClientManager<T, C extends Criteria<T>, D extends ZkNodeDataDeserializer<T>> implements Managed {
 
     private final RangerConfiguration rangerConfiguration;
 
@@ -44,12 +46,14 @@ public class RangerClientManager<T, C extends Criteria<T>> implements Managed {
     @Inject
     public RangerClientManager(
             RangerConfiguration rangerConfiguration,
-            ObjectMapper mapper
+            ObjectMapper mapper,
+            D deserializer
     ){
         this.rangerConfiguration = rangerConfiguration;
         Preconditions.checkNotNull(rangerConfiguration, "Ranger configuration can't be null");
         Preconditions.checkNotNull(rangerConfiguration.getZookeeper(), "Zookeeper can't be null");
         Preconditions.checkNotNull(rangerConfiguration.getNamespace(), "Namespace can't be null");
+        Preconditions.checkNotNull(deserializer, "Deserializer can't be null");
 
         curatorFramework = CuratorFrameworkFactory.newClient(
                 rangerConfiguration.getZookeeper(),
@@ -62,6 +66,7 @@ public class RangerClientManager<T, C extends Criteria<T>> implements Managed {
                 .mapper(mapper)
                 .services(rangerConfiguration.getServices())
                 .refreshTimeMs(rangerConfiguration.getRefreshTimeMs())
+                .deserializer(deserializer)
                 .build();
     }
 

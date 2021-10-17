@@ -15,7 +15,6 @@
  */
 package com.flipkart.ranger.client.zk;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.Constants;
 import com.flipkart.ranger.client.RangerClient;
@@ -33,7 +32,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
