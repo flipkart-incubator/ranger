@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flipkart.ranger.server;
+package com.flipkart.ranger.server.manager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.Constants;
 import com.flipkart.ranger.client.zk.UnshardedZKHubClient;
 import com.flipkart.ranger.core.model.Criteria;
+import com.flipkart.ranger.server.config.RangerConfiguration;
 import com.google.common.base.Preconditions;
 import io.dropwizard.lifecycle.Managed;
 import lombok.Getter;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flipkart.ranger.server;
+package com.flipkart.ranger.server.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.flipkart.ranger.client.Constants;

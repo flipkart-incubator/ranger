@@ -16,6 +16,9 @@
 package com.flipkart.ranger.server;
 
 import com.flipkart.ranger.core.model.Criteria;
+import com.flipkart.ranger.server.config.RangerConfiguration;
+import com.flipkart.ranger.server.manager.RangerClientManager;
+import com.flipkart.ranger.server.resources.RangerResource;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.setup.Bootstrap;

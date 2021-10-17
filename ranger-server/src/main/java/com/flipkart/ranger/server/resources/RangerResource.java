@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flipkart.ranger.server;
+package com.flipkart.ranger.server.resources;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.server.manager.RangerClientManager;
+import com.flipkart.ranger.server.model.GenericResponse;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
