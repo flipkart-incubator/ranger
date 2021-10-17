@@ -40,6 +40,10 @@ public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends Se
     private final boolean disablePushUpdaters;
     private final String connectionString;
     private final CuratorFramework curatorFramework;
+    /*
+        Use this if you don't want the datasource to fetch the entire list of services;
+         but know beforehand about the services you are going to build the hub for.
+    */
     private final List<Service> services;
 
     public AbstractZKHubClient(
@@ -72,7 +76,7 @@ public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends Se
                 .withNamespace(getNamespace())
                 .withRefreshFrequencyMs(getRefreshTimeMs())
                 .withServiceDataSource(buildServiceDataSource())
-                .withServiceFinderFactory(getFinderFactory())
+                .withServiceFinderFactory(buildFinderFactory())
                 .withExtraStartSignalConsumer(x -> curatorFramework.start())
                 .withExtraStopSignalConsumer(x -> curatorFramework.start())
                 .build();

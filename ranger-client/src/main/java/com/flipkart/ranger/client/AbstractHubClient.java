@@ -89,7 +89,7 @@ public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends Serv
 
     protected abstract ServiceDataSource buildServiceDataSource();
 
-    protected abstract ServiceFinderFactory<T,C, R> getFinderFactory();
+    protected abstract ServiceFinderFactory<T,C, R> buildFinderFactory();
 
 }
 
