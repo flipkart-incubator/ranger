@@ -59,7 +59,7 @@ public class UnshardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHu
     }
 
     @Override
-    public ServiceFinderFactory<T, C, ListBasedServiceRegistry<T>> getFinderFactory() {
+    protected ServiceFinderFactory<T, C, ListBasedServiceRegistry<T>> getFinderFactory() {
         return ZKUnshardedServiceFinderFactory.<T, C>builder()
             .curatorFramework(getCuratorFramework())
             .connectionString(getConnectionString())

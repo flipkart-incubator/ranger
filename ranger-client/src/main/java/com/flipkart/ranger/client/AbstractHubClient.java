@@ -85,11 +85,11 @@ public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends Serv
         return optionalFinder.map(trcServiceFinder -> trcServiceFinder.getAll(criteria));
     }
 
-    public abstract ServiceFinderHub<T, C, R> buildHub();
+    protected abstract ServiceFinderHub<T, C, R> buildHub();
 
-    public abstract ServiceDataSource buildServiceDataSource();
+    protected abstract ServiceDataSource buildServiceDataSource();
 
-    public abstract ServiceFinderFactory<T,C, R> getFinderFactory();
+    protected abstract ServiceFinderFactory<T,C, R> getFinderFactory();
 
 }
 

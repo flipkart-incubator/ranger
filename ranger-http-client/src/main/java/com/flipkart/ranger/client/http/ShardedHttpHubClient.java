@@ -59,7 +59,7 @@ public class ShardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHttp
     }
 
     @Override
-    public ServiceFinderHub<T, C, MapBasedServiceRegistry<T>> buildHub() {
+    protected ServiceFinderHub<T, C, MapBasedServiceRegistry<T>> buildHub() {
         return new HttpServiceFinderHubBuilder<T, C, MapBasedServiceRegistry<T>>()
                 .withServiceDataSource(getServiceDataSource())
                 .withServiceFinderFactory(getFinderFactory())
@@ -71,14 +71,14 @@ public class ShardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHttp
            In case of http hub, if client could provide the services for which hub needs to be refreshed, use them instead.
     */
     @Override
-    public ServiceDataSource getServiceDataSource() {
+    protected ServiceDataSource getServiceDataSource() {
         return null != services && !services.isEmpty() ?
                 new StaticDataSource(services) :
                 new HttpServiceDataSource<>(clientConfig, getMapper());
     }
 
     @Override
-    public ServiceFinderFactory<T, C, MapBasedServiceRegistry<T>> getFinderFactory() {
+    protected ServiceFinderFactory<T, C, MapBasedServiceRegistry<T>> getFinderFactory() {
         return HttpShardedServiceFinderFactory.<T, C>builder()
                 .httpClientConfig(clientConfig)
                 .nodeRefreshIntervalMs(getRefreshTimeMs())

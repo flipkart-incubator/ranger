@@ -65,7 +65,7 @@ public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends Se
     }
 
     @Override
-    public ServiceFinderHub<T,C, R> buildHub() {
+    protected ServiceFinderHub<T,C, R> buildHub() {
         return new ZkServiceFinderHubBuilder<T,C, R>()
                 .withCuratorFramework(curatorFramework)
                 .withConnectionString(connectionString)
@@ -79,7 +79,7 @@ public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends Se
     }
 
     @Override
-    public ServiceDataSource buildServiceDataSource() {
+    protected ServiceDataSource buildServiceDataSource() {
         return null != services && !services.isEmpty() ?
                 new StaticDataSource(services) :
                 new ZkServiceDataSource(getNamespace(), connectionString, curatorFramework);

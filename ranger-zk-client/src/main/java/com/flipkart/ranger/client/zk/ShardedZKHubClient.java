@@ -59,7 +59,7 @@ public class ShardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHubC
     }
 
     @Override
-    public ServiceFinderFactory<T, C, MapBasedServiceRegistry<T>> getFinderFactory() {
+    protected ServiceFinderFactory<T, C, MapBasedServiceRegistry<T>> getFinderFactory() {
         return ZkShardedServiceFinderFactory.<T, C>builder()
                 .curatorFramework(getCuratorFramework())
                 .connectionString(getConnectionString())

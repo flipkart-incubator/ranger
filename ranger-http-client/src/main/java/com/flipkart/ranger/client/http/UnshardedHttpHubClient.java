@@ -59,7 +59,7 @@ public class UnshardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHt
     }
 
     @Override
-    public ServiceFinderHub<T, C, ListBasedServiceRegistry<T>> buildHub() {
+    protected ServiceFinderHub<T, C, ListBasedServiceRegistry<T>> buildHub() {
         return new HttpServiceFinderHubBuilder<T, C, ListBasedServiceRegistry<T>>()
                 .withServiceDataSource(getServiceDataSource())
                 .withServiceFinderFactory(getFinderFactory())
@@ -71,14 +71,14 @@ public class UnshardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHt
            In case of http hub, if client could provide the services for which hub needs to be refreshed, use them instead.
     */
     @Override
-    public ServiceDataSource getServiceDataSource() {
+    protected ServiceDataSource getServiceDataSource() {
         return null != services && !services.isEmpty() ?
                 new StaticDataSource(services) :
                 new HttpServiceDataSource<>(clientConfig, getMapper());
     }
 
     @Override
-    public ServiceFinderFactory<T, C, ListBasedServiceRegistry<T>> getFinderFactory() {
+    protected ServiceFinderFactory<T, C, ListBasedServiceRegistry<T>> getFinderFactory() {
         return HttpUnshardedServiceFinderFactory.<T, C>builder()
                 .httpClientConfig(clientConfig)
                 .nodeRefreshIntervalMs(getRefreshTimeMs())
