@@ -52,7 +52,7 @@ public class BaseServiceProviderBuilderTest {
     }
 
     @Test
-    public void testbuilder() throws Exception {
+    public void testbuilder() {
         final String host = "localhost";
         final int port = 9000;
         Exception exception = null;
@@ -95,5 +95,6 @@ public class BaseServiceProviderBuilderTest {
                 .withPort(port)
                 .withHealthUpdateIntervalMs(1000)
                 .build();
+        serviceProvider.start();
     }
 }
