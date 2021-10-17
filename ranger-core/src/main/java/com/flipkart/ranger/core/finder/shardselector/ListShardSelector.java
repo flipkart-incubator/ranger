@@ -29,7 +29,7 @@ public class ListShardSelector<T, C extends Criteria<T>> implements ShardSelecto
     public List<ServiceNode<T>> nodes(C criteria, ListBasedServiceRegistry<T> serviceRegistry) {
         if(null == criteria){
             return serviceRegistry.nodeList();
-        }
+         }
         return serviceRegistry.nodeList().stream().filter(node -> criteria.apply(node.getNodeData())).collect(Collectors.toList());
     }
 

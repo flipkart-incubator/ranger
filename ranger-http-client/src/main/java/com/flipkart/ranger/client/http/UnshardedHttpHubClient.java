@@ -17,6 +17,7 @@ package com.flipkart.ranger.client.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.ranger.client.AbstractHubClient;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
@@ -28,6 +29,7 @@ import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
+import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import com.flipkart.ranger.http.servicefinderhub.HttpServiceDataSource;
 import com.flipkart.ranger.http.servicefinderhub.HttpServiceFinderHubBuilder;
 import com.flipkart.ranger.http.servicefinderhub.HttpUnshardedServiceFinderFactory;
@@ -38,7 +40,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-public class UnshardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHttpHubClient<T, C, ListBasedServiceRegistry<T>> {
+public class UnshardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHubClient<T, C, ListBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
 
     private List<Service> services;
     private final HttpClientConfig clientConfig;
@@ -46,14 +48,14 @@ public class UnshardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHt
     @Builder
     public UnshardedHttpHubClient(
             String namespace,
-            String environment,
             ObjectMapper mapper,
             int refreshTimeMs,
             C criteria,
+            HTTPResponseDataDeserializer<T> deserializer,
             HttpClientConfig clientConfig,
             List<Service> services
     ) {
-        super(namespace, environment, mapper, refreshTimeMs, criteria);
+        super(namespace, mapper, refreshTimeMs, criteria, deserializer);
         this.clientConfig = clientConfig;
         this.services = services;
     }
@@ -61,37 +63,28 @@ public class UnshardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHt
     @Override
     protected ServiceFinderHub<T, C, ListBasedServiceRegistry<T>> buildHub() {
         return new HttpServiceFinderHubBuilder<T, C, ListBasedServiceRegistry<T>>()
-                .withServiceDataSource(getServiceDataSource())
-                .withServiceFinderFactory(getFinderFactory())
+                .withServiceDataSource(buildServiceDataSource())
+                .withServiceFinderFactory(buildFinderFactory())
                 .withRefreshFrequencyMs(getRefreshTimeMs())
                 .build();
     }
 
-    /*
-           In case of http hub, if client could provide the services for which hub needs to be refreshed, use them instead.
-    */
     @Override
-    protected ServiceDataSource getServiceDataSource() {
+    protected ServiceDataSource buildServiceDataSource() {
         return null != services && !services.isEmpty() ?
                 new StaticDataSource(services) :
                 new HttpServiceDataSource<>(clientConfig, getMapper());
     }
 
     @Override
-    protected ServiceFinderFactory<T, C, ListBasedServiceRegistry<T>> getFinderFactory() {
+    protected ServiceFinderFactory<T, C, ListBasedServiceRegistry<T>> buildFinderFactory() {
         return HttpUnshardedServiceFinderFactory.<T, C>builder()
                 .httpClientConfig(clientConfig)
                 .nodeRefreshIntervalMs(getRefreshTimeMs())
-                .deserializer(data -> {
-                    try{
-                        return getMapper().readValue(data, new TypeReference<ServiceNodesResponse<T>>() {});
-                    }catch (IOException e){
-                        log.warn("Could not parse node data");
-                    }
-                    return null;
-                })
+                .deserializer(getDeserializer())
                 .shardSelector(new ListShardSelector<>())
                 .nodeSelector(new RoundRobinServiceNodeSelector<>())
                 .build();
     }
+
 }

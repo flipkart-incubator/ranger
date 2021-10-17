@@ -17,12 +17,13 @@
 package com.flipkart.ranger.client;
 
 import com.flipkart.ranger.core.model.Criteria;
+import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.ServiceNode;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface RangerClient<T, C extends Criteria<T>> {
+public interface RangerClient<T, C extends Criteria<T>, D extends Deserializer<T>> {
 
     void start();
 

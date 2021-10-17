@@ -24,6 +24,7 @@ import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkShardedServiceFinderFactory;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-public class ShardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHubClient<T, C, MapBasedServiceRegistry<T>> {
+public class ShardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHubClient<T, C, MapBasedServiceRegistry<T>, ZkNodeDataDeserializer<T>> {
 
     @Builder
     public ShardedZKHubClient(
@@ -44,6 +45,7 @@ public class ShardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHubC
             String connectionString,
             CuratorFramework curatorFramework,
             C criteria,
+            ZkNodeDataDeserializer<T> deserializer,
             List<Service> services
     ) {
         super(
@@ -54,6 +56,7 @@ public class ShardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHubC
                 connectionString,
                 curatorFramework,
                 criteria,
+                deserializer,
                 services
         );
     }
@@ -65,14 +68,7 @@ public class ShardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHubC
                 .connectionString(getConnectionString())
                 .nodeRefreshIntervalMs(getRefreshTimeMs())
                 .disablePushUpdaters(isDisablePushUpdaters())
-                .deserializer(data -> {
-                    try{
-                        return getMapper().readValue(data, new TypeReference<ServiceNode<T>>() {});
-                    }catch (IOException e){
-                        log.warn("Could not parse node data");
-                    }
-                    return null;
-                })
+                .deserializer(getDeserializer())
                 .shardSelector(new MatchingShardSelector<>())
                 .nodeSelector(new RoundRobinServiceNodeSelector<>())
                 .build();

@@ -24,6 +24,7 @@ import com.flipkart.ranger.core.finder.shardselector.MatchingShardSelector;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.google.common.base.Preconditions;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,10 +39,11 @@ import java.util.Optional;
 
 @Slf4j
 @Getter
-public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerClient<T, C> {
+public class SimpleRangerZKClient<T, C extends Criteria<T>, D extends ZkNodeDataDeserializer<T>> implements RangerClient<T, C, D> {
 
     private SimpleShardedServiceFinder<T, C> serviceFinder;
     private C criteria;
+    private D deserializer;
 
     @Builder(builderMethodName = "fromConnectionString", builderClassName = "FromConnectionStringBuilder")
     public SimpleRangerZKClient(
@@ -51,7 +53,8 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerCli
             int refreshTimeMs,
             boolean disableWatchers,
             String connectionString,
-            C criteria
+            C criteria,
+            D deserializer
     ){
         this(
                 namespace,
@@ -60,7 +63,8 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerCli
                 refreshTimeMs,
                 disableWatchers,
                 CuratorFrameworkFactory.newClient(connectionString, new RetryForever(Constants.CONNECTION_RETRY_TIME)),
-                criteria
+                criteria,
+                deserializer
         );
     }
 
@@ -72,10 +76,12 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerCli
             int refreshTimeMs,
             boolean disableWatchers,
             CuratorFramework curatorFramework,
-            C criteria
+            C criteria,
+            D deserializer
     ){
         Preconditions.checkNotNull(mapper, "Mapper can't be null");
         Preconditions.checkNotNull(namespace, "namespace can't be null");
+        Preconditions.checkNotNull(deserializer, "deserializer can't be null");
 
         int effectiveRefreshTime = refreshTimeMs;
         if (effectiveRefreshTime < Constants.MINIMUM_REFRESH_TIME) {
@@ -86,19 +92,12 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerCli
         }
 
         this.criteria = criteria;
+        this.deserializer = deserializer;
         this.serviceFinder = ServiceFinderBuilders.<T, C>shardedFinderBuilder()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace(namespace)
                 .withServiceName(serviceName)
-                .withDeserializer(data -> {
-                    try{
-                        return mapper.readValue(data, new TypeReference<ServiceNode<T>>() {
-                        });
-                    }catch (IOException e){
-                        log.info("Could not parse node data");
-                        return null;
-                    }
-                })
+                .withDeserializer(deserializer)
                 .withNodeRefreshIntervalMs(effectiveRefreshTime)
                 .withDisableWatchers(disableWatchers)
                 .withShardSelector(new MatchingShardSelector<>())

@@ -19,10 +19,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.AbstractHubClient;
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
+import com.flipkart.ranger.core.finderhub.ServiceFinderHubBuilder;
 import com.flipkart.ranger.core.finderhub.StaticDataSource;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceRegistry;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceDataSource;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceFinderHubBuilder;
 import lombok.Getter;
@@ -35,7 +37,7 @@ import java.util.List;
 
 @Slf4j
 @Getter
-public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>> extends AbstractHubClient<T, C, R> {
+public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>, D extends ZkNodeDataDeserializer<T>> extends AbstractHubClient<T, C, R, D> {
 
     private final boolean disablePushUpdaters;
     private final String connectionString;
@@ -54,31 +56,32 @@ public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends Se
             String connectionString,
             CuratorFramework curatorFramework,
             C criteria,
+            D deserializer,
             List<Service> services
     ) {
-        super(namespace, mapper, refreshTimeMs, criteria);
+        super(namespace, mapper, refreshTimeMs, criteria, deserializer);
         this.disablePushUpdaters = disablePushUpdaters;
         this.connectionString = connectionString;
+        this.services = services;
+
         this.curatorFramework = null != curatorFramework ? curatorFramework :
                 CuratorFrameworkFactory.builder()
                         .namespace(namespace)
                         .connectString(this.connectionString)
                         .retryPolicy(new RetryForever(5000))
                         .build();
-        this.services = services;
+
     }
 
     @Override
     protected ServiceFinderHub<T,C, R> buildHub() {
-        return new ZkServiceFinderHubBuilder<T,C, R>()
+       return new ZkServiceFinderHubBuilder<T, C, R>()
                 .withCuratorFramework(curatorFramework)
                 .withConnectionString(connectionString)
                 .withNamespace(getNamespace())
                 .withRefreshFrequencyMs(getRefreshTimeMs())
                 .withServiceDataSource(buildServiceDataSource())
                 .withServiceFinderFactory(buildFinderFactory())
-                .withExtraStartSignalConsumer(x -> curatorFramework.start())
-                .withExtraStopSignalConsumer(x -> curatorFramework.start())
                 .build();
     }
 

@@ -5,9 +5,7 @@ import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinderBuilder;
-import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
-import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
 import com.flipkart.ranger.core.finderhub.*;
 import com.flipkart.ranger.core.model.*;
 import com.google.common.collect.Lists;
@@ -18,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,11 +48,7 @@ public class AbstractHubClientTest {
 
         @Override
         public SimpleUnshardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> build() {
-            if (null == shardSelector) {
-                shardSelector = new ListShardSelector<>();
-            }
-            final ListBasedServiceRegistry<TestShardInfo> serviceRegistry = new ListBasedServiceRegistry<>(service);
-            return new SimpleUnshardedServiceFinder<>(serviceRegistry, shardSelector, nodeSelector);
+            return buildFinder();
         }
 
         @Override
@@ -95,21 +90,29 @@ public class AbstractHubClientTest {
 
         @Override
         public ServiceFinder<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>> buildFinder(Service service) {
-            final ListBasedServiceRegistry<TestShardInfo> serviceRegistry = new ListBasedServiceRegistry<>(service);
-            List<ServiceNode<TestShardInfo>> serviceNodes = Lists.newArrayList();
-            serviceNodes.add(new ServiceNode<>("localhost-1", 9000, TestShardInfo.builder().shardId(1).build()));
-            serviceRegistry.updateNodes(serviceNodes);
-
-            return new SimpleUnshardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>>(
-                    serviceRegistry, new ListShardSelector<>(), new RoundRobinServiceNodeSelector<>()
-            );
+            SimpleUnshardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> finder = new TestSimpleUnshardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>>()
+                    .withNamespace(service.getNamespace())
+                    .withServiceName(service.getServiceName())
+                    .withDeserializer(new Deserializer<TestShardInfo>() {
+                        @Override
+                        public int hashCode() {
+                            return super.hashCode();
+                        }
+                    })
+                    .build();
+            finder.start();
+            return finder;
         }
     }
 
-    private static class TestAbstractHub extends AbstractHubClient<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>>{
+    private static class TestDeserilizer<T> implements Deserializer<T>{
 
-        public TestAbstractHub(String namespace, ObjectMapper mapper, int refreshTimeMs, Criteria<TestShardInfo> criteria) {
-            super(namespace, mapper, refreshTimeMs, criteria);
+    }
+
+    private static class TestAbstractHub extends AbstractHubClient<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>, TestDeserilizer<TestShardInfo>>{
+
+        public TestAbstractHub(String namespace, ObjectMapper mapper, int refreshTimeMs, Criteria<TestShardInfo> criteria, TestDeserilizer<TestShardInfo> deserilizer) {
+            super(namespace, mapper, refreshTimeMs, criteria, deserilizer);
         }
 
         @Override
@@ -142,15 +145,26 @@ public class AbstractHubClientTest {
 
     @Test
     public void testAbstractHubClient() {
-        TestAbstractHub testAbstractHub = new TestAbstractHub(service.getNamespace(), mapper, 1000, new TestCriteria());
+        TestAbstractHub testAbstractHub = new TestAbstractHub(service.getNamespace(), mapper, 1000, new TestCriteria(), new TestDeserilizer<>());
         testAbstractHub.start();
 
         TestUtils.sleepForSeconds(3);
 
         Optional<ServiceNode<TestShardInfo>> node = testAbstractHub.getNode(service);
         Assert.assertTrue(node.isPresent());
-        Assert.assertTrue(node.get().getHost().equalsIgnoreCase("localhost-1"));
-        Assert.assertEquals(9000, node.get().getPort());
+        Assert.assertTrue(node.get().getHost().equalsIgnoreCase("localhost"));
+        Assert.assertEquals(9200, node.get().getPort());
         Assert.assertEquals(1, node.get().getNodeData().getShardId());
+
+        node = testAbstractHub.getNode(new Service("test", "test"));
+        Assert.assertFalse(node.isPresent());
+
+        node = testAbstractHub.getNode(service, nodeData -> nodeData.getShardId() == 2);
+        Assert.assertFalse(node.isPresent());
+
+        node = testAbstractHub.getNode(new Service("test", "test"), nodeData -> nodeData.getShardId() == 1);
+        Assert.assertFalse(node.isPresent());
+
+        testAbstractHub.start();
     }
 }

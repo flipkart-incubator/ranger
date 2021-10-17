@@ -21,10 +21,12 @@ import com.flipkart.ranger.client.RangerClient;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
 import com.flipkart.ranger.core.model.Criteria;
+import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.HttpServiceFinderBuilders;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
+import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import com.google.common.base.Preconditions;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +36,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class SimpleRangerHttpClient<T, C extends Criteria<T>> implements RangerClient<T, C> {
+public class SimpleRangerHttpClient<T, C extends Criteria<T>, D extends HTTPResponseDataDeserializer<T>> implements RangerClient<T, C, D> {
 
     private final C criteria;
+    private final D deserializer;
     private final SimpleUnshardedServiceFinder<T, C> serviceFinder;
 
     @Builder
@@ -46,11 +49,15 @@ public class SimpleRangerHttpClient<T, C extends Criteria<T>> implements RangerC
             ObjectMapper mapper,
             int refreshTimeMs,
             HttpClientConfig clientConfig,
-            C criteria
+            C criteria,
+            D deserializer
     ) {
         Preconditions.checkNotNull(mapper, "Mapper can't be null");
         Preconditions.checkNotNull(namespace, "namespace can't be null");
+        Preconditions.checkNotNull(deserializer, "deserializer can't be null");
+
         this.criteria = criteria;
+        this.deserializer = deserializer;
 
         this.serviceFinder = HttpServiceFinderBuilders.<T, C>httpUnshardedServiceFinderBuilider()
                 .withClientConfig(clientConfig)
@@ -58,15 +65,7 @@ public class SimpleRangerHttpClient<T, C extends Criteria<T>> implements RangerC
                 .withNamespace(namespace)
                 .withObjectMapper(mapper)
                 .withNodeRefreshIntervalMs(refreshTimeMs)
-                .withDeserializer(data -> {
-                    try {
-                        return mapper.readValue(data, new TypeReference<ServiceNodesResponse<T>>() {
-                        });
-                    } catch (IOException e) {
-                        log.warn("Could not parse node data");
-                    }
-                    return null;
-                })
+                .withDeserializer(deserializer)
                 .withShardSelector(new ListShardSelector<>())
                 .build();
     }

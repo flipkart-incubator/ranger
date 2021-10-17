@@ -28,12 +28,19 @@ import java.util.List;
 
 public class MatchingShardSelectorTest {
 
+    private static final class TestCriteria implements Criteria<TestNodeData>{
+        @Override
+        public boolean apply(TestNodeData nodeData) {
+            return nodeData.getNodeId() == 1;
+        }
+    }
+
     @Test
     public void testMatchingShardSelector(){
         final MapBasedServiceRegistry<TestNodeData> serviceRegistry = RegistryTestUtils.getServiceRegistry();
         final MatchingShardSelector<TestNodeData, Criteria<TestNodeData>> shardSelector = new MatchingShardSelector<>();
         final List<ServiceNode<TestNodeData>> nodes = shardSelector.nodes(
-                CriteriaUtils.getCriteria(1), serviceRegistry);
+                new TestCriteria(), serviceRegistry);
         Assert.assertFalse(nodes.isEmpty());
         Assert.assertEquals("localhost-1", nodes.get(0).getHost());
     }

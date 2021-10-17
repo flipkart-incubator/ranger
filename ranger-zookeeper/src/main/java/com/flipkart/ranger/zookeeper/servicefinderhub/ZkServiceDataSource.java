@@ -36,7 +36,7 @@ public class ZkServiceDataSource implements ServiceDataSource {
     private final String namespace;
     private String connectionString;
     private CuratorFramework curatorFramework;
-    private boolean manageCurator;
+    private boolean curatorProvided;
 
     public ZkServiceDataSource(String namespace,
                                String connectionString,
@@ -66,7 +66,7 @@ public class ZkServiceDataSource implements ServiceDataSource {
                     .retryPolicy(new ExponentialBackoffRetry(1000, 100))
                     .build();
             curatorFramework.start();
-            manageCurator = true;
+            curatorProvided = false;
         }
         try {
             curatorFramework.blockUntilConnected();
@@ -80,7 +80,7 @@ public class ZkServiceDataSource implements ServiceDataSource {
     @Override
     public void stop() {
         log.info("Service data stopped");
-        if(manageCurator) curatorFramework.close();
+        if(!curatorProvided) curatorFramework.close();
         log.info("Service data source stopped");
     }
 }

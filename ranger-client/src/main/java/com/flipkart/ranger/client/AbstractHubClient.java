@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
-import com.flipkart.ranger.core.model.Criteria;
-import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.model.ServiceRegistry;
+import com.flipkart.ranger.core.model.*;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +15,12 @@ import java.util.Optional;
 
 @Slf4j
 @Getter
-public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>> implements RangerHubClient<T, C> {
+public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>, D extends Deserializer<T>> implements RangerHubClient<T, C, D> {
 
     private final String namespace;
     private final ObjectMapper mapper;
     private final C criteria;
+    private final D deserializer;
 
     private int refreshTimeMs;
     private ServiceFinderHub<T, C, R> hub;
@@ -31,17 +29,20 @@ public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends Serv
             String namespace,
             ObjectMapper mapper,
             int refreshTimeMs,
-            C criteria
+            C criteria,
+            D deserializer
     ){
         this.namespace = namespace;
         this.mapper = mapper;
         this.refreshTimeMs = refreshTimeMs;
         this.criteria = criteria;
+        this.deserializer = deserializer;
     }
 
     public void start(){
         Preconditions.checkNotNull(mapper, "Mapper can't be null");
         Preconditions.checkNotNull(namespace, "namespace can't be null");
+        Preconditions.checkNotNull(deserializer, "deserializer can't be null");
 
         if (this.refreshTimeMs < Constants.MINIMUM_REFRESH_TIME) {
             log.warn("Node info update interval too low: {} ms. Has been upgraded to {} ms ",

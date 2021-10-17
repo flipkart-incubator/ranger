@@ -26,7 +26,7 @@ public class HttpServiceFinderHubBuilder<T, C extends Criteria<T>, R extends Ser
 
     @Override
     protected void preBuild() {
-        log.info("No pre-ebuild actions necessary");
+        log.info("No pre-build actions necessary");
     }
 
     @Override
