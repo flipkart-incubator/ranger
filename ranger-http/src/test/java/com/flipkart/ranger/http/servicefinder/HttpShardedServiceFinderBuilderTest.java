@@ -23,7 +23,6 @@ import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -34,8 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 

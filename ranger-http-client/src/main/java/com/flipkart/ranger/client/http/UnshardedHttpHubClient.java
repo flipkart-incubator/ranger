@@ -17,7 +17,6 @@ package com.flipkart.ranger.client.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.client.RangerHubClient;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;

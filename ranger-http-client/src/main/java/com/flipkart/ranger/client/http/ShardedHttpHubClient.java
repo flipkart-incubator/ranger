@@ -18,9 +18,7 @@ package com.flipkart.ranger.client.http;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
-import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
-import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
 import com.flipkart.ranger.core.finder.shardselector.MatchingShardSelector;
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
@@ -33,7 +31,6 @@ import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.servicefinderhub.HttpServiceDataSource;
 import com.flipkart.ranger.http.servicefinderhub.HttpServiceFinderHubBuilder;
 import com.flipkart.ranger.http.servicefinderhub.HttpShardedServiceFinderFactory;
-import com.flipkart.ranger.http.servicefinderhub.HttpUnshardedServiceFinderFactory;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
