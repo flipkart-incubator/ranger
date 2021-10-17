@@ -29,7 +29,7 @@ public class ServiceNodeResponseTest {
     @Setter
     static class TestNodeInfo{
         private int shardId;
-        private String farmId;
+        private String region;
     }
 
     @Test

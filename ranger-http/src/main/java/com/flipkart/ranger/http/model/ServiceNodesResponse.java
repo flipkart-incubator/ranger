@@ -34,7 +34,7 @@ public class  ServiceNodesResponse<T> {
     @Builder
     public ServiceNodesResponse(
             @JsonProperty("success") boolean success,
-            @JsonProperty("data") @Singular List<ServiceNode<T>> data) {
+            @JsonProperty("data") List<ServiceNode<T>> data) {
         this.success = success;
         this.data = data;
     }

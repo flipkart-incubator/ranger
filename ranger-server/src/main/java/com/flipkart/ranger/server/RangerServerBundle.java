@@ -15,7 +15,6 @@
  */
 package com.flipkart.ranger.server;
 
-import com.flipkart.ranger.client.zk.UnshardedZKHubClient;
 import com.flipkart.ranger.core.model.Criteria;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
@@ -23,13 +22,9 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.curator.framework.CuratorFramework;
 
 @Slf4j
 public abstract class RangerServerBundle<T, C extends Criteria<T>, U extends Configuration> implements ConfiguredBundle<U> {
-
-    private UnshardedZKHubClient<T, C> zkHubClient;
-    private CuratorFramework curatorFramework;
 
     protected abstract RangerConfiguration getRangerConfiguration(U configuration);
 
