@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flipkart.ranger.server.resources;
+package com.flipkart.ranger.server.bundle.resources;
 
 import com.codahale.metrics.annotation.Metered;
+import com.flipkart.ranger.client.RangerHubClient;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.server.manager.RangerClientManager;
-import com.flipkart.ranger.server.model.GenericResponse;
-import com.flipkart.ranger.server.model.ShardInfo;
+import com.flipkart.ranger.server.bundle.model.GenericResponse;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -38,36 +38,36 @@ import java.util.Optional;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/ranger")
-public class RangerResource {
+public class RangerResource<T, C extends Criteria<T>> {
 
-    private final RangerClientManager clientManager;
+    private final RangerHubClient<T, C> rangerHub;
 
     @Inject
-    public RangerResource(RangerClientManager clientManager){
-        this.clientManager = clientManager;
+    public RangerResource(RangerHubClient<T, C> rangerHub){
+        this.rangerHub = rangerHub;
     }
 
     @GET
     @Path("/services/v1")
     @Metered
-    public GenericResponse<Collection<Service>> getServices() {
+    public GenericResponse<Collection<Service>> getServices() throws Exception {
         return GenericResponse.<Collection<Service>>builder()
                 .success(true)
-                .data(clientManager.getHubClient().getServices())
+                .data(rangerHub.getServices())
                 .build();
     }
 
     @GET
     @Path("/nodes/v1/{namespace}/{serviceName}")
     @Metered
-    public GenericResponse<List<ServiceNode<ShardInfo>>> getNodes(
+    public GenericResponse<List<ServiceNode<T>>> getNodes(
             @NotNull @NotEmpty @PathParam("namespace") final String namespace,
             @NotNull @NotEmpty @PathParam("serviceName") final String serviceName
     ){
         val service = new Service(namespace, serviceName);
-        Optional<List<ServiceNode<ShardInfo>>> nodeList = clientManager.getHubClient().getAllNodes(
+        Optional<List<ServiceNode<T>>> nodeList = rangerHub.getAllNodes(
                 service, null);
-        return GenericResponse.<List<ServiceNode<ShardInfo>>>builder()
+        return GenericResponse.<List<ServiceNode<T>>>builder()
                 .success(true)
                 .data(nodeList.orElse(Collections.emptyList()))
                 .build();

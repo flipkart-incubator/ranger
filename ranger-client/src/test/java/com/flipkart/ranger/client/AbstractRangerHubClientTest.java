@@ -15,7 +15,6 @@
  */
 package com.flipkart.ranger.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.stubs.RangerTestHub;
 import com.flipkart.ranger.client.stubs.TestShardInfo;
 import com.flipkart.ranger.client.utils.RangerHubTestUtils;
@@ -31,7 +30,6 @@ import java.util.Optional;
 @Slf4j
 public class AbstractRangerHubClientTest {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
     private static final Service service = new Service("test-ns", "test-s");
 
     @Test

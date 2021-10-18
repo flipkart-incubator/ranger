@@ -1,11 +1,28 @@
+/*
+ * Copyright 2015 Flipkart Internet Pvt. Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.flipkart.ranger.server;
 
+import com.flipkart.ranger.client.RangerHubClient;
+import com.flipkart.ranger.core.model.Criteria;
+import com.flipkart.ranger.server.bundle.RangerServerBundle;
 import com.flipkart.ranger.server.healthcheck.RangerHealthCheck;
-import com.flipkart.ranger.server.manager.RangerClientManager;
-import com.flipkart.ranger.server.resources.RangerResource;
-import com.flipkart.ranger.server.rotation.BirTask;
-import com.flipkart.ranger.server.rotation.OorTask;
-import com.flipkart.ranger.server.rotation.RotationStatus;
+import com.flipkart.ranger.server.manager.RangerBundleManager;
+import com.flipkart.ranger.server.model.ShardInfo;
+import com.flipkart.ranger.server.util.RangerServerUtils;
+import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -14,8 +31,6 @@ import lombok.val;
 
 @Slf4j
 public class App extends Application<AppConfiguration> {
-
-    private RotationStatus rotationStatus;
 
     public static void main(String[] args) throws Exception {
         new App().run(args);
@@ -28,15 +43,30 @@ public class App extends Application<AppConfiguration> {
 
     @Override
     public void run(AppConfiguration appConfiguration, Environment environment) {
-        rotationStatus = new RotationStatus(appConfiguration.isInitialRotationStatus());
-        val rangerClientManager = new RangerClientManager(appConfiguration, environment.getObjectMapper());
+        val rangerConfiguration = appConfiguration.getRangerConfiguration();
+        RangerServerUtils.verifyPreconditions(rangerConfiguration);
+        val curatorFramework = RangerServerUtils.buildCurator(rangerConfiguration);
+
+        val rangerServerBundle = new RangerServerBundle<ShardInfo, Criteria<ShardInfo>, ZkNodeDataDeserializer<ShardInfo>,
+                AppConfiguration>() {
+            @Override
+            protected RangerHubClient<ShardInfo, Criteria<ShardInfo>> withRangerHub(AppConfiguration configuration) {
+                return RangerServerUtils.buildRangerHub(curatorFramework, rangerConfiguration, environment.getObjectMapper());
+            }
+
+            @Override
+            protected boolean withInitialRotationStatus(AppConfiguration configuration) {
+                return appConfiguration.isInitialRotationStatus();
+            }
+        };
+        rangerServerBundle.run(appConfiguration, environment);
+
+        val rangerClientManager = new RangerBundleManager(curatorFramework, rangerServerBundle);
         environment.lifecycle().manage(rangerClientManager);
-        environment.jersey().register(new RangerResource(rangerClientManager));
-        environment.admin()
-                .addTask(new OorTask(rotationStatus));
-        environment.admin()
-                        .addTask(new BirTask(rotationStatus));
+
         environment.healthChecks().register(
-                "ranger-healthcheck", new RangerHealthCheck(rangerClientManager.getCuratorFramework()));
+                "ranger-health-check",
+                new RangerHealthCheck(rangerClientManager.getCuratorFramework())
+        );
     }
 }

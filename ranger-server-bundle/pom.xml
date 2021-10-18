@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>com.flipkart.ranger</groupId>
-            <artifactId>ranger-zk-client</artifactId>
+            <artifactId>ranger-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>com.flipkart.ranger</groupId>
-            <artifactId>ranger-zk-client</artifactId>
+            <artifactId>ranger-client</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>

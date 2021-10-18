@@ -29,8 +29,6 @@ import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceFinderHubBuilder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.RetryForever;
 
 import java.util.List;
 
@@ -63,13 +61,7 @@ public abstract class AbstractRangerZKHubClient<T, C extends Criteria<T>, R exte
         this.disablePushUpdaters = disablePushUpdaters;
         this.connectionString = connectionString;
         this.services = services;
-
-        this.curatorFramework = null != curatorFramework ? curatorFramework :
-                CuratorFrameworkFactory.builder()
-                        .namespace(namespace)
-                        .connectString(this.connectionString)
-                        .retryPolicy(new RetryForever(5000))
-                        .build();
+        this.curatorFramework = curatorFramework;
 
     }
 

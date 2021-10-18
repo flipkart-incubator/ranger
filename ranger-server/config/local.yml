@@ -1,8 +1,11 @@
 name: ranger-server
-zookeeper: localhost:2181
-namespace: test
-disablePushUpdaters: true
 initialRotationStatus: false
+
+rangerConfiguration:
+  namespace: test
+  zookeeper: localhost:2181
+  disablePushUpdaters: true
+
 
 server:
   maxThreads: 128
