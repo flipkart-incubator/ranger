@@ -13,7 +13,6 @@ import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;

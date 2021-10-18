@@ -1,14 +1,10 @@
 package com.flipkart.ranger.client.http;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.healthcheck.HealthcheckResult;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
-import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.http.config.HttpClientConfig;
@@ -16,18 +12,14 @@ import com.flipkart.ranger.http.model.ServiceDataSourceResponse;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.Lists;
-import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
