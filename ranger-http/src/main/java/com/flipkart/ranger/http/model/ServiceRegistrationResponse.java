@@ -15,18 +15,17 @@
  */
 package com.flipkart.ranger.http.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
-@Data
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceRegistrationResponse {
-    private final boolean success;
-
-    @Builder
-    public ServiceRegistrationResponse(
-            @JsonProperty("success") boolean success
-    ) {
-        this.success = success;
-    }
+    private boolean success;
+    private String error;
 }

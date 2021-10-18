@@ -67,7 +67,7 @@ public class HttpShardedServiceFinderBuilderTest {
                         .data(Lists.newArrayList(node))
                         .success(true)
                         .build());
-        server.stubFor(get(urlEqualTo("/v1/ranger/nodes/testns/test"))
+        server.stubFor(get(urlEqualTo("/ranger/nodes/v1/testns/test"))
                                .willReturn(aResponse()
                                                    .withBody(payload)
                                                    .withStatus(200)));

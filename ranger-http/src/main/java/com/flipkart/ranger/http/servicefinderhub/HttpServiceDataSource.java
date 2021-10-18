@@ -53,7 +53,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                 .port(config.getPort() == 0
                         ? defaultPort()
                         : config.getPort())
-                .encodedPath("/v1/ranger/services")
+                .encodedPath("/ranger/services/v1")
                 .build();
         val request = new Request.Builder()
                 .url(httpUrl)
@@ -72,11 +72,12 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                         if(serviceDataSourceResponse.isSuccess()){
                             return serviceDataSourceResponse.getData();
                         }
+                        log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceDataSourceResponse.getError());
                     }
                 }
             }
             else {
-                log.warn("HTTP call to {} returned: {}", httpUrl, response.code());
+                log.warn("HTTP call to {} returned code: {}", httpUrl, response.code());
             }
         }
         catch (IOException e) {

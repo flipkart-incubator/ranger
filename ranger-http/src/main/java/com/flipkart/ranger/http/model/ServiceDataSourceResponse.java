@@ -15,6 +15,7 @@
  */
 package com.flipkart.ranger.http.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.flipkart.ranger.core.model.Service;
 import lombok.*;
 
@@ -25,7 +26,9 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceDataSourceResponse {
     private boolean success;
+    private String error;
     private List<Service> data;
 }

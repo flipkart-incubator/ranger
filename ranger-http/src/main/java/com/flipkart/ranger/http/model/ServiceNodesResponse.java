@@ -15,26 +15,25 @@
  */
 package com.flipkart.ranger.http.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.flipkart.ranger.core.model.ServiceNode;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  *
  */
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class  ServiceNodesResponse<T> {
-    private final boolean success;
-    final List<ServiceNode<T>> data;
-
-    @Builder
-    public ServiceNodesResponse(
-            @JsonProperty("success") boolean success,
-            @JsonProperty("data") List<ServiceNode<T>> data) {
-        this.success = success;
-        this.data = data;
-    }
+    private boolean success;
+    private String error;
+    private List<ServiceNode<T>> data = Collections.emptyList();
 }

@@ -33,6 +33,7 @@ import okhttp3.Request;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,13 +65,13 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                 .port(config.getPort() == 0
                         ? defaultPort()
                         : config.getPort())
-                .encodedPath(String.format("/v1/ranger/nodes/%s/%s", service.getNamespace(), service.getServiceName()))
+                .encodedPath(String.format("/ranger/nodes/v1/%s/%s", service.getNamespace(), service.getServiceName()))
                 .build();
         val request = new Request.Builder()
                 .url(httpUrl)
                 .get()
                 .build();
-        ServiceNodesResponse<T> serviceNodesResponse = null;
+
         try (val response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 try (final ResponseBody body = response.body()) {
@@ -78,7 +79,14 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                         log.warn("HTTP call to {} returned empty body", httpUrl);
                     } else {
                         final byte[] bytes = body.bytes();
-                        serviceNodesResponse = deserializer.deserialize(bytes);
+                        val serviceNodesResponse = deserializer.deserialize(bytes);
+                        if(serviceNodesResponse.isSuccess()){
+                            return Optional.of(FinderUtils.filterValidNodes(
+                                    service,
+                                    serviceNodesResponse.getData(),
+                                    healthcheckZombieCheckThresholdTime(service)));
+                        }
+                        log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceNodesResponse.getError());
                     }
                 }
             } else {
@@ -87,20 +95,11 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
         } catch (IOException e) {
             Exceptions.illegalState("Error fetching data from server: " + httpUrl, e);
         }
-
-        if (null != serviceNodesResponse && null != serviceNodesResponse.getData() &&
-                !serviceNodesResponse.getData().isEmpty()) {
-            return Optional.of(FinderUtils.filterValidNodes(
-                    service,
-                    serviceNodesResponse.getData(),
-                    healthcheckZombieCheckThresholdTime(service)));
-        }
         return Optional.empty();
     }
 
     @Override
     public boolean isActive() {
-//        return httpClient.connectionPool().connectionCount() > 0;
         return true;
     }
 }

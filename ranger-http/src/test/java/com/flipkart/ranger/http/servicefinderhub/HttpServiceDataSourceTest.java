@@ -62,7 +62,7 @@ public class HttpServiceDataSourceTest {
                 ))
                 .build();
         val response = MAPPER.writeValueAsBytes(responseObj);
-        server.stubFor(get(urlEqualTo("/v1/ranger/services"))
+        server.stubFor(get(urlEqualTo("/ranger/services/v1"))
                 .willReturn(aResponse()
                         .withBody(response)
                         .withStatus(200)));

@@ -58,7 +58,7 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
                 .port(config.getPort() == 0
                         ? defaultPort()
                         : config.getPort())
-                .encodedPath(String.format("/v1/ranger/nodes/add/%s/%s", service.getNamespace(), service.getServiceName()))
+                .encodedPath(String.format("/ranger/nodes/v1/add/%s/%s", service.getNamespace(), service.getServiceName()))
                 .build();
         val requestBody = RequestBody.create(serializer.serialize(serviceNode));
         val serviceRegistrationResponse = registerService(httpUrl, requestBody);
@@ -80,9 +80,11 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
                     }
                     else {
                         final byte[] bytes = body.bytes();
-                        return Optional.of(
-                                mapper.readValue(bytes, ServiceRegistrationResponse.class)
-                        );
+                        val serviceRegistrationResponse = mapper.readValue(bytes, ServiceRegistrationResponse.class);
+                        if(serviceRegistrationResponse.isSuccess()) {
+                            return Optional.of(serviceRegistrationResponse);
+                        }
+                        log.warn("Http call to {} returned a failure response with code {} and error {}", httpUrl, response.code(), serviceRegistrationResponse.getError());
                     }
                 }
             }
