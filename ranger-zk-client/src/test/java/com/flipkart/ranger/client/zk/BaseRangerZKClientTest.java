@@ -27,7 +27,7 @@ import java.util.Date;
 
 @Slf4j
 @Getter
-public abstract class BaseZKTest {
+public abstract class BaseRangerZKClientTest {
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper = new ObjectMapper();

@@ -16,7 +16,7 @@
 package com.flipkart.ranger.client.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.client.AbstractHubClient;
+import com.flipkart.ranger.client.AbstractRangerHubClient;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.MatchingShardSelector;
@@ -37,13 +37,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Slf4j
-public class ShardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHubClient<T, C, MapBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
+public class ShardedRangerHttpHubClient<T, C extends Criteria<T>> extends AbstractRangerHubClient<T, C, MapBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
 
     private List<Service> services;
     private final HttpClientConfig clientConfig;
 
     @Builder
-    public ShardedHttpHubClient(
+    public ShardedRangerHttpHubClient(
             String namespace,
             ObjectMapper mapper,
             int refreshTimeMs,
@@ -66,6 +66,10 @@ public class ShardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHubC
                 .build();
     }
 
+    /*
+        If the client knows the services for which a refresh ought to be run. Use that
+        information instead of a data source! Handy during service integrations!
+     */
     @Override
     protected ServiceDataSource buildServiceDataSource() {
         return null != services && !services.isEmpty() ?

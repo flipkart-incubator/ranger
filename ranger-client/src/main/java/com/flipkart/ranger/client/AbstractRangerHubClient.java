@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Slf4j
 @Getter
-public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>, D extends Deserializer<T>> implements RangerHubClient<T, C, D> {
+public abstract class AbstractRangerHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>, D extends Deserializer<T>> implements RangerHubClient<T, C, D> {
 
     private final String namespace;
     private final ObjectMapper mapper;
@@ -25,7 +25,7 @@ public abstract class AbstractHubClient<T, C extends Criteria<T>, R extends Serv
     private int refreshTimeMs;
     private ServiceFinderHub<T, C, R> hub;
 
-    public AbstractHubClient(
+    public AbstractRangerHubClient(
             String namespace,
             ObjectMapper mapper,
             int refreshTimeMs,

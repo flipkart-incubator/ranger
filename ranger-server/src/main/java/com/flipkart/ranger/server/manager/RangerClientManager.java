@@ -17,9 +17,8 @@ package com.flipkart.ranger.server.manager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.Constants;
-import com.flipkart.ranger.client.zk.UnshardedZKHubClient;
+import com.flipkart.ranger.client.zk.UnshardedRangerZKHubClient;
 import com.flipkart.ranger.core.model.Criteria;
-import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.server.config.RangerConfiguration;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.google.common.base.Preconditions;
@@ -40,7 +39,7 @@ public class RangerClientManager<T, C extends Criteria<T>, D extends ZkNodeDataD
 
     private final RangerConfiguration rangerConfiguration;
 
-    private UnshardedZKHubClient<T, C> zkHubClient;
+    private UnshardedRangerZKHubClient<T, C> zkHubClient;
     private CuratorFramework curatorFramework;
 
     @Inject
@@ -59,7 +58,7 @@ public class RangerClientManager<T, C extends Criteria<T>, D extends ZkNodeDataD
                 rangerConfiguration.getZookeeper(),
                 new RetryForever(Constants.CONNECTION_RETRY_TIME)
         );
-        zkHubClient = UnshardedZKHubClient.<T, C>builder()
+        zkHubClient = UnshardedRangerZKHubClient.<T, C>builder()
                 .connectionString(rangerConfiguration.getZookeeper())
                 .curatorFramework(curatorFramework)
                 .disablePushUpdaters(rangerConfiguration.isDisablePushUpdaters())

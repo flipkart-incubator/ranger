@@ -17,13 +17,13 @@ package com.flipkart.ranger.client.zk;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
-import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
-import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
+import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
+import com.flipkart.ranger.core.finder.shardselector.MatchingShardSelector;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
-import com.flipkart.ranger.zookeeper.servicefinderhub.ZKUnshardedServiceFinderFactory;
+import com.flipkart.ranger.zookeeper.servicefinderhub.ZkShardedServiceFinderFactory;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
@@ -31,10 +31,10 @@ import org.apache.curator.framework.CuratorFramework;
 import java.util.List;
 
 @Slf4j
-public class UnshardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHubClient<T, C, ListBasedServiceRegistry<T>, ZkNodeDataDeserializer<T>> {
+public class ShardedRangerZKHubClient<T, C extends Criteria<T>> extends AbstractRangerZKHubClient<T, C, MapBasedServiceRegistry<T>, ZkNodeDataDeserializer<T>> {
 
     @Builder
-    public UnshardedZKHubClient(
+    public ShardedRangerZKHubClient(
             String namespace,
             ObjectMapper mapper,
             int refreshTimeMs,
@@ -45,30 +45,30 @@ public class UnshardedZKHubClient<T, C extends Criteria<T>> extends AbstractZKHu
             ZkNodeDataDeserializer<T> deserializer,
             List<Service> services
     ) {
-            super(
-                    namespace,
-                    mapper,
-                    refreshTimeMs,
-                    disablePushUpdaters,
-                    connectionString,
-                    curatorFramework,
-                    criteria,
-                    deserializer,
-                    services
-            );
+        super(
+                namespace,
+                mapper,
+                refreshTimeMs,
+                disablePushUpdaters,
+                connectionString,
+                curatorFramework,
+                criteria,
+                deserializer,
+                services
+        );
     }
 
     @Override
-    protected ServiceFinderFactory<T, C, ListBasedServiceRegistry<T>> buildFinderFactory() {
-        return ZKUnshardedServiceFinderFactory.<T, C>builder()
-            .curatorFramework(getCuratorFramework())
-            .connectionString(getConnectionString())
-            .nodeRefreshIntervalMs(getRefreshTimeMs())
-            .disablePushUpdaters(isDisablePushUpdaters())
-            .deserializer(getDeserializer())
-            .shardSelector(new ListShardSelector<>())
-            .nodeSelector(new RoundRobinServiceNodeSelector<>())
-            .build();
+    protected ServiceFinderFactory<T, C, MapBasedServiceRegistry<T>> buildFinderFactory() {
+        return ZkShardedServiceFinderFactory.<T, C>builder()
+                .curatorFramework(getCuratorFramework())
+                .connectionString(getConnectionString())
+                .nodeRefreshIntervalMs(getRefreshTimeMs())
+                .disablePushUpdaters(isDisablePushUpdaters())
+                .deserializer(getDeserializer())
+                .shardSelector(new MatchingShardSelector<>())
+                .nodeSelector(new RoundRobinServiceNodeSelector<>())
+                .build();
     }
-
 }
+

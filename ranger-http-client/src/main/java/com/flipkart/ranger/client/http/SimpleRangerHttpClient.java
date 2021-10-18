@@ -43,7 +43,7 @@ public class SimpleRangerHttpClient<T, C extends Criteria<T>, D extends HTTPResp
             String namespace,
             String serviceName,
             ObjectMapper mapper,
-            int refreshTimeMs,
+            int nodeRefreshIntervalMs,
             HttpClientConfig clientConfig,
             C criteria,
             D deserializer
@@ -60,7 +60,7 @@ public class SimpleRangerHttpClient<T, C extends Criteria<T>, D extends HTTPResp
                 .withServiceName(serviceName)
                 .withNamespace(namespace)
                 .withObjectMapper(mapper)
-                .withNodeRefreshIntervalMs(refreshTimeMs)
+                .withNodeRefreshIntervalMs(nodeRefreshIntervalMs)
                 .withDeserializer(deserializer)
                 .withShardSelector(new ListShardSelector<>())
                 .build();

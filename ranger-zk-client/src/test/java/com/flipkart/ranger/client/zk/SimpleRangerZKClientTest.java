@@ -1,8 +1,6 @@
 package com.flipkart.ranger.client.zk;
 
-import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.model.Criteria;
-import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
@@ -12,7 +10,7 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-public class SimpleRangerZKClienTest extends BaseZKTest{
+public class SimpleRangerZKClientTest extends BaseRangerZKClientTest {
 
     @Test
     public void testBaseClient(){

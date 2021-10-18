@@ -296,7 +296,6 @@ Stop the finder once you are done. (Generally this is when process ends)
 ```
 serviceFinder.stop()
 ```
-
 Version
 ----
 

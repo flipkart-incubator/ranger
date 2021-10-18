@@ -5,11 +5,11 @@ import com.flipkart.ranger.core.units.TestNodeData;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ShardedZKHubTest extends BaseZKHubTest {
+public class ShardedZKRangerClientTest extends AbstractZKRangerClientTest {
 
     @Override
-    protected AbstractZKHubClient getClient() {
-        return ShardedZKHubClient.<TestNodeData, Criteria<TestNodeData>>builder()
+    protected AbstractRangerZKHubClient getClient() {
+        return ShardedRangerZKHubClient.<TestNodeData, Criteria<TestNodeData>>builder()
                 .namespace("test-n")
                 .connectionString(getTestingCluster().getConnectString())
                 .curatorFramework(getCuratorFramework())

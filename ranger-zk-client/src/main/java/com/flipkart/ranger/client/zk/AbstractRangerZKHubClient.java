@@ -16,7 +16,7 @@
 package com.flipkart.ranger.client.zk;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.client.AbstractHubClient;
+import com.flipkart.ranger.client.AbstractRangerHubClient;
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
 import com.flipkart.ranger.core.finderhub.StaticDataSource;
@@ -36,7 +36,7 @@ import java.util.List;
 
 @Slf4j
 @Getter
-public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>, D extends ZkNodeDataDeserializer<T>> extends AbstractHubClient<T, C, R, D> {
+public abstract class AbstractRangerZKHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>, D extends ZkNodeDataDeserializer<T>> extends AbstractRangerHubClient<T, C, R, D> {
 
     private final boolean disablePushUpdaters;
     private final String connectionString;
@@ -47,7 +47,7 @@ public abstract class AbstractZKHubClient<T, C extends Criteria<T>, R extends Se
     */
     private final List<Service> services;
 
-    public AbstractZKHubClient(
+    public AbstractRangerZKHubClient(
             String namespace,
             ObjectMapper mapper,
             int refreshTimeMs,

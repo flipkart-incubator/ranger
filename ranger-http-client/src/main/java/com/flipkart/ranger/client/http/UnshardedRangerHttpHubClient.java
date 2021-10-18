@@ -16,7 +16,7 @@
 package com.flipkart.ranger.client.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.client.AbstractHubClient;
+import com.flipkart.ranger.client.AbstractRangerHubClient;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
@@ -37,13 +37,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Slf4j
-public class UnshardedHttpHubClient<T, C extends Criteria<T>> extends AbstractHubClient<T, C, ListBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
+public class UnshardedRangerHttpHubClient<T, C extends Criteria<T>> extends AbstractRangerHubClient<T, C, ListBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
 
     private List<Service> services;
     private final HttpClientConfig clientConfig;
 
     @Builder
-    public UnshardedHttpHubClient(
+    public UnshardedRangerHttpHubClient(
             String namespace,
             ObjectMapper mapper,
             int refreshTimeMs,

@@ -126,7 +126,7 @@ public class ServiceRegistryUpdater<T, D extends Deserializer<T>> {
         }
     }
 
-    private void updateRegistry() {
+    private void updateRegistry() throws InterruptedException {
         log.debug("Checking for updates on data source for service: {}",
                      serviceRegistry.getService().getServiceName());
         if(!nodeDataSource.isActive()) {

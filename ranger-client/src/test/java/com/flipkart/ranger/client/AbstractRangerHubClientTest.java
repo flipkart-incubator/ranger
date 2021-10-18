@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class AbstractHubClientTest {
+public class AbstractRangerHubClientTest {
 
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final Service service = new Service("test-ns", "test-s");
@@ -108,9 +108,9 @@ public class AbstractHubClientTest {
 
     }
 
-    private static class TestAbstractHub extends AbstractHubClient<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>, TestDeserilizer<TestShardInfo>>{
+    private static class TestAbstractRangerHub extends AbstractRangerHubClient<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>, TestDeserilizer<TestShardInfo>> {
 
-        public TestAbstractHub(String namespace, ObjectMapper mapper, int refreshTimeMs, Criteria<TestShardInfo> criteria, TestDeserilizer<TestShardInfo> deserilizer) {
+        public TestAbstractRangerHub(String namespace, ObjectMapper mapper, int refreshTimeMs, Criteria<TestShardInfo> criteria, TestDeserilizer<TestShardInfo> deserilizer) {
             super(namespace, mapper, refreshTimeMs, criteria, deserilizer);
         }
 
@@ -144,7 +144,7 @@ public class AbstractHubClientTest {
 
     @Test
     public void testAbstractHubClient() {
-        TestAbstractHub testAbstractHub = new TestAbstractHub(service.getNamespace(), mapper, 1000, new TestCriteria(), new TestDeserilizer<>());
+        TestAbstractRangerHub testAbstractHub = new TestAbstractRangerHub(service.getNamespace(), mapper, 1000, new TestCriteria(), new TestDeserilizer<>());
         testAbstractHub.start();
 
         TestUtils.sleepForSeconds(3);

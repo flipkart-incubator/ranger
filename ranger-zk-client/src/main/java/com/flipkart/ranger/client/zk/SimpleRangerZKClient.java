@@ -48,7 +48,7 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>, D extends ZkNodeData
             String namespace,
             String serviceName,
             ObjectMapper mapper,
-            int refreshTimeMs,
+            int nodeRefreshIntervalMs,
             boolean disableWatchers,
             String connectionString,
             C criteria,
@@ -58,7 +58,7 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>, D extends ZkNodeData
                 namespace,
                 serviceName,
                 mapper,
-                refreshTimeMs,
+                nodeRefreshIntervalMs,
                 disableWatchers,
                 CuratorFrameworkFactory.newClient(connectionString, new RetryForever(Constants.CONNECTION_RETRY_TIME)),
                 criteria,
@@ -71,7 +71,7 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>, D extends ZkNodeData
             String namespace,
             String serviceName,
             ObjectMapper mapper,
-            int refreshTimeMs,
+            int nodeRefreshIntervalMs,
             boolean disableWatchers,
             CuratorFramework curatorFramework,
             C criteria,
@@ -81,11 +81,11 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>, D extends ZkNodeData
         Preconditions.checkNotNull(namespace, "namespace can't be null");
         Preconditions.checkNotNull(deserializer, "deserializer can't be null");
 
-        int effectiveRefreshTime = refreshTimeMs;
+        int effectiveRefreshTime = nodeRefreshIntervalMs;
         if (effectiveRefreshTime < Constants.MINIMUM_REFRESH_TIME) {
             effectiveRefreshTime = Constants.MINIMUM_REFRESH_TIME;
             log.warn("Node info update interval too low: {} ms. Has been upgraded to {} ms ",
-                    refreshTimeMs,
+                    nodeRefreshIntervalMs,
                     Constants.MINIMUM_REFRESH_TIME);
         }
 
