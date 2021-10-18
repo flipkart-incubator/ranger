@@ -48,7 +48,7 @@ public class HttpNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> 
                 .connectionPool(new ConnectionPool(1, 30, TimeUnit.SECONDS))
                 .build();
         this.config = config;
-        this.mapper = null != mapper ? mapper : new ObjectMapper();
+        this.mapper = mapper;
     }
 
 

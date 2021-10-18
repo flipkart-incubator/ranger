@@ -30,7 +30,7 @@ public class ListShardSelectorTest {
 
     @Test
     public void testNoOpShardSelector(){
-        final ListBasedServiceRegistry serviceRegistry = RegistryTestUtils.getUnshardedRegistry();
+        final ListBasedServiceRegistry<TestNodeData> serviceRegistry = RegistryTestUtils.getUnshardedRegistry();
         final ListShardSelector<TestNodeData, Criteria<TestNodeData>> shardSelector = new ListShardSelector<>();
         final List<ServiceNode<TestNodeData>> nodes = shardSelector.nodes(CriteriaUtils.getCriteria(1), serviceRegistry);
         Assert.assertFalse(nodes.isEmpty());

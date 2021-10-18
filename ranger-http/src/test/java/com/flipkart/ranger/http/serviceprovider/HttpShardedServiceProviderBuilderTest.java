@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,8 +51,8 @@ public class HttpShardedServiceProviderBuilderTest {
 
     @Test
     public void testProvider() throws Exception {
-        TestNodeData nm5NodeData = TestNodeData.builder().farmId("nm5").build();
-        ServiceNode<TestNodeData> testNode = new ServiceNode<>("localhost-1", 80, nm5NodeData);
+        val nm5NodeData = TestNodeData.builder().farmId("nm5").build();
+        val testNode = new ServiceNode<>("localhost-1", 80, nm5NodeData);
         val response = MAPPER.writeValueAsBytes(
                 ServiceRegistrationResponse.builder()
                         .success(true)
@@ -69,7 +69,7 @@ public class HttpShardedServiceProviderBuilderTest {
                 .connectionTimeoutMs(30_000)
                 .operationTimeoutMs(30_000)
                 .build();
-        ServiceProvider<TestNodeData, HttpRequestDataSerializer<TestNodeData>> serviceProvider = new HttpShardedServiceProviderBuilder<TestNodeData>()
+        val serviceProvider = new HttpShardedServiceProviderBuilder<TestNodeData>()
                 .withNamespace("testns")
                 .withServiceName("test")
                 .withHostname("localhost-1")

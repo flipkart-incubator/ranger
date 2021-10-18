@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 package com.flipkart.ranger.http.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import org.junit.Assert;
 import org.junit.Test;

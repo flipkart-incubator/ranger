@@ -27,15 +27,15 @@ public class RoundRobinServiceNodeSelectorTest {
     @Test
     public void testRandomNodeSelector(){
         final RoundRobinServiceNodeSelector<TestNodeData> roundRobinSelector = new RoundRobinServiceNodeSelector<TestNodeData>();
-        List<ServiceNode<TestNodeData>> serviceNodes = Lists.newArrayList();
+        final List<ServiceNode<TestNodeData>> serviceNodes = Lists.newArrayList();
         serviceNodes.add(new ServiceNode<>("localhost-1", 9000, TestNodeData.builder().nodeId(1).build()));
         serviceNodes.add(new ServiceNode<>("localhost-2", 9001, TestNodeData.builder().nodeId(2).build()));
         serviceNodes.add(new ServiceNode<>("localhost-3", 9002, TestNodeData.builder().nodeId(3).build()));
         ServiceNode<TestNodeData> select = roundRobinSelector.select(serviceNodes);
-        Assert.assertTrue(select.getHost().equalsIgnoreCase("localhost-2"));
+        Assert.assertEquals("localhost-2", select.getHost());
         select = roundRobinSelector.select(serviceNodes);
-        Assert.assertTrue(select.getHost().equalsIgnoreCase("localhost-3"));
+        Assert.assertEquals("localhost-3", select.getHost());
         select = roundRobinSelector.select(serviceNodes);
-        Assert.assertTrue(select.getHost().equalsIgnoreCase("localhost-1"));
+        Assert.assertEquals("localhost-1", select.getHost());
     }
 }
