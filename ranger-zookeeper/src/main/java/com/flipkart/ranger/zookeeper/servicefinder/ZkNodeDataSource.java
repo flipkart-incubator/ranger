@@ -18,6 +18,7 @@ package com.flipkart.ranger.zookeeper.servicefinder;
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.core.util.FinderUtils;
 import com.flipkart.ranger.zookeeper.common.ZkNodeDataStoreConnector;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
@@ -87,6 +88,7 @@ public class ZkNodeDataSource<T, D extends ZkNodeDataDeserializer<T>> extends Zk
         }
         catch (Exception e) {
             log.error("Error getting service data from zookeeper: ", e);
+            Exceptions.illegalState(e);
         }
         return Optional.empty();
     }

@@ -17,7 +17,6 @@
 package com.flipkart.ranger.client;
 
 import com.flipkart.ranger.core.model.Criteria;
-import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.ServiceNode;
 
 import java.util.List;

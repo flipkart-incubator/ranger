@@ -1,12 +1,5 @@
 package com.flipkart.ranger.server;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.client.RangerClientConstants;
-import com.flipkart.ranger.client.RangerHubClient;
-import com.flipkart.ranger.client.zk.UnshardedRangerZKHubClient;
-import com.flipkart.ranger.core.model.Criteria;
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.server.healthcheck.RangerHealthCheck;
 import com.flipkart.ranger.server.manager.RangerClientManager;
 import com.flipkart.ranger.server.resources.RangerResource;
@@ -42,7 +35,7 @@ public class App extends Application<AppConfiguration> {
         environment.admin()
                 .addTask(new OorTask(rotationStatus));
         environment.admin()
-                .addTask(new BirTask(rotationStatus));
+                        .addTask(new BirTask(rotationStatus));
         environment.healthChecks().register(
                 "ranger-healthcheck", new RangerHealthCheck(rangerClientManager.getCuratorFramework()));
     }

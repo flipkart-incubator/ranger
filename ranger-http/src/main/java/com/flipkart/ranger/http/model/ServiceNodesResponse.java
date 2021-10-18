@@ -16,7 +16,6 @@
 package com.flipkart.ranger.http.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.flipkart.ranger.core.model.ServiceNode;
 import lombok.*;
 

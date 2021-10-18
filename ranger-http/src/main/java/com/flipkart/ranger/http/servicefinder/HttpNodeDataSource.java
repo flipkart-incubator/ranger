@@ -23,7 +23,6 @@ import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.core.util.FinderUtils;
 import com.flipkart.ranger.http.common.HttpNodeDataStoreConnector;
 import com.flipkart.ranger.http.config.HttpClientConfig;
-import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +32,6 @@ import okhttp3.Request;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

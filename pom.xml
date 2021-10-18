@@ -16,6 +16,7 @@
         <module>ranger-zk-client</module>
         <module>ranger-http-client</module>
         <module>ranger-server</module>
+        <module>ranger-server-bundle</module>
     </modules>
 
     <distributionManagement>

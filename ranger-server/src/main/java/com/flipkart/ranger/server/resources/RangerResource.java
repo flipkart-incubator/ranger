@@ -16,7 +16,6 @@
 package com.flipkart.ranger.server.resources;
 
 import com.codahale.metrics.annotation.Metered;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.server.manager.RangerClientManager;
