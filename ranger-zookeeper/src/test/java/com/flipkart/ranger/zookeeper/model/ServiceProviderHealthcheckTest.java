@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,12 +19,13 @@ package com.flipkart.ranger.zookeeper.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinder;
+import com.flipkart.ranger.core.TestUtils;
+import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthcheck;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
-import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
@@ -95,11 +96,15 @@ public class ServiceProviderHealthcheckTest {
         public int hashCode() {
             return shardId;
         }
+
+        private static Criteria<TestShardInfo> getCriteria(int shardId){
+            return nodeData -> nodeData.getShardId() == shardId;
+        }
     }
 
     @Test
-    public void testBasicDiscovery() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+    public void testBasicDiscovery() {
+        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -116,13 +121,13 @@ public class ServiceProviderHealthcheckTest {
                 .withNodeRefreshIntervalMs(1000)
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
+        ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
         Assert.assertNotNull(node);
         Assert.assertEquals("localhost-1", node.getHost());
         TestServiceProvider testServiceProvider = serviceProviders.get(node.getHost());
         testServiceProvider.oor();
         TestUtils.sleepForSeconds(6);
-        Assert.assertNull(serviceFinder.get(new TestShardInfo(1)));
+        Assert.assertNull(serviceFinder.get(TestShardInfo.getCriteria(1)));
         serviceFinder.stop();
     }
 

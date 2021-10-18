@@ -1,12 +1,12 @@
-/**
- * Copyright 2016 Flipkart Internet Pvt. Ltd.
- *
+/*
+ * Copyright 2015 Flipkart Internet Pvt. Ltd.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,14 +19,14 @@ package com.flipkart.ranger.zookeeper.healthservice;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterFinder;
-import com.flipkart.ranger.core.finder.unsharded.UnshardedClusterInfo;
+import com.flipkart.ranger.core.TestUtils;
+import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.sample.RotationStatusMonitor;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.util.Exceptions;
-import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import lombok.val;
@@ -50,8 +50,19 @@ public class ServiceProviderIntegrationTest {
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
 
-    UnshardedClusterFinder serviceFinder;
+    SimpleUnshardedServiceFinder serviceFinder;
 
+    private static final class UnshardedClusterInfo {
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj);
+        }
+    }
     @Before
     public void startTestCluster() throws Exception {
         objectMapper = new ObjectMapper();
@@ -65,7 +76,7 @@ public class ServiceProviderIntegrationTest {
 
         registerService("localhost-4", 9000, 2, anotherFile);
 
-        serviceFinder = ServiceFinderBuilders.unshardedFinderBuilder()
+        serviceFinder = ServiceFinderBuilders.<UnshardedClusterInfo, Criteria<UnshardedClusterInfo>>unshardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")

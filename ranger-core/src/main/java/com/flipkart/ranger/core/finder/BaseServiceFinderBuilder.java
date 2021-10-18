@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,9 @@
 
 package com.flipkart.ranger.core.finder;
 
-import com.flipkart.ranger.core.finder.signals.ScheduledRegistryUpdateSignal;
+import com.flipkart.ranger.core.finder.nodeselector.RandomServiceNodeSelector;
+import com.flipkart.ranger.core.finder.serviceregistry.ServiceRegistryUpdater;
+import com.flipkart.ranger.core.finder.serviceregistry.signal.ScheduledRegistryUpdateSignal;
 import com.flipkart.ranger.core.model.*;
 import com.flipkart.ranger.core.signals.Signal;
 import com.google.common.base.Preconditions;
@@ -31,20 +33,22 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
+@SuppressWarnings("unchecked")
 public abstract class BaseServiceFinderBuilder
         <
                 T,
                 R extends ServiceRegistry<T>,
-                F extends ServiceFinder<T, R>,
-                B extends BaseServiceFinderBuilder<T, R, F, B, D>,
-                D extends Deserializer<T>> {
+                F extends ServiceFinder<T, C, R>,
+                B extends BaseServiceFinderBuilder<T, R, F, B, D, C>,
+                D extends Deserializer<T>,
+                C extends Criteria<T>> {
 
     protected String namespace;
     protected String serviceName;
     protected int nodeRefreshIntervalMs;
     protected boolean disablePushUpdaters;
     protected D deserializer;
-    protected ShardSelector<T, R> shardSelector;
+    protected ShardSelector<T, C, R> shardSelector;
     protected ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<>();
     protected final List<Signal<T>> additionalRefreshSignals = new ArrayList<>();
     protected final List<Consumer<Void>> startSignalHandlers = Lists.newArrayList();
@@ -65,7 +69,7 @@ public abstract class BaseServiceFinderBuilder
         return (B)this;
     }
 
-    public B withShardSelector(ShardSelector<T, R> shardSelector) {
+    public B withShardSelector(ShardSelector<T, C, R> shardSelector) {
         this.shardSelector = shardSelector;
         return (B)this;
     }
@@ -150,7 +154,7 @@ public abstract class BaseServiceFinderBuilder
             log.debug("Added additional signal handlers");
         }
 
-        val updater = new ServiceRegistryUpdater<T, D>(registry, nodeDataSource, signalGenerators, deserializer);
+        val updater = new ServiceRegistryUpdater<>(registry, nodeDataSource, signalGenerators, deserializer);
         finder.getStartSignal()
                 .registerConsumers(startSignalHandlers)
                 .registerConsumer(x -> nodeDataSource.start())
@@ -173,7 +177,7 @@ public abstract class BaseServiceFinderBuilder
 
     protected abstract F buildFinder(
             Service service,
-            ShardSelector<T, R> shardSelector,
+            ShardSelector<T, C, R> shardSelector,
             ServiceNodeSelector<T> nodeSelector);
 
 }

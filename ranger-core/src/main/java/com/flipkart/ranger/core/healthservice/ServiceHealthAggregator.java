@@ -1,5 +1,5 @@
-/**
- * Copyright 2016 Flipkart Internet Pvt. Ltd.
+/*
+ * Copyright 2015 Flipkart Internet Pvt. Ltd.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package com.flipkart.ranger.core.healthservice;
 
-import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
-import com.flipkart.ranger.core.healthservice.monitor.Monitor;
 import com.flipkart.ranger.core.healthcheck.Healthcheck;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
+import com.flipkart.ranger.core.healthservice.monitor.Monitor;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,20 +1,36 @@
+/*
+ * Copyright 2015 Flipkart Internet Pvt. Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.flipkart.ranger.zookeeper.servicehub;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.finder.sharded.MapBasedServiceRegistry;
+import com.flipkart.ranger.core.TestUtils;
+import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.healthcheck.HealthcheckResult;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
+import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import com.flipkart.ranger.core.util.Exceptions;
-import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
-import com.flipkart.ranger.zookeeper.zk.ZkServiceDataSource;
-import com.flipkart.ranger.zookeeper.zk.ZkShardedServiceFinderFactory;
-import com.flipkart.ranger.zookeeper.zk.ZkServiceFinderHubBuilder;
+import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceDataSource;
+import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceFinderHubBuilder;
+import com.flipkart.ranger.zookeeper.servicefinderhub.ZkShardedServiceFinderFactory;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -68,14 +84,14 @@ public class ServiceHubTest {
     }
 
     @Test
-    public void testHub() throws InterruptedException {
+    public void testHub() {
         ExternalTriggeredSignal<Void> refreshHubSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
-        val hub = new ZkServiceFinderHubBuilder<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>>()
+        val hub = new ZkServiceFinderHubBuilder<TestShardInfo, Criteria<TestShardInfo>, MapBasedServiceRegistry<TestShardInfo>>()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withRefreshFrequencyMs(1000)
-                .withServiceDataSource(new ZkServiceDataSource("test", curatorFramework))
-                .withServiceFinderFactory(ZkShardedServiceFinderFactory.<TestShardInfo>builder()
+                .withServiceDataSource(new ZkServiceDataSource("test", testingCluster.getConnectString(), curatorFramework))
+                .withServiceFinderFactory(ZkShardedServiceFinderFactory.<TestShardInfo, Criteria<TestShardInfo>>builder()
                                                   .curatorFramework(curatorFramework)
                                                   .deserializer(this::read)
                                                   .build())
@@ -96,7 +112,7 @@ public class ServiceHubTest {
                 .withSerializer(this::write)
                 .withNodeData(new TestShardInfo("prod"))
                 .withHealthcheck(() -> HealthcheckStatus.healthy)
-                .withExtraRefreshSignal(refreshProviderSignal)
+                .withadditionalRefreshSignal(refreshProviderSignal)
                 .withCuratorFramework(curatorFramework)
                 .build();
         provider1.start();
@@ -106,7 +122,7 @@ public class ServiceHubTest {
 
         TestUtils.sleepForSeconds(3);
         val node = hub.finder(new Service(NAMESPACE, "s1"))
-                .map(finder -> finder.get(new TestShardInfo("prod")))
+                .map(finder -> finder.get(nodeData -> nodeData.getEnvironment().equalsIgnoreCase("prod")))
                 .orElse(null);
         Assert.assertNotNull(node);
         hub.stop();
