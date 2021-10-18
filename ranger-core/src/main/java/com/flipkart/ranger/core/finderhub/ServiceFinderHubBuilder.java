@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,9 +34,9 @@ public abstract class ServiceFinderHubBuilder<T, C extends Criteria<T>, R extend
     private ServiceDataSource serviceDataSource;
     private ServiceFinderFactory<T,C, R> serviceFinderFactory;
     private long refreshFrequencyMs = 10_000;
-    private List<Consumer<Void>> extraStartSignalConsumers = new ArrayList<>();
-    private List<Consumer<Void>> extraStopSignalConsumers = new ArrayList<>();
-    private List<Signal<Void>> extraRefreshSignals = new ArrayList<>();
+    private final List<Consumer<Void>> extraStartSignalConsumers = new ArrayList<>();
+    private final List<Consumer<Void>> extraStopSignalConsumers = new ArrayList<>();
+    private final List<Signal<Void>> extraRefreshSignals = new ArrayList<>();
 
     public ServiceFinderHubBuilder<T,C, R> withServiceDataSource(ServiceDataSource serviceDataSource) {
         this.serviceDataSource = serviceDataSource;

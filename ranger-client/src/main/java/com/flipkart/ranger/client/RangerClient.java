@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ import com.flipkart.ranger.core.model.ServiceNode;
 import java.util.List;
 import java.util.Optional;
 
-public interface RangerClient<T, C extends Criteria<T>, D extends Deserializer<T>> {
+public interface RangerClient<T, C extends Criteria<T>> {
 
     void start();
 

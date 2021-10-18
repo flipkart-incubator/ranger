@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
+@SuppressWarnings("unchecked")
 public abstract class BaseServiceFinderBuilder
         <
                 T,
@@ -153,7 +154,7 @@ public abstract class BaseServiceFinderBuilder
             log.debug("Added additional signal handlers");
         }
 
-        val updater = new ServiceRegistryUpdater<T, D>(registry, nodeDataSource, signalGenerators, deserializer);
+        val updater = new ServiceRegistryUpdater<>(registry, nodeDataSource, signalGenerators, deserializer);
         finder.getStartSignal()
                 .registerConsumers(startSignalHandlers)
                 .registerConsumer(x -> nodeDataSource.start())

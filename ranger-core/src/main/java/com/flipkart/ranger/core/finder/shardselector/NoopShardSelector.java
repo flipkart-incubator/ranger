@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ import com.flipkart.ranger.core.model.ShardSelector;
 import java.util.List;
 
 public class NoopShardSelector<T, C extends Criteria<T>> implements ShardSelector<T, C, ListBasedServiceRegistry<T>> {
-
     @Override
     public List<ServiceNode<T>> nodes(C criteria, ListBasedServiceRegistry<T> serviceRegistry) {
         return serviceRegistry.nodeList();

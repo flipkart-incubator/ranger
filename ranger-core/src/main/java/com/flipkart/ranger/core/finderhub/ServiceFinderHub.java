@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,7 @@ public class ServiceFinderHub<T, C extends Criteria<T>, R extends ServiceRegistr
     private final Lock updateLock = new ReentrantLock();
     private final Condition updateCond = updateLock.newCondition();
     private boolean updateAvailable = false;
-    private ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     @Getter
     private final ExternalTriggeredSignal<Void> startSignal
@@ -62,7 +62,7 @@ public class ServiceFinderHub<T, C extends Criteria<T>, R extends ServiceRegistr
     private final ServiceDataSource serviceDataSource;
     private final ServiceFinderFactory<T,C, R> finderFactory;
 
-    private AtomicBoolean alreadyUpdating = new AtomicBoolean(false);
+    private final AtomicBoolean alreadyUpdating = new AtomicBoolean(false);
     private Future<?> monitorFuture = null;
 
     public ServiceFinderHub(

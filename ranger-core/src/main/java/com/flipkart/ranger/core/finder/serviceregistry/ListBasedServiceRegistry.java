@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.flipkart.ranger.core.finder.serviceregistry;
 
 import com.flipkart.ranger.core.model.Service;
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ListBasedServiceRegistry<T> extends ServiceRegistry<T> {
-    private AtomicReference<List<ServiceNode<T>>> nodes
+    private final AtomicReference<List<ServiceNode<T>>> nodes
                                         = new AtomicReference<>();
 
     public ListBasedServiceRegistry(Service service) {
