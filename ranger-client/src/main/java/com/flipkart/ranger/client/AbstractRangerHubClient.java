@@ -28,13 +28,13 @@ public abstract class AbstractRangerHubClient<T, C extends Criteria<T>, R extend
     public AbstractRangerHubClient(
             String namespace,
             ObjectMapper mapper,
-            int refreshTimeMs,
+            int nodeRefreshTimeMs,
             C criteria,
             D deserializer
     ){
         this.namespace = namespace;
         this.mapper = mapper;
-        this.refreshTimeMs = refreshTimeMs;
+        this.refreshTimeMs = nodeRefreshTimeMs;
         this.criteria = criteria;
         this.deserializer = deserializer;
     }

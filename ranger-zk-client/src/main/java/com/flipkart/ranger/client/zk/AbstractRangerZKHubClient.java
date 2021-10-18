@@ -50,7 +50,7 @@ public abstract class AbstractRangerZKHubClient<T, C extends Criteria<T>, R exte
     public AbstractRangerZKHubClient(
             String namespace,
             ObjectMapper mapper,
-            int refreshTimeMs,
+            int nodeRefreshIntervalMs,
             boolean disablePushUpdaters,
             String connectionString,
             CuratorFramework curatorFramework,
@@ -58,7 +58,7 @@ public abstract class AbstractRangerZKHubClient<T, C extends Criteria<T>, R exte
             D deserializer,
             List<Service> services
     ) {
-        super(namespace, mapper, refreshTimeMs, criteria, deserializer);
+        super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer);
         this.disablePushUpdaters = disablePushUpdaters;
         this.connectionString = connectionString;
         this.services = services;
