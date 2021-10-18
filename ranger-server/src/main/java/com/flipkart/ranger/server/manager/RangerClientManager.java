@@ -57,6 +57,7 @@ public class RangerClientManager implements Managed {
                 new RetryForever(RangerClientConstants.CONNECTION_RETRY_TIME)
         );
         this.hubClient = UnshardedRangerZKHubClient.<ShardInfo, Criteria<ShardInfo>>builder()
+                .namespace(appConfiguration.getNamespace())
                 .connectionString(appConfiguration.getZookeeper())
                 .curatorFramework(curatorFramework)
                 .disablePushUpdaters(appConfiguration.isDisablePushUpdaters())
@@ -68,7 +69,7 @@ public class RangerClientManager implements Managed {
                         mapper.readValue(data, new TypeReference<ServiceNode<ShardInfo>>() {
                         });
                     } catch (IOException e) {
-                        log.warn("Error parsing node data");
+                        log.warn("Error parsing node data with value {}", new String(data));
                     }
                     return null;
                 })

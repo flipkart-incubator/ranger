@@ -45,6 +45,8 @@ public class FinderUtils {
             Service service,
             long healthcheckZombieCheckThresholdTime,
             ServiceNode<T> serviceNode) {
+        if(null == serviceNode) return false;
+
         if(HealthcheckStatus.healthy != serviceNode.getHealthcheckStatus()) {
             log.debug("Unhealthy node [{}:{}] found for [{}]",
                       serviceNode.getHost(), serviceNode.getPort(), service.getServiceName());

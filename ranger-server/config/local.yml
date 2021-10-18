@@ -1,0 +1,34 @@
+name: ranger-server
+zookeeper: localhost:2181
+namespace: test
+disablePushUpdaters: true
+initialRotationStatus: false
+
+server:
+  maxThreads: 128
+  minThreads: 128
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
+  applicationContextPath: /
+  requestLog:
+    appenders:
+      - type: console
+        timeZone: IST
+
+logging:
+  level: INFO
+
+  loggers:
+    com.flipkart.ranger.server: DEBUG
+
+  appenders:
+    - type: console
+      threshold: INFO
+      timeZone: IST
+      logFormat: "%(%-5level) [%date] [%thread] [%logger{0}]: %message%n"
+
+

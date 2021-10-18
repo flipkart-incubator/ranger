@@ -20,6 +20,10 @@ public class AppConfiguration extends Configuration {
 
     @NotEmpty
     @NotNull
+    private String name;
+
+    @NotEmpty
+    @NotNull
     private String zookeeper;
 
     @NotEmpty
