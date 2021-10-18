@@ -46,13 +46,13 @@ public class ShardedRangerHttpHubClient<T, C extends Criteria<T>> extends Abstra
     public ShardedRangerHttpHubClient(
             String namespace,
             ObjectMapper mapper,
-            int refreshTimeMs,
+            int nodeRefreshIntervalMs,
             C criteria,
             HTTPResponseDataDeserializer<T> deserializer,
             HttpClientConfig clientConfig,
             List<Service> services
     ) {
-        super(namespace, mapper, refreshTimeMs, criteria, deserializer);
+        super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer);
         this.clientConfig = clientConfig;
         this.services = services;
     }

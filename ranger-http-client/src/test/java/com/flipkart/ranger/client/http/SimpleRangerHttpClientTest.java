@@ -21,7 +21,7 @@ public class SimpleRangerHttpClientTest extends BaseRangerHttpClientTest{
                 .deserializer(this::read)
                 .namespace("test-n")
                 .serviceName("test-s")
-                .refreshTimeMs(5000)
+                .nodeRefreshIntervalMs(5000)
                 .build();
         client.start();
 

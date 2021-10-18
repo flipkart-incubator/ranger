@@ -20,6 +20,7 @@ public class ShardedRangerHttpClientTest extends BaseRangerHttpClientTest {
                 .namespace("test-n")
                 .deserializer(this::read)
                 .mapper(getObjectMapper())
+                .nodeRefreshIntervalMs(5000)
                 .build();
         client.start();
 

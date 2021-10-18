@@ -46,13 +46,13 @@ public class UnshardedRangerHttpHubClient<T, C extends Criteria<T>> extends Abst
     public UnshardedRangerHttpHubClient(
             String namespace,
             ObjectMapper mapper,
-            int refreshTimeMs,
+            int nodeRefreshIntervalMs,
             C criteria,
             HTTPResponseDataDeserializer<T> deserializer,
             HttpClientConfig clientConfig,
             List<Service> services
     ) {
-        super(namespace, mapper, refreshTimeMs, criteria, deserializer);
+        super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer);
         this.clientConfig = clientConfig;
         this.services = services;
     }
