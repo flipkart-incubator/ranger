@@ -37,7 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Slf4j
-public class ShardedRangerHttpHubClient<T, C extends Criteria<T>> extends AbstractRangerHubClient<T, C, MapBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
+public class ShardedRangerHttpHubClient<T, C extends Criteria<T>>
+        extends AbstractRangerHubClient<T, C, MapBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
 
     private final List<Service> services;
     private final HttpClientConfig clientConfig;

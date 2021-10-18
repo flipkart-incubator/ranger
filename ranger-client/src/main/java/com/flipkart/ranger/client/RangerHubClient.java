@@ -19,6 +19,7 @@ import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,8 @@ public interface RangerHubClient<T, C extends Criteria<T>> {
         void start();
 
         void stop();
+
+        Collection<Service> getServices() throws Exception;
 
         Optional<ServiceNode<T>> getNode(final Service service);
 

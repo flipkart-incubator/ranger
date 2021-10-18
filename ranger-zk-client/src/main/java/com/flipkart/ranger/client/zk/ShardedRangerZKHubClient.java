@@ -31,7 +31,8 @@ import org.apache.curator.framework.CuratorFramework;
 import java.util.List;
 
 @Slf4j
-public class ShardedRangerZKHubClient<T, C extends Criteria<T>> extends AbstractRangerZKHubClient<T, C, MapBasedServiceRegistry<T>, ZkNodeDataDeserializer<T>> {
+public class ShardedRangerZKHubClient<T, C extends Criteria<T>>
+        extends AbstractRangerZKHubClient<T, C, MapBasedServiceRegistry<T>, ZkNodeDataDeserializer<T>> {
 
     @Builder
     public ShardedRangerZKHubClient(

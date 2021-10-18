@@ -36,7 +36,8 @@ import java.util.List;
 
 @Slf4j
 @Getter
-public abstract class AbstractRangerZKHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>, D extends ZkNodeDataDeserializer<T>> extends AbstractRangerHubClient<T, C, R, D> {
+public abstract class AbstractRangerZKHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>, D extends ZkNodeDataDeserializer<T>>
+        extends AbstractRangerHubClient<T, C, R, D> {
 
     private final boolean disablePushUpdaters;
     private final String connectionString;

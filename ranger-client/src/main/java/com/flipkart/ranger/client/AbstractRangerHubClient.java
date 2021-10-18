@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,6 +100,10 @@ public abstract class AbstractRangerHubClient<T, C extends Criteria<T>, R extend
     ){
         val optionalFinder = this.getHub().finder(service);
         return optionalFinder.map(trcServiceFinder -> trcServiceFinder.getAll(criteria));
+    }
+
+    public Collection<Service> getServices() throws Exception {
+        return this.getHub().getServiceDataSource().services();
     }
 
     protected abstract ServiceFinderHub<T, C, R> buildHub();
