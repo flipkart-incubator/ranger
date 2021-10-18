@@ -31,7 +31,7 @@ import lombok.Getter;
 import lombok.val;
 
 @Getter
-public class HttpShardedServiceFinderFactory <T, C extends Criteria<T>> implements ServiceFinderFactory<T, C, MapBasedServiceRegistry<T>> {
+public class  HttpShardedServiceFinderFactory <T, C extends Criteria<T>> implements ServiceFinderFactory<T, C, MapBasedServiceRegistry<T>> {
 
     private final HttpClientConfig clientConfig;
     private final ObjectMapper mapper;

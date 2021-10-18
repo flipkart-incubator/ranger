@@ -9,13 +9,29 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ranger-server</artifactId>
+    <artifactId>ranger-zk-client</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.flipkart.ranger</groupId>
             <artifactId>ranger-zookeeper</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.flipkart.ranger</groupId>
+            <artifactId>ranger-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
+            <version>${curator.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
