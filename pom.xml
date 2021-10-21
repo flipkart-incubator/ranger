@@ -17,6 +17,8 @@
         <module>ranger-http-client</module>
         <module>ranger-server</module>
         <module>ranger-server-bundle</module>
+        <module>ranger-http-server</module>
+        <module>ranger-server-common</module>
     </modules>
 
     <distributionManagement>

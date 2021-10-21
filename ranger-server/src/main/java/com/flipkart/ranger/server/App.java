@@ -20,14 +20,17 @@ import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.server.bundle.RangerServerBundle;
 import com.flipkart.ranger.server.healthcheck.RangerHealthCheck;
 import com.flipkart.ranger.server.manager.RangerBundleManager;
-import com.flipkart.ranger.server.model.ShardInfo;
+import com.flipkart.ranger.server.common.ShardInfo;
 import com.flipkart.ranger.server.util.RangerServerUtils;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
+import com.google.common.collect.Lists;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+
+import java.util.List;
 
 @Slf4j
 public class App extends Application<AppConfiguration> {
@@ -49,9 +52,12 @@ public class App extends Application<AppConfiguration> {
 
         val rangerServerBundle = new RangerServerBundle<ShardInfo, Criteria<ShardInfo>, ZkNodeDataDeserializer<ShardInfo>,
                 AppConfiguration>() {
+
             @Override
-            protected RangerHubClient<ShardInfo, Criteria<ShardInfo>> withRangerHub(AppConfiguration configuration) {
-                return RangerServerUtils.buildRangerHub(curatorFramework, rangerConfiguration, environment.getObjectMapper());
+            protected List<RangerHubClient<ShardInfo, Criteria<ShardInfo>>> withHubs(AppConfiguration configuration) {
+                return Lists.newArrayList(
+                        RangerServerUtils.buildRangerHub(curatorFramework, rangerConfiguration, environment.getObjectMapper())
+                );
             }
 
             @Override

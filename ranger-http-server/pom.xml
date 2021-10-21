@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ranger-server</artifactId>
+    <artifactId>ranger-http-server</artifactId>
 
     <properties>
         <dropwizard.version>2.0.23</dropwizard.version>
@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>com.flipkart.ranger</groupId>
-            <artifactId>ranger-zk-client</artifactId>
+            <artifactId>ranger-http-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

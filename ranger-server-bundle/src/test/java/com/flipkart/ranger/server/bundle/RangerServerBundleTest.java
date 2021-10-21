@@ -10,6 +10,7 @@ import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.google.common.collect.Lists;
 import io.dropwizard.Configuration;
 import io.dropwizard.jersey.DropwizardResourceConfig;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
@@ -17,12 +18,14 @@ import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
 import io.dropwizard.setup.AdminEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import lombok.val;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.flipkart.ranger.client.utils.RangerHubTestUtils.service;
@@ -40,9 +43,10 @@ public class RangerServerBundleTest {
 
     private final RangerServerBundle<TestShardInfo, Criteria<TestShardInfo>, TestDeserializer<TestShardInfo>, Configuration>
             rangerServerBundle = new RangerServerBundle<TestShardInfo, Criteria<TestShardInfo>, TestDeserializer<TestShardInfo>, Configuration>() {
+
         @Override
-        protected RangerHubClient<TestShardInfo, Criteria<TestShardInfo>> withRangerHub(Configuration configuration) {
-            return RangerHubTestUtils.getTestHub();
+        protected List<RangerHubClient<TestShardInfo, Criteria<TestShardInfo>>> withHubs(Configuration configuration) {
+            return Lists.newArrayList(RangerHubTestUtils.getTestHub());
         }
 
         @Override
@@ -73,19 +77,20 @@ public class RangerServerBundleTest {
     @Test
     public void testRangerBundle(){
         TestUtils.sleepForSeconds(3);
-        Optional<ServiceNode<TestShardInfo>> node = rangerServerBundle.getRangerHub().getNode(service);
+        val hub = rangerServerBundle.getHubs().get(0);
+        Optional<ServiceNode<TestShardInfo>> node = hub.getNode(service);
         Assert.assertTrue(node.isPresent());
         Assert.assertTrue(node.get().getHost().equalsIgnoreCase("localhost"));
         Assert.assertEquals(9200, node.get().getPort());
         Assert.assertEquals(1, node.get().getNodeData().getShardId());
 
-        node = rangerServerBundle.getRangerHub().getNode(new Service("test", "test"));
+        node = hub.getNode(new Service("test", "test"));
         Assert.assertFalse(node.isPresent());
 
-        node = rangerServerBundle.getRangerHub().getNode(service, nodeData -> nodeData.getShardId() == 2);
+        node = hub.getNode(service, nodeData -> nodeData.getShardId() == 2);
         Assert.assertFalse(node.isPresent());
 
-        node = rangerServerBundle.getRangerHub().getNode(new Service("test", "test"), nodeData -> nodeData.getShardId() == 1);
+        node = hub.getNode(new Service("test", "test"), nodeData -> nodeData.getShardId() == 1);
         Assert.assertFalse(node.isPresent());
     }
 

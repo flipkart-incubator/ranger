@@ -29,10 +29,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Consumes(MediaType.APPLICATION_JSON)
@@ -40,20 +37,28 @@ import java.util.Optional;
 @Path("/ranger")
 public class RangerResource<T, C extends Criteria<T>> {
 
-    private final RangerHubClient<T, C> rangerHub;
+    private final List<RangerHubClient<T, C>> rangerHubs;
 
     @Inject
-    public RangerResource(RangerHubClient<T, C> rangerHub){
-        this.rangerHub = rangerHub;
+    public RangerResource(List<RangerHubClient<T, C>> rangerHubs){
+        this.rangerHubs = rangerHubs;
     }
 
     @GET
     @Path("/services/v1")
     @Metered
-    public GenericResponse<Collection<Service>> getServices() throws Exception {
+    public GenericResponse<Collection<Service>> getServices() {
+        Collection<Service> services = new ArrayList<>();
+        for (RangerHubClient<T, C> hub : rangerHubs) {
+            try {
+                services.addAll(hub.getServices());
+            } catch (Exception e) {
+                log.warn("Call to a hub failed with exception, {}", e.getMessage());
+            }
+        }
         return GenericResponse.<Collection<Service>>builder()
                 .success(true)
-                .data(rangerHub.getServices())
+                .data(services)
                 .build();
     }
 
@@ -65,11 +70,17 @@ public class RangerResource<T, C extends Criteria<T>> {
             @NotNull @NotEmpty @PathParam("serviceName") final String serviceName
     ){
         val service = new Service(namespace, serviceName);
-        Optional<List<ServiceNode<T>>> nodeList = rangerHub.getAllNodes(
-                service, null);
+        List<ServiceNode<T>> serviceNodes = new ArrayList<>();
+        for (RangerHubClient<T, C> hub : rangerHubs) {
+            try {
+                serviceNodes.addAll(hub.getAllNodes(service, null).orElse(Collections.emptyList()));
+            } catch (Exception e) {
+                log.warn("Call to a hub failed with exception, {}", e.getMessage());
+            }
+        }
         return GenericResponse.<List<ServiceNode<T>>>builder()
                 .success(true)
-                .data(nodeList.orElse(Collections.emptyList()))
+                .data(serviceNodes)
                 .build();
     }
 }

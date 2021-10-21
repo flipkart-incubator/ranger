@@ -30,6 +30,8 @@ import io.dropwizard.setup.Environment;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 @Slf4j
 public abstract class RangerServerBundle<
         T,
@@ -39,12 +41,12 @@ public abstract class RangerServerBundle<
         > implements ConfiguredBundle<U>{
 
     @Getter
-    private RangerHubClient<T, C> rangerHub;
+    private List<RangerHubClient<T, C>> hubs;
     @Getter
     @VisibleForTesting
     private RotationStatus rotationStatus;
 
-    protected abstract RangerHubClient<T, C> withRangerHub(U configuration);
+    protected abstract List<RangerHubClient<T, C>> withHubs(U configuration);
 
     protected abstract boolean withInitialRotationStatus(U configuration);
 
@@ -55,7 +57,7 @@ public abstract class RangerServerBundle<
 
     @Override
     public void run(U configuration, Environment environment) {
-        rangerHub = withRangerHub(configuration);
+        hubs = withHubs(configuration);
         rotationStatus = new RotationStatus(withInitialRotationStatus(configuration));
 
         environment.admin()
@@ -63,16 +65,16 @@ public abstract class RangerServerBundle<
         environment.admin()
                 .addTask(new BirTask(rotationStatus));
 
-        environment.jersey().register(new RangerResource<>(rangerHub));
+        environment.jersey().register(new RangerResource<>(hubs));
     }
 
     public void start(){
-        log.info("Starting the ranger hub");
-        rangerHub.start();
+        log.info("Starting the ranger hubs");
+        hubs.forEach(RangerHubClient::start);
     }
 
     public void stop(){
         log.info("Stopping the ranger hub");
-        rangerHub.stop();
+        hubs.forEach(RangerHubClient::stop);
     }
 }
