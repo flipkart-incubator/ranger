@@ -1,5 +1,6 @@
 package com.flipkart.ranger.http.server;
 
+import com.codahale.metrics.health.HealthCheck;
 import com.flipkart.ranger.client.RangerHubClient;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
@@ -9,6 +10,7 @@ import com.flipkart.ranger.server.bundle.RangerServerBundle;
 import com.flipkart.ranger.server.common.ShardInfo;
 import com.google.common.collect.Lists;
 import io.dropwizard.Application;
+import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.val;
 
@@ -16,6 +18,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class App extends Application<AppConfiguration> {
+
+    public static void main(String[] args) throws Exception {
+        new App().run(args);
+    }
+
+    @Override
+    public void initialize(Bootstrap<AppConfiguration> bootstrap) {
+
+    }
 
     @Override
     public void run(AppConfiguration appConfiguration, Environment environment) {
@@ -46,5 +57,14 @@ public class App extends Application<AppConfiguration> {
 
         val rangerClientManager = new RangerHttpBundleManager(rangerServerBundle);
         environment.lifecycle().manage(rangerClientManager);
+        environment.healthChecks().register(
+                "ranger-http-health-check",
+                new HealthCheck() {
+                    @Override
+                    protected Result check() {
+                        return Result.healthy();
+                    }
+                })
+        );
     }
 }
