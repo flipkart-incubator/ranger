@@ -49,13 +49,13 @@ public class RangerResource<T, C extends Criteria<T>> {
     @Metered
     public GenericResponse<Collection<Service>> getServices() {
         Collection<Service> services = new ArrayList<>();
-        for (RangerHubClient<T, C> hub : rangerHubs) {
+        rangerHubs.forEach(hub -> {
             try {
                 services.addAll(hub.getServices());
             } catch (Exception e) {
                 log.warn("Call to a hub failed with exception, {}", e.getMessage());
             }
-        }
+        });
         return GenericResponse.<Collection<Service>>builder()
                 .success(true)
                 .data(services)
@@ -71,13 +71,13 @@ public class RangerResource<T, C extends Criteria<T>> {
     ){
         val service = new Service(namespace, serviceName);
         List<ServiceNode<T>> serviceNodes = new ArrayList<>();
-        for (RangerHubClient<T, C> hub : rangerHubs) {
+        rangerHubs.forEach(hub -> {
             try {
-                serviceNodes.addAll(hub.getAllNodes(service, null).orElse(Collections.emptyList()));
+                serviceNodes.addAll(hub.getAllNodes(service).orElse(Collections.emptyList()));
             } catch (Exception e) {
                 log.warn("Call to a hub failed with exception, {}", e.getMessage());
             }
-        }
+        });
         return GenericResponse.<List<ServiceNode<T>>>builder()
                 .success(true)
                 .data(serviceNodes)

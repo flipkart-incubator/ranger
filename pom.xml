@@ -15,10 +15,10 @@
         <module>ranger-client</module>
         <module>ranger-zk-client</module>
         <module>ranger-http-client</module>
-        <module>ranger-server</module>
-        <module>ranger-server-bundle</module>
-        <module>ranger-http-server</module>
         <module>ranger-server-common</module>
+        <module>ranger-server-bundle</module>
+        <module>ranger-zk-server</module>
+        <module>ranger-http-server</module>
     </modules>
 
     <distributionManagement>

@@ -40,6 +40,14 @@ public abstract class RangerServerBundle<
         U extends Configuration
         > implements ConfiguredBundle<U>{
 
+    /**
+        Why are we taking a list of hubs, instead of one? To be able to aggregate from different dataSources if need be
+        instead of just fetching from a single dataSource.
+
+        Please check the {@link RangerResource} for how a list is getting aggregated.
+
+        You could also define your custom aggregation by using the {@link RangerHubClient}
+     */
     @Getter
     private List<RangerHubClient<T, C>> hubs;
     @Getter
