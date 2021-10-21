@@ -20,7 +20,7 @@ import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.server.bundle.RangerServerBundle;
 import com.flipkart.ranger.server.healthcheck.RangerHealthCheck;
 import com.flipkart.ranger.server.manager.RangerBundleManager;
-import com.flipkart.ranger.server.common.ShardInfo;
+import com.flipkart.ranger.common.server.ShardInfo;
 import com.flipkart.ranger.server.util.RangerServerUtils;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.google.common.collect.Lists;

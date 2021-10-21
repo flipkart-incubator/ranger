@@ -7,7 +7,7 @@ import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.server.config.RangerHttpConfiguration;
-import com.flipkart.ranger.server.common.ShardInfo;
+import com.flipkart.ranger.common.server.ShardInfo;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 

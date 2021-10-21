@@ -7,8 +7,7 @@ import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import com.flipkart.ranger.http.server.manager.RangerHttpBundleManager;
 import com.flipkart.ranger.http.server.util.RangerHttpServerUtils;
 import com.flipkart.ranger.server.bundle.RangerServerBundle;
-import com.flipkart.ranger.server.common.ShardInfo;
-import com.google.common.collect.Lists;
+import com.flipkart.ranger.common.server.ShardInfo;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -64,7 +63,6 @@ public class App extends Application<AppConfiguration> {
                     protected Result check() {
                         return Result.healthy();
                     }
-                })
-        );
+                });
     }
 }
