@@ -48,7 +48,6 @@ public class RangerServerUtils {
                 .curatorFramework(curatorFramework)
                 .disablePushUpdaters(rangerConfiguration.isDisablePushUpdaters())
                 .mapper(mapper)
-                .services(rangerConfiguration.getServices())
                 .refreshTimeMs(rangerConfiguration.getNodeRefreshTimeMs())
                 .deserializer(data -> {
                     try {

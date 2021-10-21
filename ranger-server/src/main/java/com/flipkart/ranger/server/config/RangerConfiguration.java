@@ -26,5 +26,4 @@ public class RangerConfiguration {
     private boolean disablePushUpdaters;
     @Min(1000)
     private int nodeRefreshTimeMs = RangerClientConstants.MINIMUM_REFRESH_TIME;
-    private List<Service> services;
 }
