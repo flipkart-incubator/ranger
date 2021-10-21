@@ -88,7 +88,6 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                         }else{
                             log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceNodesResponse.getError());
                         }
-                        return Optional.of(serviceNodes);
                     }
                 }
             } else {
@@ -97,7 +96,7 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
         } catch (IOException e) {
             Exceptions.illegalState("Error fetching data from server: " + httpUrl, e);
         }
-        return Optional.empty();
+        return Optional.of(serviceNodes);
     }
 
     @Override

@@ -76,7 +76,6 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                         }else{
                             log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceDataSourceResponse.getError());
                         }
-                        return services;
                     }
                 }
             }
@@ -89,6 +88,6 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
         }
 
         log.error("No data returned from server: " + httpUrl);
-        return Collections.emptyList();
+        return services;
     }
 }
