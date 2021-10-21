@@ -123,6 +123,7 @@
             <artifactId>guava-retrying</artifactId>
             <version>${guava-retrying.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>

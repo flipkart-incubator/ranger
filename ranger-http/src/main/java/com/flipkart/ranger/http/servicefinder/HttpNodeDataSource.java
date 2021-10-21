@@ -32,6 +32,7 @@ import okhttp3.Request;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,6 +71,7 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                 .get()
                 .build();
 
+        List<ServiceNode<T>> serviceNodes = Collections.emptyList();
         try (val response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 try (final ResponseBody body = response.body()) {
@@ -79,12 +81,14 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                         final byte[] bytes = body.bytes();
                         val serviceNodesResponse = deserializer.deserialize(bytes);
                         if(serviceNodesResponse.isSuccess()){
-                            return Optional.of(FinderUtils.filterValidNodes(
+                            serviceNodes = FinderUtils.filterValidNodes(
                                     service,
                                     serviceNodesResponse.getData(),
-                                    healthcheckZombieCheckThresholdTime(service)));
+                                    healthcheckZombieCheckThresholdTime(service));
+                        }else{
+                            log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceNodesResponse.getError());
                         }
-                        log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceNodesResponse.getError());
+                        return Optional.of(serviceNodes);
                     }
                 }
             } else {

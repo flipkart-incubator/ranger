@@ -32,6 +32,7 @@ import okhttp3.ResponseBody;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> implements ServiceDataSource {
@@ -60,6 +61,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                 .get()
                 .build();
 
+        List<Service> services = Collections.emptyList();
         try (val response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 try (final ResponseBody body = response.body()) {
@@ -70,9 +72,11 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                         final byte[] bytes = body.bytes();
                         val serviceDataSourceResponse = mapper.readValue(bytes, ServiceDataSourceResponse.class);
                         if(serviceDataSourceResponse.isSuccess()){
-                            return serviceDataSourceResponse.getData();
+                            services = serviceDataSourceResponse.getData();
+                        }else{
+                            log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceDataSourceResponse.getError());
                         }
-                        log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceDataSourceResponse.getError());
+                        return services;
                     }
                 }
             }

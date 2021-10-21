@@ -81,10 +81,10 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
                     else {
                         final byte[] bytes = body.bytes();
                         val serviceRegistrationResponse = mapper.readValue(bytes, ServiceRegistrationResponse.class);
-                        if(serviceRegistrationResponse.isSuccess()) {
-                            return Optional.of(serviceRegistrationResponse);
+                        if(!serviceRegistrationResponse.isSuccess()){
+                            log.warn("Http call to {} returned a failure response with code {} and error {}", httpUrl, response.code(), serviceRegistrationResponse.getError());
                         }
-                        log.warn("Http call to {} returned a failure response with code {} and error {}", httpUrl, response.code(), serviceRegistrationResponse.getError());
+                        return Optional.of(serviceRegistrationResponse);
                     }
                 }
             }
