@@ -30,7 +30,7 @@ public class SimpleRangerHttpClientTest extends BaseRangerHttpClientTest{
 
     @Test
     public void testSimpleHttpRangerClient(){
-        val client = SimpleRangerHttpClient.<TestNodeData, Criteria<TestNodeData>, HTTPResponseDataDeserializer<TestNodeData>>builder()
+        val client = SimpleRangerHttpClient.<TestNodeData, Criteria<TestNodeData>>builder()
                 .clientConfig(getHttpClientConfig())
                 .mapper(getObjectMapper())
                 .deserializer(this::read)

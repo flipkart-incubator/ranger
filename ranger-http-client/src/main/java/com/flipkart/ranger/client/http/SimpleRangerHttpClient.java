@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class SimpleRangerHttpClient<T, C extends Criteria<T>, D extends HTTPResponseDataDeserializer<T>> implements RangerClient<T, C> {
+public class SimpleRangerHttpClient<T, C extends Criteria<T>> implements RangerClient<T, C> {
 
     private final C criteria;
     private final SimpleUnshardedServiceFinder<T, C> serviceFinder;
@@ -45,7 +45,7 @@ public class SimpleRangerHttpClient<T, C extends Criteria<T>, D extends HTTPResp
             int nodeRefreshIntervalMs,
             HttpClientConfig clientConfig,
             C criteria,
-            D deserializer
+            HTTPResponseDataDeserializer<T> deserializer
     ) {
         Preconditions.checkNotNull(mapper, "Mapper can't be null");
         Preconditions.checkNotNull(namespace, "namespace can't be null");

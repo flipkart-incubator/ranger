@@ -20,6 +20,9 @@ import lombok.*;
 
 import java.util.Objects;
 
+/*
+    An example nodeData with which we have written our ranger-servers. When you write your own servers you could define your own node data!
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

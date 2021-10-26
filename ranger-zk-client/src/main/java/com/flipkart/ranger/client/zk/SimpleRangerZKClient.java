@@ -37,11 +37,11 @@ import java.util.Optional;
 
 @Slf4j
 @Getter
-public class SimpleRangerZKClient<T, C extends Criteria<T>, D extends ZkNodeDataDeserializer<T>> implements RangerClient<T, C> {
+public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerClient<T, C> {
 
     private final SimpleShardedServiceFinder<T, C> serviceFinder;
     private final C criteria;
-    private final D deserializer;
+    private final ZkNodeDataDeserializer<T> deserializer;
 
     @Builder(builderMethodName = "fromConnectionString", builderClassName = "FromConnectionStringBuilder")
     public SimpleRangerZKClient(
@@ -52,7 +52,7 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>, D extends ZkNodeData
             boolean disableWatchers,
             String connectionString,
             C criteria,
-            D deserializer
+            ZkNodeDataDeserializer<T> deserializer
     ){
         this(
                 namespace,
@@ -75,7 +75,7 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>, D extends ZkNodeData
             boolean disableWatchers,
             CuratorFramework curatorFramework,
             C criteria,
-            D deserializer
+            ZkNodeDataDeserializer<T> deserializer
     ){
         Preconditions.checkNotNull(mapper, "Mapper can't be null");
         Preconditions.checkNotNull(namespace, "namespace can't be null");

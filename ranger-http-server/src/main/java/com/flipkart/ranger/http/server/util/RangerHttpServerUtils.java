@@ -6,6 +6,7 @@ import com.flipkart.ranger.client.http.UnshardedRangerHttpHubClient;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.config.HttpClientConfig;
+import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.server.config.RangerHttpConfiguration;
 import com.flipkart.ranger.common.server.ShardInfo;
 import com.google.common.base.Preconditions;
@@ -40,7 +41,7 @@ public class RangerHttpServerUtils {
                 .nodeRefreshIntervalMs(nodeRefreshTimeMs)
                 .deserializer(data -> {
                     try {
-                        mapper.readValue(data, new TypeReference<ServiceNode<ShardInfo>>() {
+                        mapper.readValue(data, new TypeReference<ServiceNodesResponse<ShardInfo>>() {
                         });
                     } catch (IOException e) {
                         log.warn("Error parsing node data with value {}", new String(data));
