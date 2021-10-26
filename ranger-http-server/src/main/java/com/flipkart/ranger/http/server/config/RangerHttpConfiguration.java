@@ -1,6 +1,5 @@
 package com.flipkart.ranger.http.server.config;
 
-import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import lombok.*;
 

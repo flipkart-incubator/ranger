@@ -19,7 +19,6 @@ import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
-import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;

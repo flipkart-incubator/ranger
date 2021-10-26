@@ -2,12 +2,12 @@ package com.flipkart.ranger.http.server;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.flipkart.ranger.client.RangerHubClient;
+import com.flipkart.ranger.common.server.ShardInfo;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import com.flipkart.ranger.http.server.manager.RangerHttpBundleManager;
 import com.flipkart.ranger.http.server.util.RangerHttpServerUtils;
 import com.flipkart.ranger.server.bundle.RangerServerBundle;
-import com.flipkart.ranger.common.server.ShardInfo;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;

@@ -3,12 +3,11 @@ package com.flipkart.ranger.http.server.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.http.UnshardedRangerHttpHubClient;
+import com.flipkart.ranger.common.server.ShardInfo;
 import com.flipkart.ranger.core.model.Criteria;
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.server.config.RangerHttpConfiguration;
-import com.flipkart.ranger.common.server.ShardInfo;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 

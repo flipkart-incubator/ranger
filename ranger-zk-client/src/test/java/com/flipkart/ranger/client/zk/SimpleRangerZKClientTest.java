@@ -3,7 +3,6 @@ package com.flipkart.ranger.client.zk;
 import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
-import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
