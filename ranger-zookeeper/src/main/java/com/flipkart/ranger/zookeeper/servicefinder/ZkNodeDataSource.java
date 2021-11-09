@@ -88,7 +88,6 @@ public class ZkNodeDataSource<T, D extends ZkNodeDataDeserializer<T>> extends Zk
         }
         catch (Exception e) {
             log.error("Error getting service data from zookeeper: ", e);
-            Exceptions.illegalState(e);
         }
         return Optional.empty();
     }

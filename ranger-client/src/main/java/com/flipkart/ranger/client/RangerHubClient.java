@@ -24,19 +24,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RangerHubClient<T, C extends Criteria<T>> {
+    void start();
 
-        void start();
+    void stop();
 
-        void stop();
+    Collection<Service> getServices() throws Exception;
 
-        Collection<Service> getServices() throws Exception;
+    Optional<ServiceNode<T>> getNode(final Service service);
 
-        Optional<ServiceNode<T>> getNode(final Service service);
+    Optional<ServiceNode<T>> getNode(final Service service, final C criteria);
 
-        Optional<ServiceNode<T>> getNode(final Service service, final C criteria);
+    Optional<List<ServiceNode<T>>> getAllNodes(final Service service);
 
-        Optional<List<ServiceNode<T>>> getAllNodes(final Service service);
-
-        Optional<List<ServiceNode<T>>> getAllNodes(final Service service, final C criteria);
-
+    Optional<List<ServiceNode<T>>> getAllNodes(final Service service, final C criteria);
 }
