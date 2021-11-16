@@ -34,17 +34,17 @@ public class ZkServiceFinderHubBuilder<T, C extends Criteria<T>, R extends Servi
     private CuratorFramework curatorFramework;
     private String connectionString;
 
-    public ZkServiceFinderHubBuilder<T,C, R> withNamespace(final String namespace) {
+    public ZkServiceFinderHubBuilder<T, C, R> withNamespace(final String namespace) {
         this.namespace = namespace;
         return this;
     }
 
-    public ZkServiceFinderHubBuilder<T,C, R> withCuratorFramework(CuratorFramework curatorFramework) {
+    public ZkServiceFinderHubBuilder<T, C, R> withCuratorFramework(CuratorFramework curatorFramework) {
         this.curatorFramework = curatorFramework;
         return this;
     }
 
-    public ZkServiceFinderHubBuilder<T,C, R> withConnectionString(final String connectionString) {
+    public ZkServiceFinderHubBuilder<T, C, R> withConnectionString(final String connectionString) {
         this.connectionString = connectionString;
         return this;
     }
@@ -65,7 +65,7 @@ public class ZkServiceFinderHubBuilder<T, C extends Criteria<T>, R extends Servi
     }
 
     @Override
-    protected void postBuild(ServiceFinderHub<T, C,R> serviceFinderHub) {
+    protected void postBuild(ServiceFinderHub<T, C, R> serviceFinderHub) {
         log.debug("No post build steps necessary");
     }
 }

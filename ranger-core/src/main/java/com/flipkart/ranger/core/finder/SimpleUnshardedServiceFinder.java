@@ -23,8 +23,8 @@ import com.flipkart.ranger.core.model.ShardSelector;
 
 public class SimpleUnshardedServiceFinder<T, C extends Criteria<T>> extends ServiceFinder<T, C, ListBasedServiceRegistry<T>> {
     public SimpleUnshardedServiceFinder(ListBasedServiceRegistry<T> serviceRegistry,
-                                      ShardSelector<T, C, ListBasedServiceRegistry<T>> shardSelector,
-                                      ServiceNodeSelector<T> nodeSelector) {
+                                        ShardSelector<T, C, ListBasedServiceRegistry<T>> shardSelector,
+                                        ServiceNodeSelector<T> nodeSelector) {
         super(serviceRegistry, shardSelector, nodeSelector);
     }
 }

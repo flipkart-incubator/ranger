@@ -18,14 +18,14 @@ package com.flipkart.ranger.core.model;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor
 public class Service {
     private String namespace;
     private String serviceName;
-
-    public Service(){}
 
     public String name() {
         return String.format("%s/%s", namespace, serviceName);

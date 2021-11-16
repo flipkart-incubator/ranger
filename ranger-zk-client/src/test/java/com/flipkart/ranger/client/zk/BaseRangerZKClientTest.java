@@ -110,7 +110,7 @@ public abstract class BaseRangerZKClientTest {
                 .withSerializer(this::write)
                 .withNodeData(new TestNodeData(1))
                 .withHealthcheck(() -> HealthcheckStatus.healthy)
-                .withadditionalRefreshSignal(refreshProviderSignal)
+                .withAdditionalRefreshSignal(refreshProviderSignal)
                 .withCuratorFramework(getCuratorFramework())
                 .build();
         provider.start();

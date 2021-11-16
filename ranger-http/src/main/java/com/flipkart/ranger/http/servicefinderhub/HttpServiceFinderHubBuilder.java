@@ -30,7 +30,7 @@ public class HttpServiceFinderHubBuilder<T, C extends Criteria<T>, R extends Ser
     }
 
     @Override
-    protected void postBuild(ServiceFinderHub<T,C, R> serviceFinderHub) {
+    protected void postBuild(ServiceFinderHub<T, C, R> serviceFinderHub) {
         log.info("No post build actions necessary");
     }
 }

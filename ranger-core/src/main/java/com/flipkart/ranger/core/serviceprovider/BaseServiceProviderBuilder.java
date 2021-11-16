@@ -144,7 +144,7 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
         return (B)this;
     }
 
-    public B withadditionalRefreshSignal(Signal<HealthcheckResult> additionalRefreshSignal) {
+    public B withAdditionalRefreshSignal(Signal<HealthcheckResult> additionalRefreshSignal) {
         this.additionalRefreshSignals.add(additionalRefreshSignal);
         return (B)this;
     }
