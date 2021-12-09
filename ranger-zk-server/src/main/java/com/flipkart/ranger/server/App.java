@@ -53,6 +53,8 @@ public class App extends Application<AppConfiguration> {
      *    is available in the run as an arg to be used,
      * d) Also don't want to create two bundle managers (one for http and one for ZK)
      *
+     * Also, the verifyPreconditions is different for both zk and http.
+     *
      * @param appConfiguration  {@link AppConfiguration} The appConfiguration provided
      * @param environment       {@link Environment} The environment in scope.
      */
