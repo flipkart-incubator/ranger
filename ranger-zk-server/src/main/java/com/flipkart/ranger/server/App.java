@@ -47,9 +47,9 @@ public class App extends Application<AppConfiguration> {
     /**
      * The reason why rangerServerBundle.run is used here instead of initializing in the initialize method and letting run automatically called.
      *
-     * a) RangerServerBundle's closure contains a rangerHubClient within it, now this could client could either be a ZK client or the httpClient.
+     * a) RangerServerBundle's closure contains a rangerHubClient within it, now this client could either be a ZK client or the httpClient.
      * b) A ZK client would need the curatorFramework and the http client doesn't need anything.
-     * c) So the rangerServerBundle couldn't contain a curatorFramework and that has to be defined outside, for that we need the AppConfiguration, which
+     * c) So the RangerServerBundle couldn't contain a curatorFramework and that has to be defined outside, for that we need the AppConfiguration, which
      *    is available in the run as an arg to be used,
      * d) Also don't want to create two bundle managers (one for http and one for ZK)
      *
