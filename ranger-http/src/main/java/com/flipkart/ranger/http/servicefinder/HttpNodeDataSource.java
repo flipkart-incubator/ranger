@@ -94,7 +94,7 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                 log.warn("HTTP call to {} returned: {}", httpUrl, response.code());
             }
         } catch (IOException e) {
-            Exceptions.illegalState("Error fetching data from server: " + httpUrl, e);
+            log.error("Error getting service data from the http endPoint: ", e);
         }
         return Optional.of(serviceNodes);
     }
