@@ -41,8 +41,8 @@ public class RangerServerBundleTest {
     private final Bootstrap<?> bootstrap = mock(Bootstrap.class);
     private final Configuration configuration = mock(Configuration.class);
 
-    private final RangerServerBundle<TestShardInfo, Criteria<TestShardInfo>, TestDeserializer<TestShardInfo>, Configuration>
-            rangerServerBundle = new RangerServerBundle<TestShardInfo, Criteria<TestShardInfo>, TestDeserializer<TestShardInfo>, Configuration>() {
+    private final RangerServerBundle<TestShardInfo, Criteria<TestShardInfo>,  Configuration>
+            rangerServerBundle = new RangerServerBundle<TestShardInfo, Criteria<TestShardInfo>, Configuration>() {
 
         @Override
         protected List<RangerHubClient<TestShardInfo, Criteria<TestShardInfo>>> withHubs(Configuration configuration) {

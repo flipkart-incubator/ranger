@@ -64,7 +64,7 @@ public class App extends Application<AppConfiguration> {
         RangerServerUtils.verifyPreconditions(rangerConfiguration);
         val curatorFramework = RangerServerUtils.buildCurator(rangerConfiguration);
 
-        val rangerServerBundle = new RangerServerBundle<ShardInfo, Criteria<ShardInfo>, ZkNodeDataDeserializer<ShardInfo>,
+        val rangerServerBundle = new RangerServerBundle<ShardInfo, Criteria<ShardInfo>,
                 AppConfiguration>() {
 
             @Override

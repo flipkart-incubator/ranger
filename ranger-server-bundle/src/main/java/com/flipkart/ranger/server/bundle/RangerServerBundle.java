@@ -36,9 +36,7 @@ import java.util.List;
 public abstract class RangerServerBundle<
         T,
         C extends Criteria<T>,
-        D extends Deserializer<T>,
-        U extends Configuration
-        > implements ConfiguredBundle<U>{
+        U extends Configuration> implements ConfiguredBundle<U>{
 
     /**
         Why are we taking a list of hubs, instead of one? To be able to aggregate from different dataSources if need be

@@ -61,13 +61,12 @@ public class App extends Application<AppConfiguration> {
         val rangerConfiguration = appConfiguration.getRangerConfiguration();
         RangerHttpServerUtils.verifyPreconditions(rangerConfiguration);
 
-        val rangerServerBundle = new RangerServerBundle<ShardInfo, Criteria<ShardInfo>, HTTPResponseDataDeserializer<ShardInfo>,
+        val rangerServerBundle = new RangerServerBundle<ShardInfo, Criteria<ShardInfo>,
                 AppConfiguration>() {
 
             @Override
             protected List<RangerHubClient<ShardInfo, Criteria<ShardInfo>>> withHubs(AppConfiguration configuration) {
-                val clientConfigs = configuration.getRangerConfiguration().getHttpClientConfigs();
-                return clientConfigs.stream().map(clientConfig ->
+                return configuration.getRangerConfiguration().getHttpClientConfigs().stream().map(clientConfig ->
                         RangerHttpServerUtils.buildRangerHub(
                                 rangerConfiguration.getNamespace(),
                                 rangerConfiguration.getNodeRefreshTimeMs(),
