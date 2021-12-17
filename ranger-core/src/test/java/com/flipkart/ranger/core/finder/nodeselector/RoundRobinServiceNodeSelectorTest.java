@@ -17,20 +17,20 @@ package com.flipkart.ranger.core.finder.nodeselector;
 
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
-import com.google.common.collect.Lists;
+import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class RoundRobinServiceNodeSelectorTest {
     @Test
     public void testRandomNodeSelector(){
-        final RoundRobinServiceNodeSelector<TestNodeData> roundRobinSelector = new RoundRobinServiceNodeSelector<TestNodeData>();
-        final List<ServiceNode<TestNodeData>> serviceNodes = Lists.newArrayList();
-        serviceNodes.add(new ServiceNode<>("localhost-1", 9000, TestNodeData.builder().nodeId(1).build()));
-        serviceNodes.add(new ServiceNode<>("localhost-2", 9001, TestNodeData.builder().nodeId(2).build()));
-        serviceNodes.add(new ServiceNode<>("localhost-3", 9002, TestNodeData.builder().nodeId(3).build()));
+        val roundRobinSelector = new RoundRobinServiceNodeSelector<TestNodeData>();
+        val serviceNodes = new ArrayList<ServiceNode<TestNodeData>>();
+        serviceNodes.add(new ServiceNode<>("localhost-1", 9000, TestNodeData.builder().shardId(1).build()));
+        serviceNodes.add(new ServiceNode<>("localhost-2", 9001, TestNodeData.builder().shardId(2).build()));
+        serviceNodes.add(new ServiceNode<>("localhost-3", 9002, TestNodeData.builder().shardId(3).build()));
         ServiceNode<TestNodeData> select = roundRobinSelector.select(serviceNodes);
         Assert.assertEquals("localhost-2", select.getHost());
         select = roundRobinSelector.select(serviceNodes);

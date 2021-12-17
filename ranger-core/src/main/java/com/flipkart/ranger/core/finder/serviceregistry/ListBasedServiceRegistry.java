@@ -19,6 +19,7 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.google.common.collect.ImmutableList;
+import lombok.val;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,8 +34,8 @@ public class ListBasedServiceRegistry<T> extends ServiceRegistry<T> {
     }
 
     public List<ServiceNode<T>> nodeList() {
-        List<ServiceNode<T>> nodes = this.nodes.get();
-        return null == nodes ? Collections.emptyList() : nodes;
+        val nodeList = this.nodes.get();
+        return null == nodeList ? Collections.emptyList() : nodeList;
     }
 
     @Override

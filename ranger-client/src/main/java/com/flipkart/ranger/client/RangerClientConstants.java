@@ -15,10 +15,10 @@
  */
 package com.flipkart.ranger.client;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class RangerClientConstants {
-
-    private RangerClientConstants(){}
-
     public static final int CONNECTION_RETRY_TIME = 5000;
     public static final int MINIMUM_REFRESH_TIME = 5000;
 }

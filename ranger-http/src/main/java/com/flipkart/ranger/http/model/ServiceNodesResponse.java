@@ -17,22 +17,21 @@ package com.flipkart.ranger.http.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.flipkart.ranger.core.model.ServiceNode;
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
  *
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@Value
+@Jacksonized
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class  ServiceNodesResponse<T> {
-    private boolean success;
-    private String error;
-    private List<ServiceNode<T>> data = Collections.emptyList();
+    boolean success;
+    String error;
+    List<ServiceNode<T>> data;
 }

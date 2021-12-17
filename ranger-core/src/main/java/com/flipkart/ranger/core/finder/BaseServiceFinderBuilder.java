@@ -38,17 +38,16 @@ public abstract class BaseServiceFinderBuilder
         <
                 T,
                 R extends ServiceRegistry<T>,
-                F extends ServiceFinder<T, C, R>,
-                B extends BaseServiceFinderBuilder<T, R, F, B, D, C>,
-                D extends Deserializer<T>,
-                C extends Criteria<T>> {
+                F extends ServiceFinder<T, R>,
+                B extends BaseServiceFinderBuilder<T, R, F, B, D>,
+                D extends Deserializer<T>> {
 
     protected String namespace;
     protected String serviceName;
     protected int nodeRefreshIntervalMs;
     protected boolean disablePushUpdaters;
     protected D deserializer;
-    protected ShardSelector<T, C, R> shardSelector;
+    protected ShardSelector<T, R> shardSelector;
     protected ServiceNodeSelector<T> nodeSelector = new RandomServiceNodeSelector<>();
     protected final List<Signal<T>> additionalRefreshSignals = new ArrayList<>();
     protected final List<Consumer<Void>> startSignalHandlers = Lists.newArrayList();
@@ -69,7 +68,7 @@ public abstract class BaseServiceFinderBuilder
         return (B)this;
     }
 
-    public B withShardSelector(ShardSelector<T, C, R> shardSelector) {
+    public B withShardSelector(ShardSelector<T, R> shardSelector) {
         this.shardSelector = shardSelector;
         return (B)this;
     }
@@ -141,7 +140,7 @@ public abstract class BaseServiceFinderBuilder
                      serviceName, nodeRefreshIntervalMs);
             nodeRefreshIntervalMs = 1000;
         }
-        val service = new Service(namespace, serviceName);
+        val service = Service.builder().namespace(namespace).serviceName(serviceName).build();
         val finder = buildFinder(service, shardSelector, nodeSelector);
         val registry = finder.getServiceRegistry();
         val signalGenerators = new ArrayList<Signal<T>>();
@@ -177,7 +176,7 @@ public abstract class BaseServiceFinderBuilder
 
     protected abstract F buildFinder(
             Service service,
-            ShardSelector<T, C, R> shardSelector,
+            ShardSelector<T, R> shardSelector,
             ServiceNodeSelector<T> nodeSelector);
 
 }

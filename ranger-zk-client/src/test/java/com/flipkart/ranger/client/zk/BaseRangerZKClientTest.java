@@ -28,6 +28,7 @@ import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -97,7 +98,7 @@ public abstract class BaseRangerZKClientTest {
     }
 
     protected void initilizeProvider(){
-        ExternalTriggeredSignal<HealthcheckResult> refreshProviderSignal = new ExternalTriggeredSignal<>(
+        val refreshProviderSignal = new ExternalTriggeredSignal<>(
                 () -> HealthcheckResult.builder()
                         .status(HealthcheckStatus.healthy)
                         .updatedTime(new Date().getTime())
@@ -108,7 +109,7 @@ public abstract class BaseRangerZKClientTest {
                 .withNamespace("test-n")
                 .withServiceName("s1")
                 .withSerializer(this::write)
-                .withNodeData(new TestNodeData(1))
+                .withNodeData(TestNodeData.builder().shardId(1).build())
                 .withHealthcheck(() -> HealthcheckStatus.healthy)
                 .withAdditionalRefreshSignal(refreshProviderSignal)
                 .withCuratorFramework(getCuratorFramework())

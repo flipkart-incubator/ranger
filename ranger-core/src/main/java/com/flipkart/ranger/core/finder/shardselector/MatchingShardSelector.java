@@ -17,23 +17,23 @@
 package com.flipkart.ranger.core.finder.shardselector;
 
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class MatchingShardSelector<T, C extends Criteria<T>> implements ShardSelector<T, C, MapBasedServiceRegistry<T>> {
+public class MatchingShardSelector<T> implements ShardSelector<T, MapBasedServiceRegistry<T>> {
 
     @Override
-    public List<ServiceNode<T>> nodes(C criteria, MapBasedServiceRegistry<T> serviceRegistry) {
+    public List<ServiceNode<T>> nodes(Predicate<T> criteria, MapBasedServiceRegistry<T> serviceRegistry) {
         if(null == criteria) return serviceRegistry.nodeList();
         return serviceRegistry.nodes()
                 .entries()
                 .stream()
-                .filter(e -> criteria.apply(e.getKey()))
+                .filter(e -> criteria.test(e.getKey()))
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
     }

@@ -17,7 +17,7 @@ package com.flipkart.ranger.http.servicefinderhub;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceDataSourceResponse;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -30,7 +30,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
@@ -56,9 +55,9 @@ public class HttpServiceDataSourceTest {
         val responseObj = ServiceDataSourceResponse.builder()
                 .success(true)
                 .data(Lists.newArrayList(
-                        new Service("test-n", "test-s"),
-                        new Service("test-n", "test-s1"),
-                        new Service("test-n", "test-s2")
+                        RangerTestUtils.getService("test-n", "test-s"),
+                        RangerTestUtils.getService("test-n", "test-s1"),
+                        RangerTestUtils.getService("test-n", "test-s2")
                 ))
                 .build();
         val response = MAPPER.writeValueAsBytes(responseObj);
@@ -72,8 +71,8 @@ public class HttpServiceDataSourceTest {
                 .connectionTimeoutMs(30_000)
                 .operationTimeoutMs(30_000)
                 .build();
-        HttpServiceDataSource<TestNodeData> httpServiceDataSource = new HttpServiceDataSource<>(clientConfig, MAPPER);
-        Collection<Service> services = httpServiceDataSource.services();
+        val httpServiceDataSource = new HttpServiceDataSource<>(clientConfig, MAPPER);
+        val services = httpServiceDataSource.services();
         Assert.assertNotNull(services);
         Assert.assertFalse(services.isEmpty());
         Assert.assertEquals(3, services.size());

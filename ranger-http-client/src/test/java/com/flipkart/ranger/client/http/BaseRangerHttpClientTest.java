@@ -18,10 +18,10 @@ package com.flipkart.ranger.client.http;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
-import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.util.Exceptions;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceDataSourceResponse;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
@@ -49,8 +49,8 @@ public abstract class BaseRangerHttpClientTest {
 
     @Before
     public void startTestCluster() throws Exception {
-        final TestNodeData testNode = new TestNodeData(1);
-        final ServiceNode<TestNodeData> node = new ServiceNode<>("127.0.0.1", 80, testNode);
+        val testNode = TestNodeData.builder().shardId(1).build();
+        val node = new ServiceNode<>("127.0.0.1", 80, testNode);
         node.setHealthcheckStatus(HealthcheckStatus.healthy);
         node.setLastUpdatedTimeStamp(System.currentTimeMillis());
         val payload = objectMapper.writeValueAsBytes(
@@ -66,7 +66,7 @@ public abstract class BaseRangerHttpClientTest {
         val responseObj = ServiceDataSourceResponse.builder()
                 .success(true)
                 .data(Lists.newArrayList(
-                        new Service("test-n", "test-s")
+                        RangerTestUtils.getService("test-n", "test-s")
                 ))
                 .build();
         val response = objectMapper.writeValueAsBytes(responseObj);

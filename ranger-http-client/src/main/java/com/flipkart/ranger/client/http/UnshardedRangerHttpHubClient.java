@@ -24,7 +24,6 @@ import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
 import com.flipkart.ranger.core.finderhub.StaticDataSource;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
@@ -35,10 +34,11 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Slf4j
-public class UnshardedRangerHttpHubClient<T, C extends Criteria<T>>
-        extends AbstractRangerHubClient<T, C, ListBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
+public class UnshardedRangerHttpHubClient<T>
+        extends AbstractRangerHubClient<T, ListBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
 
     private final List<Service> services;
     private final HttpClientConfig clientConfig;
@@ -48,7 +48,7 @@ public class UnshardedRangerHttpHubClient<T, C extends Criteria<T>>
             String namespace,
             ObjectMapper mapper,
             int nodeRefreshIntervalMs,
-            C criteria,
+            Predicate<T> criteria,
             HTTPResponseDataDeserializer<T> deserializer,
             HttpClientConfig clientConfig,
             List<Service> services
@@ -59,8 +59,8 @@ public class UnshardedRangerHttpHubClient<T, C extends Criteria<T>>
     }
 
     @Override
-    protected ServiceFinderHub<T, C, ListBasedServiceRegistry<T>> buildHub() {
-        return new HttpServiceFinderHubBuilder<T, C, ListBasedServiceRegistry<T>>()
+    protected ServiceFinderHub<T, ListBasedServiceRegistry<T>> buildHub() {
+        return new HttpServiceFinderHubBuilder<T, ListBasedServiceRegistry<T>>()
                 .withServiceDataSource(buildServiceDataSource())
                 .withServiceFinderFactory(buildFinderFactory())
                 .withRefreshFrequencyMs(getNodeRefreshTimeMs())
@@ -75,8 +75,8 @@ public class UnshardedRangerHttpHubClient<T, C extends Criteria<T>>
     }
 
     @Override
-    protected ServiceFinderFactory<T, C, ListBasedServiceRegistry<T>> buildFinderFactory() {
-        return HttpUnshardedServiceFinderFactory.<T, C>builder()
+    protected ServiceFinderFactory<T, ListBasedServiceRegistry<T>> buildFinderFactory() {
+        return HttpUnshardedServiceFinderFactory.<T>builder()
                 .httpClientConfig(clientConfig)
                 .nodeRefreshIntervalMs(getNodeRefreshTimeMs())
                 .deserializer(getDeserializer())

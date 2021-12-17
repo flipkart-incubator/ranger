@@ -17,54 +17,58 @@ package com.flipkart.ranger.client.stubs;
 
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinderBuilder;
-import com.flipkart.ranger.core.model.*;
+import com.flipkart.ranger.core.model.Deserializer;
+import com.flipkart.ranger.core.model.NodeDataSource;
+import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.units.TestNodeData;
 import com.google.common.collect.Lists;
 import lombok.Builder;
 
 import java.util.List;
-import java.util.Optional;
 
 @Builder
-public class TestSimpleUnshardedServiceFinder <T, C extends Criteria<T>>
-        extends SimpleUnshardedServiceFinderBuilder<TestShardInfo, TestSimpleUnshardedServiceFinder<T, C>, Deserializer<TestShardInfo>, Criteria<TestShardInfo>> {
+public class TestSimpleUnshardedServiceFinder <T>
+        extends SimpleUnshardedServiceFinderBuilder<TestNodeData, TestSimpleUnshardedServiceFinder<T>, Deserializer<TestNodeData>> {
 
     @Override
-    public SimpleUnshardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> build() {
+    public SimpleUnshardedServiceFinder<TestNodeData> build() {
         return buildFinder();
     }
 
     @Override
-    protected NodeDataSource<TestShardInfo, Deserializer<TestShardInfo>> dataSource(Service service) {
-        return new NodeDataSource<TestShardInfo, Deserializer<TestShardInfo>>() {
-            @Override
-            public Optional<List<ServiceNode<TestShardInfo>>> refresh(Deserializer<TestShardInfo> deserializer) {
-                return Optional.of(
-                        Lists.newArrayList(
-                                new ServiceNode<>("localhost", 9200, TestShardInfo.builder().shardId(1).build())
-                        )
-                );
-            }
+    protected NodeDataSource<TestNodeData, Deserializer<TestNodeData>> dataSource(Service service) {
+        return new TestDataSource();
+    }
 
-            @Override
-            public void start() {
+    static class TestDataSource implements NodeDataSource<TestNodeData, Deserializer<TestNodeData>>{
 
-            }
+        @Override
+        public List<ServiceNode<TestNodeData>> refresh(Deserializer<TestNodeData> deserializer) {
+            return Lists.newArrayList(
+                            new ServiceNode<>("localhost", 9200, TestNodeData.builder().shardId(1).build())
+                    );
+        }
 
-            @Override
-            public void ensureConnected() {
+        @Override
+        public void start() {
 
-            }
+        }
 
-            @Override
-            public void stop() {
+        @Override
+        public void ensureConnected() {
 
-            }
+        }
 
-            @Override
-            public boolean isActive() {
-                return true;
-            }
-        };
+        @Override
+        public void stop() {
+
+        }
+
+        @Override
+        public boolean isActive() {
+            return true;
+        }
     }
 }
 

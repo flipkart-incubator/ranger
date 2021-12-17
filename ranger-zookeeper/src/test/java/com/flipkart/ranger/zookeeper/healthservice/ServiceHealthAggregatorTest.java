@@ -15,12 +15,12 @@
  */
 package com.flipkart.ranger.zookeeper.healthservice;
 
-import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.Monitor;
+import com.flipkart.ranger.core.utils.TestUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -78,7 +78,7 @@ public class ServiceHealthAggregatorTest {
 
     }
 
-    private class TestMonitor extends IsolatedHealthMonitor {
+    private static class TestMonitor extends IsolatedHealthMonitor {
         int threadSleep = 2000;
 
         public TestMonitor(String name, TimeEntity timeEntity) {

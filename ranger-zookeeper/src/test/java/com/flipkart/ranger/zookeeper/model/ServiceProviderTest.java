@@ -19,17 +19,18 @@ package com.flipkart.ranger.zookeeper.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
+import com.flipkart.ranger.core.units.TestNodeData;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
@@ -44,7 +45,7 @@ public class ServiceProviderTest {
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
-    private List<ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>>> serviceProviders = Lists.newArrayList();
+    private List<ServiceProvider<TestNodeData, ZkNodeDataSerializer<TestNodeData>>> serviceProviders = Lists.newArrayList();
 
     @Before
     public void startTestCluster() throws Exception {
@@ -59,69 +60,21 @@ public class ServiceProviderTest {
 
     @After
     public void stopTestCluster() throws Exception {
-        for (ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider : serviceProviders) {
-            serviceProvider.stop();
-        }
+        serviceProviders.forEach(ServiceProvider::stop);
         if (null != testingCluster) {
             testingCluster.close();
         }
     }
 
-    private static final class TestShardInfo {
-        private int shardId;
-
-        public TestShardInfo(int shardId) {
-            this.shardId = shardId;
-        }
-
-        public TestShardInfo() {
-        }
-
-        public int getShardId() {
-            return shardId;
-        }
-
-        public void setShardId(int shardId) {
-            this.shardId = shardId;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            TestShardInfo that = (TestShardInfo) o;
-
-            if (shardId != that.shardId) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return shardId;
-        }
-
-        private static Criteria<TestShardInfo> getCriteria(int shardId){
-            return nodeData -> nodeData.getShardId() == shardId;
-        }
-    }
-
     @Test
-    public void testBasicDiscovery() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
+    public void testBasicDiscovery() {
+        val serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
                 .withDeserializer(data -> {
                     try {
-                        return objectMapper.readValue(data, new TypeReference<ServiceNode<TestShardInfo>>() {});
+                        return objectMapper.readValue(data, new TypeReference<ServiceNode<TestNodeData>>() {});
                     }
                     catch (IOException e) {
                         e.printStackTrace();
@@ -131,24 +84,24 @@ public class ServiceProviderTest {
                 .build();
         serviceFinder.start();
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
             Assert.assertNotNull(node);
             Assert.assertEquals(1, node.getNodeData().getShardId());
         }
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
             Assert.assertNotNull(node);
             Assert.assertEquals(1, node.getNodeData().getShardId());
         }
         long startTime = System.currentTimeMillis();
         for (long i = 0; i < 1000000; i++) {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(2));
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(2));
             Assert.assertNotNull(node);
             Assert.assertEquals(2, node.getNodeData().getShardId());
         }
         log.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(99));
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(99));
             Assert.assertNull(node);
         }
         serviceFinder.stop();
@@ -157,62 +110,16 @@ public class ServiceProviderTest {
 
     @Test
     public void testBasicDiscoveryRR() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder
-                = ServiceFinderBuilders.<TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
+        val serviceFinder
+                = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
-                .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
+                .withNodeSelector(new RoundRobinServiceNodeSelector<>())
                 .withDeserializer(data -> {
                     try {
                         return objectMapper.readValue(data,
-                                                      new TypeReference<ServiceNode<TestShardInfo>>() {
-                                                      });
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                })
-                .build();
-        serviceFinder.start();
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
-        }
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
-        }
-        long startTime = System.currentTimeMillis();
-        for (long i = 0; i < 1000000; i++) {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(2));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(2, node.getNodeData().getShardId());
-        }
-        log.info("PERF::RoundRobinSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
-        {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(99));
-            Assert.assertNull(node);
-        }
-        serviceFinder.stop();
-        //while (true);
-    }
-
-    @Test
-    public void testVisibility() {
-        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.
-                <TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
-                .withConnectionString(testingCluster.getConnectString())
-                .withNamespace("test")
-                .withServiceName("test-service")
-                .withNodeSelector(new RoundRobinServiceNodeSelector<TestShardInfo>())
-                .withDeserializer(data -> {
-                    try {
-                        return objectMapper.readValue(data,
-                                new TypeReference<ServiceNode<TestShardInfo>>() {
+                                new TypeReference<ServiceNode<TestNodeData>>() {
                                 });
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -221,33 +128,75 @@ public class ServiceProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        List<ServiceNode<TestShardInfo>> all = serviceFinder.getAll(TestShardInfo.getCriteria(1));
-        log.info("Testing ServiceFinder.getAll()");
-        for (ServiceNode<TestShardInfo> serviceNode : all) {
-            log.info("node = " + serviceNode.getHost() + ":" + serviceNode.getPort() + "  " + serviceNode.getHealthcheckStatus() + " " + serviceNode
-                    .getLastUpdatedTimeStamp());
+        {
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
+            Assert.assertNotNull(node);
+            Assert.assertEquals(1, node.getNodeData().getShardId());
         }
+        {
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
+            Assert.assertNotNull(node);
+            Assert.assertEquals(1, node.getNodeData().getShardId());
+        }
+        long startTime = System.currentTimeMillis();
+        for (long i = 0; i < 1000000; i++) {
+            ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(2));
+            Assert.assertNotNull(node);
+            Assert.assertEquals(2, node.getNodeData().getShardId());
+        }
+        log.info("PERF::RoundRobinSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
+        {
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(99));
+            Assert.assertNull(node);
+        }
+        serviceFinder.stop();
+        //while (true);
+    }
+
+    @Test
+    public void testVisibility() {
+        val serviceFinder = ServiceFinderBuilders.
+                <TestNodeData>shardedFinderBuilder()
+                .withConnectionString(testingCluster.getConnectString())
+                .withNamespace("test")
+                .withServiceName("test-service")
+                .withNodeSelector(new RoundRobinServiceNodeSelector<>())
+                .withDeserializer(data -> {
+                    try {
+                        return objectMapper.readValue(data,
+                                new TypeReference<ServiceNode<TestNodeData>>() {
+                                });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .build();
+        serviceFinder.start();
+        List<ServiceNode<TestNodeData>> all = serviceFinder.getAll(RangerTestUtils.getCriteria(1));
+        log.info("Testing ServiceFinder.getAll()");
+        all.stream().map(serviceNode -> "node = " + serviceNode.getHost() + ":" + serviceNode.getPort() + "  " + serviceNode.getHealthcheckStatus() + " " + serviceNode
+                .getLastUpdatedTimeStamp()).forEach(log::info);
         Assert.assertEquals(3, all.size());
         serviceFinder.stop();
     }
 
     private void registerService(String host, int port, int shardId) {
-        final ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
+        val serviceProvider = ServiceProviderBuilders.<TestNodeData>shardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
                 .withSerializer(data -> {
                     try {
                         return objectMapper.writeValueAsBytes(data);
-                    }
-                    catch (JsonProcessingException e) {
+                    } catch (JsonProcessingException e) {
                         e.printStackTrace();
                     }
                     return null;
                 })
                 .withHostname(host)
                 .withPort(port)
-                .withNodeData(new TestShardInfo(shardId))
+                .withNodeData(TestNodeData.builder().shardId(shardId).build())
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
                 .withHealthUpdateIntervalMs(15000)
                 .build();

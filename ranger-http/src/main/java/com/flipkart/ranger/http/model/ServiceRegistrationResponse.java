@@ -16,16 +16,16 @@
 package com.flipkart.ranger.http.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@Value
+@Jacksonized
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceRegistrationResponse {
-    private boolean success;
-    private String error;
+    boolean success;
+    String error;
 }

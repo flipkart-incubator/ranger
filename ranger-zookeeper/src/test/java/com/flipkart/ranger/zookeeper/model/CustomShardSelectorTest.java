@@ -18,10 +18,8 @@ package com.flipkart.ranger.zookeeper.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
@@ -30,6 +28,7 @@ import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
@@ -37,8 +36,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Predicate;
 
 
 @Slf4j
@@ -59,9 +59,7 @@ public class CustomShardSelectorTest {
 
     @After
     public void stopTestCluster() throws Exception {
-        for(ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider : serviceProviders) {
-            serviceProvider.stop();
-        }
+        serviceProviders.forEach(ServiceProvider::stop);
         if(null != testingCluster) {
             testingCluster.close();
         }
@@ -113,29 +111,29 @@ public class CustomShardSelectorTest {
             return result;
         }
 
-        private static Criteria<TestShardInfo> getCriteria(int a, int b){
+        private static Predicate<TestShardInfo> getCriteria(int a, int b){
             return nodeData -> nodeData.getA() == a && nodeData.getB() == b;
         }
     }
 
-    private static final class TestShardSelector implements ShardSelector<TestShardInfo, Criteria<TestShardInfo>, MapBasedServiceRegistry<TestShardInfo>> {
+    private static final class TestShardSelector implements ShardSelector<TestShardInfo, MapBasedServiceRegistry<TestShardInfo>> {
 
         @Override
-        public List<ServiceNode<TestShardInfo>> nodes(Criteria<TestShardInfo> criteria, MapBasedServiceRegistry<TestShardInfo> serviceRegistry) {
-            List<ServiceNode<TestShardInfo>> nodes = Lists.newArrayList();
-            for(Map.Entry<TestShardInfo, ServiceNode<TestShardInfo>> entry : serviceRegistry.nodes().entries()) {
-                TestShardInfo shardInfo = entry.getKey();
-                if(criteria.apply(shardInfo)){
+        public List<ServiceNode<TestShardInfo>> nodes(Predicate<TestShardInfo> criteria, MapBasedServiceRegistry<TestShardInfo> serviceRegistry) {
+            val nodes = new ArrayList<ServiceNode<TestShardInfo>>();
+            serviceRegistry.nodes().entries().forEach(entry -> {
+                val shardInfo = entry.getKey();
+                if (criteria.test(shardInfo)) {
                     nodes.add(entry.getValue());
                 }
-            }
+            });
             return nodes;
         }
     }
 
     @Test
-    public void testBasicDiscovery() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
+    public void testBasicDiscovery() {
+        val serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -152,11 +150,11 @@ public class CustomShardSelectorTest {
                 .build();
         serviceFinder.start();
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1, 10));
+            val node = serviceFinder.get(TestShardInfo.getCriteria(1, 10));
             Assert.assertNull(node);
         }
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1, 2));
+            val node = serviceFinder.get(TestShardInfo.getCriteria(1, 2));
             Assert.assertNotNull(node);
             Assert.assertEquals(new TestShardInfo(1, 2), node.getNodeData());
         }
@@ -164,7 +162,7 @@ public class CustomShardSelectorTest {
     }
 
     private void registerService(String host, int port, int a, int b) {
-        final ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
+        val serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -178,7 +176,7 @@ public class CustomShardSelectorTest {
                 })
                 .withHostname(host)
                 .withPort(port)
-                .withNodeData(new TestShardInfo(a,b))
+                .withNodeData(new TestShardInfo(a, b))
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
                 .withHealthUpdateIntervalMs(1000)
                 .build();

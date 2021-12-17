@@ -15,10 +15,9 @@
  */
 package com.flipkart.ranger.client.http;
 
-import com.flipkart.ranger.core.TestUtils;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
+import com.flipkart.ranger.core.utils.TestUtils;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,7 +28,7 @@ public class SimpleRangerHttpClientTest extends BaseRangerHttpClientTest{
 
     @Test
     public void testSimpleHttpRangerClient(){
-        val client = SimpleRangerHttpClient.<TestNodeData, Criteria<TestNodeData>>builder()
+        val client = SimpleRangerHttpClient.<TestNodeData>builder()
                 .clientConfig(getHttpClientConfig())
                 .mapper(getObjectMapper())
                 .deserializer(this::read)
@@ -44,10 +43,10 @@ public class SimpleRangerHttpClientTest extends BaseRangerHttpClientTest{
         Optional<ServiceNode<TestNodeData>> node = client.getNode();
         Assert.assertTrue(node.isPresent());
 
-        node = client.getNode(nodeData -> nodeData.getNodeId() == 1);
+        node = client.getNode(nodeData -> nodeData.getShardId() == 1);
         Assert.assertTrue(node.isPresent());
 
-        node = client.getNode(nodeData -> nodeData.getNodeId() == 2);
+        node = client.getNode(nodeData -> nodeData.getShardId() == 2);
         Assert.assertFalse(node.isPresent());
 
         client.stop();

@@ -16,41 +16,18 @@
 package com.flipkart.ranger.common.server;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
-
-import java.util.Objects;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 /*
     An example nodeData with which we have written our ranger-servers. When you write your own servers you could define your own node data!
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@Value
 @Builder
+@Jacksonized
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ShardInfo {
-    private String environment;
-    private String region;
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-
-        if (!(o instanceof ShardInfo))
-            return false;
-
-        ShardInfo other = (ShardInfo) o;
-        return Objects.equals(this.getEnvironment(), other.getEnvironment())
-                && Objects.equals(this.getRegion(), other.getRegion());
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = hash + (this.environment != null ? this.environment.hashCode() : 0);
-        hash = hash + (this.region != null ? this.region.hashCode() : 0);
-        return hash;
-    }
+    String environment;
+    String region;
 }

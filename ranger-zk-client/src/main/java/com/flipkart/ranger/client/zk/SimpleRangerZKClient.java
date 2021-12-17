@@ -20,7 +20,6 @@ import com.flipkart.ranger.client.RangerClient;
 import com.flipkart.ranger.client.RangerClientConstants;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.shardselector.MatchingShardSelector;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
@@ -34,13 +33,14 @@ import org.apache.curator.retry.RetryForever;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Slf4j
 @Getter
-public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerClient<T, C> {
+public class SimpleRangerZKClient<T> implements RangerClient<T> {
 
-    private final SimpleShardedServiceFinder<T, C> serviceFinder;
-    private final C criteria;
+    private final SimpleShardedServiceFinder<T> serviceFinder;
+    private final Predicate<T> criteria;
     private final ZkNodeDataDeserializer<T> deserializer;
 
     @Builder(builderMethodName = "fromConnectionString", builderClassName = "FromConnectionStringBuilder")
@@ -51,7 +51,7 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerCli
             int nodeRefreshIntervalMs,
             boolean disableWatchers,
             String connectionString,
-            C criteria,
+            Predicate<T> criteria,
             ZkNodeDataDeserializer<T> deserializer
     ){
         this(
@@ -74,7 +74,7 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerCli
             int nodeRefreshIntervalMs,
             boolean disableWatchers,
             CuratorFramework curatorFramework,
-            C criteria,
+            Predicate<T> criteria,
             ZkNodeDataDeserializer<T> deserializer
     ){
         Preconditions.checkNotNull(mapper, "Mapper can't be null");
@@ -91,7 +91,7 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerCli
 
         this.criteria = criteria;
         this.deserializer = deserializer;
-        this.serviceFinder = ServiceFinderBuilders.<T, C>shardedFinderBuilder()
+        this.serviceFinder = ServiceFinderBuilders.<T>shardedFinderBuilder()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace(namespace)
                 .withServiceName(serviceName)
@@ -120,17 +120,17 @@ public class SimpleRangerZKClient<T, C extends Criteria<T>> implements RangerCli
     }
 
     @Override
-    public Optional<List<ServiceNode<T>>> getAllNodes() {
+    public List<ServiceNode<T>> getAllNodes() {
         return getAllNodes(criteria);
     }
 
     @Override
-    public Optional<ServiceNode<T>> getNode(C criteria) {
+    public Optional<ServiceNode<T>> getNode(Predicate<T> criteria) {
         return Optional.ofNullable(this.serviceFinder.get(criteria));
     }
 
     @Override
-    public Optional<List<ServiceNode<T>>> getAllNodes(C criteria) {
-        return Optional.ofNullable(this.serviceFinder.getAll(criteria));
+    public List<ServiceNode<T>> getAllNodes(Predicate<T> criteria) {
+        return this.serviceFinder.getAll(criteria);
     }
 }

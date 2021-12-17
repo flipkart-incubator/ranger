@@ -16,9 +16,10 @@
 package com.flipkart.ranger.core.model;
 
 import java.util.List;
+import java.util.function.Predicate;
 
-public interface ShardSelector<T, C extends Criteria<T>, ServiceRegistryType extends ServiceRegistry<T>> {
+public interface ShardSelector<T, ServiceRegistryType extends ServiceRegistry<T>> {
 
-    List<ServiceNode<T>> nodes(C criteria, ServiceRegistryType serviceRegistry);
+    List<ServiceNode<T>> nodes(Predicate<T> criteria, ServiceRegistryType serviceRegistry);
 
 }

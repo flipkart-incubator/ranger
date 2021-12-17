@@ -18,11 +18,9 @@ package com.flipkart.ranger.http.servicefinder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.TestUtils;
-import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -58,8 +56,8 @@ public class HttpShardedServiceFinderBuilderTest {
 
     @Test
     public void testFinder() throws Exception {
-        final NodeData testNode = new NodeData("testNode");
-        final ServiceNode<NodeData> node = new ServiceNode<>("127.0.0.1", 80, testNode);
+        val testNode = new NodeData("testNode");
+        val node = new ServiceNode<>("127.0.0.1", 80, testNode);
         node.setHealthcheckStatus(HealthcheckStatus.healthy);
         node.setLastUpdatedTimeStamp(System.currentTimeMillis());
         val payload = MAPPER.writeValueAsBytes(
@@ -78,7 +76,7 @@ public class HttpShardedServiceFinderBuilderTest {
                 .operationTimeoutMs(30_000)
                 .build();
 
-        final SimpleShardedServiceFinder<NodeData, Criteria<NodeData>> finder = new HttpShardedServiceFinderBuilder<NodeData, Criteria<NodeData>>()
+        val finder = new HttpShardedServiceFinderBuilder<NodeData>()
                 .withClientConfig(clientConfig)
                 .withNamespace("testns")
                 .withServiceName("test")

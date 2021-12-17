@@ -20,14 +20,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
+import com.flipkart.ranger.core.units.TestNodeData;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -45,7 +47,7 @@ public class ServiceProviderExtCuratorTest {
 
     private TestingCluster testingCluster;
     private ObjectMapper objectMapper;
-    private List<ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>>> serviceProviders = Lists.newArrayList();
+    private List<ServiceProvider<TestNodeData, ZkNodeDataSerializer<TestNodeData>>> serviceProviders = Lists.newArrayList();
     private CuratorFramework curatorFramework;
 
     @Before
@@ -65,66 +67,23 @@ public class ServiceProviderExtCuratorTest {
 
     @After
     public void stopTestCluster() throws Exception {
-        for(ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider : serviceProviders) {
-            serviceProvider.stop();
-        }
+        serviceProviders.forEach(ServiceProvider::stop);
         curatorFramework.close();
         if(null != testingCluster) {
             testingCluster.close();
         }
     }
 
-    private static final class TestShardInfo {
-        private int shardId;
-
-        public TestShardInfo(int shardId) {
-            this.shardId = shardId;
-        }
-
-        public TestShardInfo() {
-        }
-
-        public int getShardId() {
-            return shardId;
-        }
-
-        public void setShardId(int shardId) {
-            this.shardId = shardId;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            TestShardInfo that = (TestShardInfo) o;
-
-            if (shardId != that.shardId) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return shardId;
-        }
-
-        private static Criteria<TestShardInfo> getCriteria(int shardId){
-            return nodeData -> nodeData.getShardId() == shardId;
-        }
-
-    }
-
     @Test
     public void testBasicDiscovery() {
-        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
+        SimpleShardedServiceFinder<TestNodeData> serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withServiceName("test-service")
                 .withDeserializer(data -> {
                     try {
                         return objectMapper.readValue(data,
-                                new TypeReference<ServiceNode<TestShardInfo>>() {
+                                new TypeReference<ServiceNode<TestNodeData>>() {
                                 });
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -134,25 +93,25 @@ public class ServiceProviderExtCuratorTest {
                 .build();
         serviceFinder.start();
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
+            ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(1));
             Assert.assertNotNull(node);
             Assert.assertEquals(1, node.getNodeData().getShardId());
         }
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
+            ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(1));
             Assert.assertNotNull(node);
             Assert.assertEquals(1, node.getNodeData().getShardId());
         }
         long startTime = System.currentTimeMillis();
         for(long i = 0; i <1000000; i++)
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(2));
+            ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(2));
             Assert.assertNotNull(node);
             Assert.assertEquals(2, node.getNodeData().getShardId());
         }
         log.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
-            ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(99));
+            ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(99));
             Assert.assertNull(node);
         }
         serviceFinder.stop();
@@ -160,7 +119,7 @@ public class ServiceProviderExtCuratorTest {
     }
 
     private void registerService(String host, int port, int shardId) {
-        final ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
+        val serviceProvider = ServiceProviderBuilders.<TestNodeData>shardedServiceProviderBuilder()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -174,7 +133,7 @@ public class ServiceProviderExtCuratorTest {
                 })
                 .withHostname(host)
                 .withPort(port)
-                .withNodeData(new TestShardInfo(shardId))
+                .withNodeData(TestNodeData.builder().shardId(shardId).build())
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
                 .withHealthUpdateIntervalMs(1000)
                 .build();

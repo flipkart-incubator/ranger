@@ -20,7 +20,6 @@ import com.flipkart.ranger.client.AbstractRangerHubClient;
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
 import com.flipkart.ranger.core.finderhub.StaticDataSource;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
@@ -31,11 +30,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Slf4j
 @Getter
-public abstract class AbstractRangerZKHubClient<T, C extends Criteria<T>, R extends ServiceRegistry<T>, D extends ZkNodeDataDeserializer<T>>
-        extends AbstractRangerHubClient<T, C, R, D> {
+public abstract class AbstractRangerZKHubClient<T, R extends ServiceRegistry<T>, D extends ZkNodeDataDeserializer<T>>
+        extends AbstractRangerHubClient<T, R, D> {
 
     private final boolean disablePushUpdaters;
     private final String connectionString;
@@ -53,7 +53,7 @@ public abstract class AbstractRangerZKHubClient<T, C extends Criteria<T>, R exte
             boolean disablePushUpdaters,
             String connectionString,
             CuratorFramework curatorFramework,
-            C criteria,
+            Predicate<T> criteria,
             D deserializer,
             List<Service> services
     ) {
@@ -66,8 +66,8 @@ public abstract class AbstractRangerZKHubClient<T, C extends Criteria<T>, R exte
     }
 
     @Override
-    protected ServiceFinderHub<T,C, R> buildHub() {
-       return new ZkServiceFinderHubBuilder<T, C, R>()
+    protected ServiceFinderHub<T, R> buildHub() {
+       return new ZkServiceFinderHubBuilder<T, R>()
                 .withCuratorFramework(curatorFramework)
                 .withConnectionString(connectionString)
                 .withNamespace(getNamespace())

@@ -20,7 +20,6 @@ import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelecto
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.MatchingShardSelector;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkShardedServiceFinderFactory;
@@ -29,10 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Slf4j
-public class ShardedRangerZKHubClient<T, C extends Criteria<T>>
-        extends AbstractRangerZKHubClient<T, C, MapBasedServiceRegistry<T>, ZkNodeDataDeserializer<T>> {
+public class ShardedRangerZKHubClient<T>
+        extends AbstractRangerZKHubClient<T, MapBasedServiceRegistry<T>, ZkNodeDataDeserializer<T>> {
 
     @Builder
     public ShardedRangerZKHubClient(
@@ -42,7 +42,7 @@ public class ShardedRangerZKHubClient<T, C extends Criteria<T>>
             boolean disablePushUpdaters,
             String connectionString,
             CuratorFramework curatorFramework,
-            C criteria,
+            Predicate<T> criteria,
             ZkNodeDataDeserializer<T> deserializer,
             List<Service> services
     ) {
@@ -60,8 +60,8 @@ public class ShardedRangerZKHubClient<T, C extends Criteria<T>>
     }
 
     @Override
-    protected ServiceFinderFactory<T, C, MapBasedServiceRegistry<T>> buildFinderFactory() {
-        return ZkShardedServiceFinderFactory.<T, C>builder()
+    protected ServiceFinderFactory<T, MapBasedServiceRegistry<T>> buildFinderFactory() {
+        return ZkShardedServiceFinderFactory.<T>builder()
                 .curatorFramework(getCuratorFramework())
                 .connectionString(getConnectionString())
                 .nodeRefreshIntervalMs(getNodeRefreshTimeMs())

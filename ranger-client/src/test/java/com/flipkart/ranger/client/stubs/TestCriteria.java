@@ -15,10 +15,12 @@
  */
 package com.flipkart.ranger.client.stubs;
 
-import com.flipkart.ranger.core.model.Criteria;
+import com.flipkart.ranger.core.units.TestNodeData;
 
-public class TestCriteria implements Criteria<TestShardInfo> {
-    public boolean apply(TestShardInfo nodeData) {
+import java.util.function.Predicate;
+
+public class TestCriteria implements Predicate<TestNodeData> {
+    public boolean test(TestNodeData nodeData) {
         return nodeData.getShardId() == 1;
     }
 }

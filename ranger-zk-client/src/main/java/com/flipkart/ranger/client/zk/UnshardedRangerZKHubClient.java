@@ -20,7 +20,6 @@ import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelecto
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZKUnshardedServiceFinderFactory;
@@ -29,10 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Slf4j
-public class UnshardedRangerZKHubClient<T, C extends Criteria<T>>
-        extends AbstractRangerZKHubClient<T, C, ListBasedServiceRegistry<T>, ZkNodeDataDeserializer<T>> {
+public class UnshardedRangerZKHubClient<T>
+        extends AbstractRangerZKHubClient<T, ListBasedServiceRegistry<T>, ZkNodeDataDeserializer<T>> {
 
     @Builder
     public UnshardedRangerZKHubClient(
@@ -42,7 +42,7 @@ public class UnshardedRangerZKHubClient<T, C extends Criteria<T>>
             boolean disablePushUpdaters,
             String connectionString,
             CuratorFramework curatorFramework,
-            C criteria,
+            Predicate<T> criteria,
             ZkNodeDataDeserializer<T> deserializer,
             List<Service> services
     ) {
@@ -60,8 +60,8 @@ public class UnshardedRangerZKHubClient<T, C extends Criteria<T>>
     }
 
     @Override
-    protected ServiceFinderFactory<T, C, ListBasedServiceRegistry<T>> buildFinderFactory() {
-        return ZKUnshardedServiceFinderFactory.<T, C>builder()
+    protected ServiceFinderFactory<T, ListBasedServiceRegistry<T>> buildFinderFactory() {
+        return ZKUnshardedServiceFinderFactory.<T>builder()
             .curatorFramework(getCuratorFramework())
             .connectionString(getConnectionString())
             .nodeRefreshIntervalMs(getNodeRefreshTimeMs())

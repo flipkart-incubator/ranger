@@ -24,7 +24,6 @@ import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
 import com.flipkart.ranger.core.finderhub.StaticDataSource;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
@@ -34,13 +33,14 @@ import com.flipkart.ranger.http.servicefinderhub.HttpShardedServiceFinderFactory
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 
 @Slf4j
-public class ShardedRangerHttpHubClient<T, C extends Criteria<T>>
-        extends AbstractRangerHubClient<T, C, MapBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
+public class ShardedRangerHttpHubClient<T>
+        extends AbstractRangerHubClient<T, MapBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
 
-    private final List<Service> services;
+    private final Set<Service> services;
     private final HttpClientConfig clientConfig;
 
     @Builder
@@ -48,10 +48,10 @@ public class ShardedRangerHttpHubClient<T, C extends Criteria<T>>
             String namespace,
             ObjectMapper mapper,
             int nodeRefreshIntervalMs,
-            C criteria,
+            Predicate<T> criteria,
             HTTPResponseDataDeserializer<T> deserializer,
             HttpClientConfig clientConfig,
-            List<Service> services
+            Set<Service> services
     ) {
         super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer);
         this.clientConfig = clientConfig;
@@ -59,8 +59,8 @@ public class ShardedRangerHttpHubClient<T, C extends Criteria<T>>
     }
 
     @Override
-    protected ServiceFinderHub<T, C, MapBasedServiceRegistry<T>> buildHub() {
-        return new HttpServiceFinderHubBuilder<T, C, MapBasedServiceRegistry<T>>()
+    protected ServiceFinderHub<T, MapBasedServiceRegistry<T>> buildHub() {
+        return new HttpServiceFinderHubBuilder<T, MapBasedServiceRegistry<T>>()
                 .withServiceDataSource(buildServiceDataSource())
                 .withServiceFinderFactory(buildFinderFactory())
                 .withRefreshFrequencyMs(getNodeRefreshTimeMs())
@@ -79,8 +79,8 @@ public class ShardedRangerHttpHubClient<T, C extends Criteria<T>>
     }
 
     @Override
-    protected ServiceFinderFactory<T, C, MapBasedServiceRegistry<T>> buildFinderFactory() {
-        return HttpShardedServiceFinderFactory.<T, C>builder()
+    protected ServiceFinderFactory<T, MapBasedServiceRegistry<T>> buildFinderFactory() {
+        return HttpShardedServiceFinderFactory.<T>builder()
                 .httpClientConfig(clientConfig)
                 .nodeRefreshIntervalMs(getNodeRefreshTimeMs())
                 .deserializer(getDeserializer())

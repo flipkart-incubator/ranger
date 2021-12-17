@@ -15,21 +15,21 @@
  */
 package com.flipkart.ranger.http.config;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  *
  */
-@Data
-@AllArgsConstructor
+@Value
 @Builder
-@ToString
-@NoArgsConstructor
+@Jacksonized
 public class HttpClientConfig {
-    private String host;
-    private int port;
-    private boolean secure;
-    private long connectionTimeoutMs;
-    private long operationTimeoutMs;
-    private long refreshIntervalMillis;
+    String host;
+    int port;
+    boolean secure;
+    long connectionTimeoutMs;
+    long operationTimeoutMs;
+    long refreshIntervalMillis;
 }

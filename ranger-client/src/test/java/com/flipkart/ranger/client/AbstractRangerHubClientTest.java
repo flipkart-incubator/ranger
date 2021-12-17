@@ -15,13 +15,14 @@
  */
 package com.flipkart.ranger.client;
 
-import com.flipkart.ranger.client.stubs.RangerTestHub;
-import com.flipkart.ranger.client.stubs.TestShardInfo;
 import com.flipkart.ranger.client.utils.RangerHubTestUtils;
-import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.units.TestNodeData;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
+import com.flipkart.ranger.core.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,28 +31,29 @@ import java.util.Optional;
 @Slf4j
 public class AbstractRangerHubClientTest {
 
-    private static final Service service = new Service("test-ns", "test-s");
+    private static final Service service = RangerTestUtils.getService("test-ns", "test-s");
 
     @Test
     public void testAbstractHubClient() {
-        RangerTestHub testAbstractHub = RangerHubTestUtils.getTestHub();
+        val testAbstractHub = RangerHubTestUtils.getTestHub();
         testAbstractHub.start();
+
         TestUtils.sleepForSeconds(3);
-        Optional<ServiceNode<TestShardInfo>> node = testAbstractHub.getNode(service);
+        Optional<ServiceNode<TestNodeData>> node = testAbstractHub.getNode(service);
         Assert.assertTrue(node.isPresent());
         Assert.assertTrue(node.get().getHost().equalsIgnoreCase("localhost"));
         Assert.assertEquals(9200, node.get().getPort());
         Assert.assertEquals(1, node.get().getNodeData().getShardId());
 
-        node = testAbstractHub.getNode(new Service("test", "test"));
+        node = testAbstractHub.getNode(RangerTestUtils.getService("test", "test"));
         Assert.assertFalse(node.isPresent());
 
         node = testAbstractHub.getNode(service, nodeData -> nodeData.getShardId() == 2);
         Assert.assertFalse(node.isPresent());
 
-        node = testAbstractHub.getNode(new Service("test", "test"), nodeData -> nodeData.getShardId() == 1);
+        node = testAbstractHub.getNode(RangerTestUtils.getService("test", "test"), nodeData -> nodeData.getShardId() == 1);
         Assert.assertFalse(node.isPresent());
 
-        testAbstractHub.start();
+        testAbstractHub.stop();
     }
 }

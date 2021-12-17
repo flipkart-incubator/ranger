@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ShardSelector;
@@ -31,12 +30,12 @@ import lombok.Getter;
 import lombok.val;
 
 @Getter
-public class  HttpShardedServiceFinderFactory <T, C extends Criteria<T>> implements ServiceFinderFactory<T, C, MapBasedServiceRegistry<T>> {
+public class  HttpShardedServiceFinderFactory <T> implements ServiceFinderFactory<T, MapBasedServiceRegistry<T>> {
 
     private final HttpClientConfig clientConfig;
     private final ObjectMapper mapper;
     private final HTTPResponseDataDeserializer<T> deserializer;
-    private final ShardSelector<T, C, MapBasedServiceRegistry<T>> shardSelector;
+    private final ShardSelector<T, MapBasedServiceRegistry<T>> shardSelector;
     private final ServiceNodeSelector<T> nodeSelector;
     private final int nodeRefreshIntervalMs;
 
@@ -45,7 +44,7 @@ public class  HttpShardedServiceFinderFactory <T, C extends Criteria<T>> impleme
             HttpClientConfig httpClientConfig,
             ObjectMapper mapper,
             HTTPResponseDataDeserializer<T> deserializer,
-            ShardSelector<T, C, MapBasedServiceRegistry<T>> shardSelector,
+            ShardSelector<T, MapBasedServiceRegistry<T>> shardSelector,
             ServiceNodeSelector<T> nodeSelector,
             int nodeRefreshIntervalMs)
     {
@@ -58,8 +57,8 @@ public class  HttpShardedServiceFinderFactory <T, C extends Criteria<T>> impleme
     }
 
     @Override
-    public ServiceFinder<T, C, MapBasedServiceRegistry<T>> buildFinder(Service service) {
-        val serviceFinder = new HttpShardedServiceFinderBuilder<T, C>()
+    public ServiceFinder<T, MapBasedServiceRegistry<T>> buildFinder(Service service) {
+        val serviceFinder = new HttpShardedServiceFinderBuilder<T>()
                 .withClientConfig(clientConfig)
                 .withObjectMapper(mapper)
                 .withDeserializer(deserializer)

@@ -19,14 +19,13 @@ package com.flipkart.ranger.zookeeper.healthservice;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.sample.RotationStatusMonitor;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.util.Exceptions;
+import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import lombok.val;
@@ -76,7 +75,7 @@ public class ServiceProviderIntegrationTest {
 
         registerService("localhost-4", 9000, 2, anotherFile);
 
-        serviceFinder = ServiceFinderBuilders.<UnshardedClusterInfo, Criteria<UnshardedClusterInfo>>unshardedFinderBuilder()
+        serviceFinder = ServiceFinderBuilders.<UnshardedClusterInfo>unshardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")

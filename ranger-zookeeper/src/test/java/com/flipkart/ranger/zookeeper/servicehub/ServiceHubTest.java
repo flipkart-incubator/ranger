@@ -15,23 +15,21 @@
  */
 package com.flipkart.ranger.zookeeper.servicehub;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.TestUtils;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.healthcheck.HealthcheckResult;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
-import com.flipkart.ranger.core.model.Criteria;
-import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
+import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.util.Exceptions;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
+import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceDataSource;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceFinderHubBuilder;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkShardedServiceFinderFactory;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
@@ -86,12 +84,12 @@ public class ServiceHubTest {
     @Test
     public void testHub() {
         ExternalTriggeredSignal<Void> refreshHubSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
-        val hub = new ZkServiceFinderHubBuilder<TestShardInfo, Criteria<TestShardInfo>, MapBasedServiceRegistry<TestShardInfo>>()
+        val hub = new ZkServiceFinderHubBuilder<TestNodeData, MapBasedServiceRegistry<TestNodeData>>()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withRefreshFrequencyMs(1000)
                 .withServiceDataSource(new ZkServiceDataSource("test", testingCluster.getConnectString(), curatorFramework))
-                .withServiceFinderFactory(ZkShardedServiceFinderFactory.<TestShardInfo, Criteria<TestShardInfo>>builder()
+                .withServiceFinderFactory(ZkShardedServiceFinderFactory.<TestNodeData>builder()
                                                   .curatorFramework(curatorFramework)
                                                   .deserializer(this::read)
                                                   .build())
@@ -99,18 +97,18 @@ public class ServiceHubTest {
                 .build();
         hub.start();
 
-        ExternalTriggeredSignal<HealthcheckResult> refreshProviderSignal = new ExternalTriggeredSignal<>(
+        val refreshProviderSignal = new ExternalTriggeredSignal<>(
                 () -> HealthcheckResult.builder()
                         .status(HealthcheckStatus.healthy)
                         .updatedTime(new Date().getTime())
                         .build(), Collections.emptyList());
-        val provider1 = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
+        val provider1 = ServiceProviderBuilders.<TestNodeData>shardedServiceProviderBuilder()
                 .withHostname("localhost")
                 .withPort(1080)
                 .withNamespace(NAMESPACE)
                 .withServiceName("s1")
                 .withSerializer(this::write)
-                .withNodeData(new TestShardInfo("prod"))
+                .withNodeData(TestNodeData.builder().shardId(1).build())
                 .withHealthcheck(() -> HealthcheckStatus.healthy)
                 .withAdditionalRefreshSignal(refreshProviderSignal)
                 .withCuratorFramework(curatorFramework)
@@ -121,26 +119,17 @@ public class ServiceHubTest {
         refreshHubSignal.trigger();
 
         TestUtils.sleepForSeconds(3);
-        val node = hub.finder(new Service(NAMESPACE, "s1"))
-                .map(finder -> finder.get(nodeData -> nodeData.getEnvironment().equalsIgnoreCase("prod")))
+        val node = hub.finder(RangerTestUtils.getService(NAMESPACE, "s1"))
+                .map(finder -> finder.get(nodeData -> nodeData.getShardId() == 1))
                 .orElse(null);
         Assert.assertNotNull(node);
         hub.stop();
         provider1.stop();
     }
 
-    @Data
-    private static final class TestShardInfo {
-        private final String environment;
-
-        private TestShardInfo(@JsonProperty("environment") String environment) {
-            this.environment = environment;
-        }
-    }
-
-    private ServiceNode<TestShardInfo> read(final byte[] data) {
+    private ServiceNode<TestNodeData> read(final byte[] data) {
         try {
-            return objectMapper.readValue(data, new TypeReference<ServiceNode<TestShardInfo>>() {});
+            return objectMapper.readValue(data, new TypeReference<ServiceNode<TestNodeData>>() {});
         }
         catch (IOException e) {
             Exceptions.illegalState(e);
@@ -148,7 +137,7 @@ public class ServiceHubTest {
         return null;
     }
 
-    private byte[] write(final ServiceNode<TestShardInfo> node) {
+    private byte[] write(final ServiceNode<TestNodeData> node) {
         try {
             return objectMapper.writeValueAsBytes(node);
         }

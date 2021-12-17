@@ -20,25 +20,31 @@ import com.flipkart.ranger.client.AbstractRangerHubClient;
 import com.flipkart.ranger.client.utils.RangerHubTestUtils;
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finderhub.*;
-import com.flipkart.ranger.core.model.Criteria;
+import com.flipkart.ranger.core.units.TestNodeData;
 import com.google.common.collect.Lists;
+import lombok.Builder;
 
-public class RangerTestHub extends AbstractRangerHubClient<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>, TestDeserializer<TestShardInfo>> {
+import java.util.function.Predicate;
 
-    public RangerTestHub(String namespace, ObjectMapper mapper, int nodeRefreshTimeMs, Criteria<TestShardInfo> criteria, TestDeserializer<TestShardInfo> deserilizer) {
+public class RangerTestHub extends AbstractRangerHubClient<TestNodeData,
+        ListBasedServiceRegistry<TestNodeData>, TestDeserializer<TestNodeData>> {
+
+    @Builder
+    public RangerTestHub(String namespace, ObjectMapper mapper, int nodeRefreshTimeMs,
+                         Predicate<TestNodeData> criteria, TestDeserializer<TestNodeData> deserilizer) {
         super(namespace, mapper, nodeRefreshTimeMs, criteria, deserilizer);
     }
 
     @Override
-    protected ServiceFinderHub<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>> buildHub() {
-        return new ServiceFinderHubBuilder<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>>() {
+    protected ServiceFinderHub<TestNodeData, ListBasedServiceRegistry<TestNodeData>> buildHub() {
+        return new ServiceFinderHubBuilder<TestNodeData, ListBasedServiceRegistry<TestNodeData>>() {
             @Override
             protected void preBuild() {
 
             }
 
             @Override
-            protected void postBuild(ServiceFinderHub<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>> serviceFinderHub) {
+            protected void postBuild(ServiceFinderHub<TestNodeData, ListBasedServiceRegistry<TestNodeData>> serviceFinderHub) {
 
             }
         }.withServiceDataSource(buildServiceDataSource())
@@ -52,7 +58,7 @@ public class RangerTestHub extends AbstractRangerHubClient<TestShardInfo, Criter
     }
 
     @Override
-    protected ServiceFinderFactory<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>> buildFinderFactory() {
+    protected ServiceFinderFactory<TestNodeData, ListBasedServiceRegistry<TestNodeData>> buildFinderFactory() {
         return new TestServiceFinderFactory();
     }
 }

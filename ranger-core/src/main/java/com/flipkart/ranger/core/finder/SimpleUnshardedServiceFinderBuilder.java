@@ -17,21 +17,23 @@ package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
-import com.flipkart.ranger.core.model.*;
+import com.flipkart.ranger.core.model.Deserializer;
+import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.core.model.ServiceNodeSelector;
+import com.flipkart.ranger.core.model.ShardSelector;
 
-public abstract class SimpleUnshardedServiceFinderBuilder<T, B extends SimpleUnshardedServiceFinderBuilder<T, B, D, C>, D extends Deserializer<T>, C extends Criteria<T>>
-        extends BaseServiceFinderBuilder<T, ListBasedServiceRegistry<T>, SimpleUnshardedServiceFinder<T, C>, B, D, C> {
+public abstract class SimpleUnshardedServiceFinderBuilder<T, B extends SimpleUnshardedServiceFinderBuilder<T, B, D>, D extends Deserializer<T>>
+        extends BaseServiceFinderBuilder<T, ListBasedServiceRegistry<T>, SimpleUnshardedServiceFinder<T>, B, D> {
 
     @Override
-    protected SimpleUnshardedServiceFinder<T, C> buildFinder(
+    protected SimpleUnshardedServiceFinder<T> buildFinder(
             Service service,
-            ShardSelector<T, C, ListBasedServiceRegistry<T>> shardSelector,
+            ShardSelector<T, ListBasedServiceRegistry<T>> shardSelector,
             ServiceNodeSelector<T> nodeSelector
     ) {
         if (null == shardSelector) {
             shardSelector = new ListShardSelector<>();
         }
-        final ListBasedServiceRegistry<T> serviceRegistry = new ListBasedServiceRegistry<>(service);
-        return new SimpleUnshardedServiceFinder<>(serviceRegistry, shardSelector, nodeSelector);
+        return new SimpleUnshardedServiceFinder<>(new ListBasedServiceRegistry<>(service), shardSelector, nodeSelector);
     }
 }

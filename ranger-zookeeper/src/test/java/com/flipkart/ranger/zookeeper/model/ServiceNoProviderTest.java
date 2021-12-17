@@ -19,8 +19,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.units.TestNodeData;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import lombok.val;
 import org.apache.curator.test.TestingCluster;
@@ -41,9 +42,6 @@ public class ServiceNoProviderTest {
         objectMapper = new ObjectMapper();
         testingCluster = new TestingCluster(3);
         testingCluster.start();
-        //registerService("localhost-1", 9000, 1);
-        //registerService("localhost-2", 9000, 1);
-        //registerService("localhost-3", 9000, 2);
     }
 
     @After
@@ -53,63 +51,16 @@ public class ServiceNoProviderTest {
         }
     }
 
-    private static final class TestShardInfo {
-        private int shardId;
-
-        public TestShardInfo(int shardId) {
-            this.shardId = shardId;
-        }
-
-        public TestShardInfo() {
-        }
-
-        public int getShardId() {
-            return shardId;
-        }
-
-        public void setShardId(int shardId) {
-            this.shardId = shardId;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            TestShardInfo that = (TestShardInfo) o;
-
-            if (shardId != that.shardId) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return shardId;
-        }
-
-        private static Criteria<TestShardInfo> getCriteria(int shardId){
-            return nodeData -> shardId == nodeData.getShardId();
-        }
-    }
-
-
     @Test
-    public void testBasicDiscovery() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> serviceFinder = ServiceFinderBuilders.<TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
+    public void testBasicDiscovery() {
+        SimpleShardedServiceFinder<TestNodeData> serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
                 .withDeserializer(data -> {
                     try {
                         return objectMapper.readValue(data,
-                                                      new TypeReference<ServiceNode<TestShardInfo>>() {
+                                                      new TypeReference<ServiceNode<TestNodeData>>() {
                                                       });
                     }
                     catch (IOException e) {
@@ -119,7 +70,7 @@ public class ServiceNoProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
+        ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(1));
         Assert.assertNull(node);
         serviceFinder.stop();
 
@@ -127,7 +78,7 @@ public class ServiceNoProviderTest {
 
     @Test
     public void testBasicDiscoveryRR() {
-        val serviceFinder = ServiceFinderBuilders.<TestShardInfo, Criteria<TestShardInfo>>shardedFinderBuilder()
+        val serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -135,7 +86,7 @@ public class ServiceNoProviderTest {
                 .withDeserializer(data -> {
                     try {
                         return objectMapper.readValue(data,
-                                                      new TypeReference<ServiceNode<TestShardInfo>>() {
+                                                      new TypeReference<ServiceNode<TestNodeData>>() {
                                                       });
                     }
                     catch (IOException e) {
@@ -145,7 +96,7 @@ public class ServiceNoProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(TestShardInfo.getCriteria(1));
+        ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(1));
         Assert.assertNull(node);
         serviceFinder.stop();
     }

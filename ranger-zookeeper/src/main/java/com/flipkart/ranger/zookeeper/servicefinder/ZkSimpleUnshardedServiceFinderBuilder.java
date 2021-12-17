@@ -17,7 +17,6 @@ package com.flipkart.ranger.zookeeper.servicefinder;
 
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinderBuilder;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.signals.Signal;
@@ -36,23 +35,23 @@ import java.util.List;
  *
  */
 @Slf4j
-public class ZkSimpleUnshardedServiceFinderBuilder<T, C extends Criteria<T>>
-        extends SimpleUnshardedServiceFinderBuilder<T, ZkSimpleUnshardedServiceFinderBuilder<T, C>, ZkNodeDataDeserializer<T>, C> {
+public class ZkSimpleUnshardedServiceFinderBuilder<T>
+        extends SimpleUnshardedServiceFinderBuilder<T, ZkSimpleUnshardedServiceFinderBuilder<T>, ZkNodeDataDeserializer<T>> {
     private CuratorFramework curatorFramework;
     private String connectionString;
 
-    public ZkSimpleUnshardedServiceFinderBuilder<T, C> withCuratorFramework(CuratorFramework curatorFramework) {
+    public ZkSimpleUnshardedServiceFinderBuilder<T> withCuratorFramework(CuratorFramework curatorFramework) {
         this.curatorFramework = curatorFramework;
         return this;
     }
 
-    public ZkSimpleUnshardedServiceFinderBuilder<T, C> withConnectionString(final String connectionString) {
+    public ZkSimpleUnshardedServiceFinderBuilder<T> withConnectionString(final String connectionString) {
         this.connectionString = connectionString;
         return this;
     }
 
     @Override
-    public SimpleUnshardedServiceFinder<T, C> build() {
+    public SimpleUnshardedServiceFinder<T> build() {
         boolean curatorProvided = curatorFramework != null;
         if (!curatorProvided) {
             Preconditions.checkNotNull(connectionString);

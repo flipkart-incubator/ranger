@@ -51,8 +51,9 @@ public class ZkServiceDataSource implements ServiceDataSource {
         final List<String> children = curatorFramework.getChildren()
                 .forPath("/");
         return children.stream()
-                .map(child -> new Service(namespace, child))
+                .map(child -> Service.builder().namespace(namespace).serviceName(child).build())
                 .collect(Collectors.toSet());
+
     }
 
     @Override

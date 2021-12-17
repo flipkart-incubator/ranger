@@ -20,7 +20,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
-import java.util.List;
 
 /*
 A static data source to be used when we know the services beforehand and don't have to fetch from a source.
@@ -30,7 +29,7 @@ A static data source to be used when we know the services beforehand and don't h
 @AllArgsConstructor
 public class StaticDataSource implements ServiceDataSource{
 
-    private final List<Service> services;
+    private final Collection<Service> services;
 
     @Override
     public Collection<Service> services() throws Exception {

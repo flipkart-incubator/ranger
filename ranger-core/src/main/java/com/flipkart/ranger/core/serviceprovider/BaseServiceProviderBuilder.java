@@ -34,6 +34,7 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.util.Collections;
 import java.util.List;
@@ -174,16 +175,14 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
             staleUpdateThresholdMs = 5000;
         }
 
-        final ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
-        for (IsolatedHealthMonitor isolatedMonitor : isolatedMonitors) {
-            serviceHealthAggregator.addIsolatedMonitor(isolatedMonitor);
-        }
+        val serviceHealthAggregator = new ServiceHealthAggregator();
+        isolatedMonitors.forEach(serviceHealthAggregator::addIsolatedMonitor);
 
         healthchecks.add(serviceHealthAggregator);
-        final Service service = new Service(namespace, serviceName);
-        final NodeDataSink<T,S> usableNodeDataSource = dataSink(service);
+        val service = Service.builder().namespace(namespace).serviceName(serviceName).build();
+        val usableNodeDataSource = dataSink(service);
 
-        final ScheduledSignal<HealthcheckResult> healthcheckUpdateSignalGenerator
+        val healthcheckUpdateSignalGenerator
                 = new ScheduledSignal<>(
                 service,
                 new HealthChecker(healthchecks, staleUpdateThresholdMs),
@@ -191,19 +190,19 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
                 healthUpdateIntervalMs
         );
 
-        final List<HealthService> healthServices = Collections.singletonList(serviceHealthAggregator);
+        val healthServices = Collections.singletonList(serviceHealthAggregator);
 
-        final List<Signal<HealthcheckResult>> signalGenerators
+        val signalGenerators
                 = ImmutableList.<Signal<HealthcheckResult>>builder()
                 .add(healthcheckUpdateSignalGenerator)
                 .addAll(additionalRefreshSignals)
                 .build();
-        final ServiceProvider<T, S> serviceProvider = new ServiceProvider<>(service,
+        val serviceProvider = new ServiceProvider<>(service,
                                                                          new ServiceNode<>(hostname, port, nodeData),
                                                                          serializer,
                                                                          usableNodeDataSource,
                                                                          signalGenerators);
-        final Signal<Void> startSignal = serviceProvider.getStartSignal();
+        val startSignal = serviceProvider.getStartSignal();
 
         startSignal
                 .registerConsumers(startSignalHandlers)
@@ -211,7 +210,7 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
                 .registerConsumer(x -> healthServices.forEach(HealthService::start))
                 .registerConsumer(x -> signalGenerators.forEach(Signal::start));
 
-        final Signal<Void> stopSignal = serviceProvider.getStopSignal();
+        val stopSignal = serviceProvider.getStopSignal();
         stopSignal
                 .registerConsumer(x -> healthServices.forEach(HealthService::stop))
                 .registerConsumer(x -> signalGenerators.forEach(Signal::stop))

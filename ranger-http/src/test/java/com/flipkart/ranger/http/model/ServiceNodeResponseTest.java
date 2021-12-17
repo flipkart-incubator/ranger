@@ -17,19 +17,21 @@ package com.flipkart.ranger.http.model;
 
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.ResourceHelper;
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
+import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ServiceNodeResponseTest {
 
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    @Setter
+    @Value
+    @Builder
+    @Jacksonized
     static class TestNodeInfo{
-        private int shardId;
-        private String region;
+        int shardId;
+        String region;
     }
 
     @Test

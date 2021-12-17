@@ -16,21 +16,21 @@
 package com.flipkart.ranger.client.stubs;
 
 import com.flipkart.ranger.core.finder.ServiceFinder;
-import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Deserializer;
 import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.core.units.TestNodeData;
+import lombok.val;
 
-public class TestServiceFinderFactory  implements ServiceFinderFactory<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>> {
+public class TestServiceFinderFactory  implements ServiceFinderFactory<TestNodeData, ListBasedServiceRegistry<TestNodeData>> {
 
     @Override
-    public ServiceFinder<TestShardInfo, Criteria<TestShardInfo>, ListBasedServiceRegistry<TestShardInfo>> buildFinder(Service service) {
-        SimpleUnshardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>> finder = new TestSimpleUnshardedServiceFinder<TestShardInfo, Criteria<TestShardInfo>>()
+    public ServiceFinder<TestNodeData, ListBasedServiceRegistry<TestNodeData>> buildFinder(Service service) {
+        val finder = new TestSimpleUnshardedServiceFinder<TestNodeData>()
                 .withNamespace(service.getNamespace())
                 .withServiceName(service.getServiceName())
-                .withDeserializer(new Deserializer<TestShardInfo>() {
+                .withDeserializer(new Deserializer<TestNodeData>() {
                     @Override
                     public int hashCode() {
                         return super.hashCode();

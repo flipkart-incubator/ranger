@@ -20,15 +20,22 @@ import com.flipkart.ranger.client.stubs.RangerTestHub;
 import com.flipkart.ranger.client.stubs.TestCriteria;
 import com.flipkart.ranger.client.stubs.TestDeserializer;
 import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class RangerHubTestUtils {
 
-    public static final Service service = new Service("test-ns", "test-s");
+    public static final Service service = RangerTestUtils.getService("test-ns", "test-s");
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private RangerHubTestUtils(){}
-
     public static RangerTestHub getTestHub(){
-        return new RangerTestHub(service.getNamespace(), mapper, 1000, new TestCriteria(), new TestDeserializer<>());
+        return RangerTestHub.builder()
+                .namespace(service.getNamespace())
+                .mapper(mapper)
+                .nodeRefreshTimeMs(1000)
+                .criteria(new TestCriteria())
+                .deserilizer(new TestDeserializer<>())
+                .build();
     }
 }

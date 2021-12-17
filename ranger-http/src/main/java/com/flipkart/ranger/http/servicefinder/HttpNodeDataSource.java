@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.core.util.FinderUtils;
 import com.flipkart.ranger.http.common.HttpNodeDataStoreConnector;
 import com.flipkart.ranger.http.config.HttpClientConfig;
@@ -34,7 +33,6 @@ import okhttp3.ResponseBody;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  *
@@ -53,7 +51,7 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
     }
 
     @Override
-    public Optional<List<ServiceNode<T>>> refresh(D deserializer) {
+    public List<ServiceNode<T>> refresh(D deserializer) {
         Preconditions.checkNotNull(config, "client config has not been set for node data");
         Preconditions.checkNotNull(mapper, "mapper has not been set for node data");
         val httpUrl = new HttpUrl.Builder()
@@ -96,7 +94,7 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
         } catch (IOException e) {
             log.error("Error getting service data from the http endPoint: ", e);
         }
-        return Optional.of(serviceNodes);
+        return serviceNodes;
     }
 
     @Override

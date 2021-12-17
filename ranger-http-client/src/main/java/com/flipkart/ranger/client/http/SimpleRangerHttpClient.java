@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.RangerClient;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
 import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.HttpServiceFinderBuilders;
 import com.flipkart.ranger.http.config.HttpClientConfig;
@@ -30,12 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Slf4j
-public class SimpleRangerHttpClient<T, C extends Criteria<T>> implements RangerClient<T, C> {
+public class SimpleRangerHttpClient<T> implements RangerClient<T> {
 
-    private final C criteria;
-    private final SimpleUnshardedServiceFinder<T, C> serviceFinder;
+    private final Predicate<T> criteria;
+    private final SimpleUnshardedServiceFinder<T> serviceFinder;
 
     @Builder
     public SimpleRangerHttpClient(
@@ -44,7 +44,7 @@ public class SimpleRangerHttpClient<T, C extends Criteria<T>> implements RangerC
             ObjectMapper mapper,
             int nodeRefreshIntervalMs,
             HttpClientConfig clientConfig,
-            C criteria,
+            Predicate<T> criteria,
             HTTPResponseDataDeserializer<T> deserializer
     ) {
         Preconditions.checkNotNull(mapper, "Mapper can't be null");
@@ -53,7 +53,7 @@ public class SimpleRangerHttpClient<T, C extends Criteria<T>> implements RangerC
 
         this.criteria = criteria;
 
-        this.serviceFinder = HttpServiceFinderBuilders.<T, C>httpUnshardedServiceFinderBuilider()
+        this.serviceFinder = HttpServiceFinderBuilders.<T>httpUnshardedServiceFinderBuilider()
                 .withClientConfig(clientConfig)
                 .withServiceName(serviceName)
                 .withNamespace(namespace)
@@ -82,18 +82,18 @@ public class SimpleRangerHttpClient<T, C extends Criteria<T>> implements RangerC
     }
 
     @Override
-    public Optional<List<ServiceNode<T>>> getAllNodes() {
+    public List<ServiceNode<T>> getAllNodes() {
         return getAllNodes(criteria);
     }
 
     @Override
-    public Optional<ServiceNode<T>> getNode(C criteria) {
+    public Optional<ServiceNode<T>> getNode(Predicate<T> criteria) {
         return Optional.ofNullable(this.serviceFinder.get(criteria));
     }
 
     @Override
-    public Optional<List<ServiceNode<T>>> getAllNodes(C criteria) {
-        return Optional.ofNullable(this.serviceFinder.getAll(criteria));
+    public List<ServiceNode<T>> getAllNodes(Predicate<T> criteria) {
+        return this.serviceFinder.getAll(criteria);
     }
 }
 

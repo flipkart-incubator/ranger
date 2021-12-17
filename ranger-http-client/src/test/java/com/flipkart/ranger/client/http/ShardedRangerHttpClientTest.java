@@ -15,11 +15,10 @@
  */
 package com.flipkart.ranger.client.http;
 
-import com.flipkart.ranger.core.TestUtils;
-import com.flipkart.ranger.core.model.Criteria;
-import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
+import com.flipkart.ranger.core.utils.TestUtils;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,7 +29,7 @@ public class ShardedRangerHttpClientTest extends BaseRangerHttpClientTest {
 
     @Test
     public void testShardedHttpHubClient(){
-        val client = ShardedRangerHttpHubClient.<TestNodeData, Criteria<TestNodeData>>builder()
+        val client = ShardedRangerHttpHubClient.<TestNodeData>builder()
                 .clientConfig(getHttpClientConfig())
                 .namespace("test-n")
                 .deserializer(this::read)
@@ -41,14 +40,14 @@ public class ShardedRangerHttpClientTest extends BaseRangerHttpClientTest {
 
         TestUtils.sleepForSeconds(6);
 
-        val service = new Service("test-n", "test-s");
+        val service = RangerTestUtils.getService("test-n", "test-s");
         Optional<ServiceNode<TestNodeData>> node = client.getNode(service);
         Assert.assertTrue(node.isPresent());
 
-        node = client.getNode(service, nodeData -> nodeData.getNodeId() == 1);
+        node = client.getNode(service, nodeData -> nodeData.getShardId() == 1);
         Assert.assertTrue(node.isPresent());
 
-        node = client.getNode(service, nodeData -> nodeData.getNodeId() == 2);
+        node = client.getNode(service, nodeData -> nodeData.getShardId() == 2);
         Assert.assertFalse(node.isPresent());
 
         client.stop();

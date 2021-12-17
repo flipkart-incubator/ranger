@@ -17,18 +17,19 @@ package com.flipkart.ranger.http.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.flipkart.ranger.core.model.Service;
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+
+@Value
+@Jacksonized
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceDataSourceResponse {
-    private boolean success;
-    private String error;
-    private List<Service> data;
+    boolean success;
+    String error;
+    List<Service> data;
 }

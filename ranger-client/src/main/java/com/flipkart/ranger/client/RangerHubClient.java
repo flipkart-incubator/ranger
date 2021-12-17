@@ -15,15 +15,15 @@
  */
 package com.flipkart.ranger.client;
 
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
-public interface RangerHubClient<T, C extends Criteria<T>> {
+public interface RangerHubClient<T> {
     void start();
 
     void stop();
@@ -32,9 +32,9 @@ public interface RangerHubClient<T, C extends Criteria<T>> {
 
     Optional<ServiceNode<T>> getNode(final Service service);
 
-    Optional<ServiceNode<T>> getNode(final Service service, final C criteria);
+    Optional<ServiceNode<T>> getNode(final Service service, final Predicate<T> criteria);
 
-    Optional<List<ServiceNode<T>>> getAllNodes(final Service service);
+    List<ServiceNode<T>> getAllNodes(final Service service);
 
-    Optional<List<ServiceNode<T>>> getAllNodes(final Service service, final C criteria);
+    List<ServiceNode<T>> getAllNodes(final Service service, final Predicate<T> criteria);
 }

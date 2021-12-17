@@ -17,7 +17,7 @@ package com.flipkart.ranger.http;
 
 import com.flipkart.ranger.http.serviceprovider.HttpShardedServiceProviderBuilder;
 
-public class HttpServiceProviderBuilders {
+public final class HttpServiceProviderBuilders {
 
     private HttpServiceProviderBuilders() {
         throw new InstantiationError("Must not instantiate this class");

@@ -15,11 +15,13 @@
  */
 package com.flipkart.ranger.core.util;
 
+import lombok.experimental.UtilityClass;
+
 /**
  *
  */
+@UtilityClass
 public class Exceptions {
-    private Exceptions() {}
 
     public static void illegalState(String message, Throwable t) {
         throw new IllegalStateException(message, t);

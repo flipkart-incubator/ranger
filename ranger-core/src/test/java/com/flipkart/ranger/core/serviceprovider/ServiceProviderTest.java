@@ -23,6 +23,7 @@ import com.flipkart.ranger.core.model.Serializer;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
+import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -118,19 +119,19 @@ public class ServiceProviderTest {
 
     @Test
     public void testBuildServiceProvider(){
-        ServiceProvider<TestNodeData, TestSerializer<TestNodeData>> testProvider = new TestServiceProviderBuilder<TestNodeData>()
+        val testProvider = new TestServiceProviderBuilder<TestNodeData>()
                 .withServiceName("test-service")
                 .withNamespace("test")
                 .withHostname("localhost-1")
                 .withPort(9000)
                 .withSerializer(new TestSerializerImpl())
-                .withNodeData(TestNodeData.builder().nodeId(1).build())
+                .withNodeData(TestNodeData.builder().shardId(1).build())
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
                 .withHealthUpdateIntervalMs(1000)
                 .build();
         testProvider.start();
         Assert.assertNotNull(testNodeData);
-        Assert.assertEquals(1, testNodeData.getNodeId());
+        Assert.assertEquals(1, testNodeData.getShardId());
     }
 
 }

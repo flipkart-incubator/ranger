@@ -15,7 +15,6 @@
  */
 package com.flipkart.ranger.client.zk;
 
-import com.flipkart.ranger.core.model.Criteria;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import lombok.val;
@@ -28,7 +27,7 @@ public class SimpleRangerZKClientTest extends BaseRangerZKClientTest {
 
     @Test
     public void testBaseClient(){
-        val client  = SimpleRangerZKClient.<TestNodeData, Criteria<TestNodeData>>fromCurator()
+        val client  = SimpleRangerZKClient.<TestNodeData>fromCurator()
                 .curatorFramework(getCuratorFramework())
                 .deserializer(this::read)
                 .namespace("test-n")
@@ -41,10 +40,10 @@ public class SimpleRangerZKClientTest extends BaseRangerZKClientTest {
         Optional<ServiceNode<TestNodeData>> node = client.getNode();
         Assert.assertTrue(node.isPresent());
 
-        node = client.getNode(c -> c.getNodeId() == 1);
+        node = client.getNode(c -> c.getShardId() == 1);
         Assert.assertTrue(node.isPresent());
 
-        node = client.getNode(c -> c.getNodeId() == 2);
+        node = client.getNode(c -> c.getShardId() == 2);
         Assert.assertFalse(node.isPresent());
     }
 }
