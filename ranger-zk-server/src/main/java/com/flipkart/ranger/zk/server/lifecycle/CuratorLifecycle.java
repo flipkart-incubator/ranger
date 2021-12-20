@@ -39,6 +39,7 @@ public class CuratorLifecycle implements LifecycleSignal {
         }
         catch (InterruptedException e) {
             log.error("Curator block interrupted", e);
+            Thread.currentThread().interrupt();
         }
         log.info("Started the curator");
     }
