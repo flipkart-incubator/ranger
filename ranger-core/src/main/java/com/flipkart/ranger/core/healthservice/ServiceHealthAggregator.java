@@ -22,6 +22,7 @@ import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.Monitor;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.util.Date;
 import java.util.List;
@@ -147,7 +148,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
         Date currentTime = new Date();
 
         /* check health status of isolated monitors */
-        final boolean hasUnhealthyMonitor = isolatedHealthMonitorList.stream()
+        val hasUnhealthyMonitor = isolatedHealthMonitorList.stream()
                 .filter(isolatedHealthMonitor -> !isolatedHealthMonitor.isDisabled())
                 .anyMatch(isolatedHealthMonitor -> isIsolatedMonitorHealthy(isolatedHealthMonitor, currentTime));
         if (hasUnhealthyMonitor) {
@@ -167,7 +168,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
         if (HealthcheckStatus.unhealthy == isolatedHealthMonitor.getHealthStatus()) {
             return true;
         }
-        final boolean hasValidUpdateTime
+        val hasValidUpdateTime
                 = null != isolatedHealthMonitor.getLastStatusUpdateTime()
                 && hasValidUpdatedTime(isolatedHealthMonitor, currentTime);
             /* check if the monitor and its last updated time is stale, if so, mark status as unhealthy */
@@ -180,21 +181,13 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
     }
 
     private boolean hasValidUpdatedTime(IsolatedHealthMonitor isolatedHealthMonitor, Date currentTime) {
-        final long timeDifferenceMillis = currentTime.getTime() - isolatedHealthMonitor.getLastStatusUpdateTime()
+        val timeDifferenceMillis = currentTime.getTime() - isolatedHealthMonitor.getLastStatusUpdateTime()
                 .getTime();
         return timeDifferenceMillis <= isolatedHealthMonitor.getStalenessAllowedInMillis();
     }
 
     private void processMonitors() {
-    /* check status of all inline monitors in the same thread */
-        for (Monitor<HealthcheckStatus> healthMonitor : inlineHealthMonitorList) {
-            if (healthMonitor.isDisabled()) {
-                continue;
-            }
-            final HealthcheckStatus monitorStatus = healthMonitor.monitor();
-            if (HealthcheckStatus.unhealthy == monitorStatus) {
-                healthcheckStatus.set(HealthcheckStatus.unhealthy);
-            }
-        }
+        /* check status of all inline monitors in the same thread */
+        inlineHealthMonitorList.stream().filter(healthMonitor -> !healthMonitor.isDisabled()).map(Monitor::monitor).filter(monitorStatus -> HealthcheckStatus.unhealthy == monitorStatus).forEach(monitorStatus -> healthcheckStatus.set(HealthcheckStatus.unhealthy));
     }
 }
