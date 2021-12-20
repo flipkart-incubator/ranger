@@ -151,7 +151,7 @@ public class CustomShardSelectorTest {
         serviceFinder.start();
         {
             val node = serviceFinder.get(TestShardInfo.getCriteria(1, 10)).orElse(null);
-            Assert.assertNotNull(node);
+            Assert.assertNull(node);
         }
         {
             val node = serviceFinder.get(TestShardInfo.getCriteria(1, 2)).orElse(null);
