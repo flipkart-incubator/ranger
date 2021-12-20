@@ -41,13 +41,13 @@ public class SimpleRangerHttpClientTest extends BaseRangerHttpClientTest{
         TestUtils.sleepForSeconds(6);
 
         Optional<ServiceNode<TestNodeData>> node = client.getNode();
-        Assert.assertTrue(node.isPresent());
+        Assert.assertTrue(null != node && node.isPresent());
 
         node = client.getNode(nodeData -> nodeData.getShardId() == 1);
-        Assert.assertTrue(node.isPresent());
+        Assert.assertTrue(null != node && node.isPresent());
 
         node = client.getNode(nodeData -> nodeData.getShardId() == 2);
-        Assert.assertFalse(node.isPresent());
+        Assert.assertTrue(null != node && node.isPresent());
 
         client.stop();
     }

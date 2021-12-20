@@ -42,13 +42,13 @@ public class UnshardedRangerHttpClientTest extends BaseRangerHttpClientTest {
 
         val service = RangerTestUtils.getService("test-n", "test-s");
         Optional<ServiceNode<TestNodeData>> node = client.getNode(service);
-        Assert.assertTrue(node.isPresent());
+        Assert.assertTrue(null != node && node.isPresent());
 
         node = client.getNode(service, nodeData -> nodeData.getShardId() == 1);
-        Assert.assertTrue(node.isPresent());
+        Assert.assertTrue(null != node && node.isPresent());
 
         node = client.getNode(service, nodeData -> nodeData.getShardId() == 2);
-        Assert.assertFalse(node.isPresent());
+        Assert.assertTrue(null != node && node.isPresent());
 
         client.stop();
     }
