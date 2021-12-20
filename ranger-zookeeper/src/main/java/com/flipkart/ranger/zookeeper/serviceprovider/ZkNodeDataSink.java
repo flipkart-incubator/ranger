@@ -24,6 +24,7 @@ import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.flipkart.ranger.zookeeper.util.PathBuilder;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -66,7 +67,7 @@ public class ZkNodeDataSink<T, S extends ZkNodeDataSerializer<T>> extends ZkNode
     private synchronized void createPath(
             ServiceNode<T> serviceNode,
             S serializer) {
-        final String instancePath = PathBuilder.instancePath(service, serviceNode);
+        val instancePath = PathBuilder.instancePath(service, serviceNode);
         try {
             if (null == curatorFramework.checkExists().forPath(instancePath)) {
                 curatorFramework.create()
@@ -80,7 +81,7 @@ public class ZkNodeDataSink<T, S extends ZkNodeDataSerializer<T>> extends ZkNode
             log.warn("Node already exists.. Race condition?", e);
         }
         catch (Exception e) {
-            final String message = String.format(
+            val message = String.format(
                     "Could not create node for %s after 60 retries (1 min). " +
                             "This service will not be discoverable. Retry after some time.", service.getServiceName());
             log.error(message, e);

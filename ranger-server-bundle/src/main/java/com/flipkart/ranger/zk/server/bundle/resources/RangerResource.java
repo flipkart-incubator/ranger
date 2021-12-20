@@ -28,6 +28,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,8 +54,8 @@ public class RangerResource<T> {
     public GenericResponse<Set<Service>> getServices() {
         return GenericResponse.<Set<Service>>builder()
                 .code(SUCCESS)
-                .data(rangerHubs.stream().map(RangerHubClient::getServices)
-                        .flatMap(Set::stream).collect(Collectors.toSet()))
+                .data(rangerHubs.stream().map(RangerHubClient::getRegisteredServices)
+                        .flatMap(Collection::stream).collect(Collectors.toSet()))
                 .build();
     }
 

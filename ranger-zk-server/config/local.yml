@@ -6,7 +6,6 @@ rangerConfiguration:
   zookeeper: localhost:2181
   disablePushUpdaters: true
 
-
 server:
   maxThreads: 128
   minThreads: 128

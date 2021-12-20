@@ -25,6 +25,7 @@ import com.flipkart.ranger.zookeeper.util.PathBuilder;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.KeeperException;
 
@@ -76,10 +77,10 @@ public class ZkNodeDataSource<T, D extends ZkNodeDataDeserializer<T>> extends Zk
             log.debug("Found {} nodes for [{}]", children.size(), serviceName);
             for (String child : children) {
                 byte[] data = readChild(parentPath, child).orElse(null);
-                if (data == null) {
+                if (data == null || data.length <= 0) {
                     continue;
                 }
-                final ServiceNode<T> node = deserializer.deserialize(data);
+                val node = deserializer.deserialize(data);
                 if(FinderUtils.isValidNode(service, healthcheckZombieCheckThresholdTime, node)) {
                     nodes.add(node);
                 }

@@ -28,10 +28,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -107,7 +104,7 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
         return optionalFinder.map(trServiceFinder -> trServiceFinder.getAll(criteria)).orElse(Collections.emptyList());
     }
 
-    public Set<Service> getServices() {
+    public Collection<Service> getRegisteredServices() {
         try{
             return this.getHub().getServiceDataSource().services();
         }catch (Exception e){
