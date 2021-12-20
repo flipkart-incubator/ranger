@@ -88,7 +88,7 @@ public class SimpleRangerHttpClient<T> implements RangerClient<T> {
 
     @Override
     public Optional<ServiceNode<T>> getNode(Predicate<T> criteria) {
-        return Optional.ofNullable(this.serviceFinder.get(criteria));
+        return this.serviceFinder.get(criteria);
     }
 
     @Override

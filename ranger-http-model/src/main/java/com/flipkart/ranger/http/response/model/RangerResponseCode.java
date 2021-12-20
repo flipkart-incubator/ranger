@@ -13,25 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flipkart.ranger.core.model;
+package com.flipkart.ranger.http.response.model;
 
-import lombok.*;
+public enum RangerResponseCode {
 
+    SUCCESS;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
-@Builder
-public class Service {
-    String namespace;
-    String serviceName;
-
-    public String name() {
-        return String.format("%s/%s", namespace, serviceName);
-    }
-
-    @Override
-    public String toString() {
-        return name();
-    }
 }

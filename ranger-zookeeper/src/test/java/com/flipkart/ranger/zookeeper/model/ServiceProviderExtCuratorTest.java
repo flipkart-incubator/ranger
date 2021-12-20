@@ -76,7 +76,7 @@ public class ServiceProviderExtCuratorTest {
 
     @Test
     public void testBasicDiscovery() {
-        SimpleShardedServiceFinder<TestNodeData> serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
+        val serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withCuratorFramework(curatorFramework)
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -93,29 +93,28 @@ public class ServiceProviderExtCuratorTest {
                 .build();
         serviceFinder.start();
         {
-            ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
+            Assert.assertTrue(node.isPresent());
+            Assert.assertEquals(1, node.get().getNodeData().getShardId());
         }
         {
-            ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
+            Assert.assertTrue(node.isPresent());
+            Assert.assertEquals(1, node.get().getNodeData().getShardId());
         }
         long startTime = System.currentTimeMillis();
         for(long i = 0; i <1000000; i++)
         {
-            ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(2));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(2, node.getNodeData().getShardId());
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(2));
+            Assert.assertTrue(node.isPresent());
+            Assert.assertEquals(2, node.get().getNodeData().getShardId());
         }
         log.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
-            ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(99));
-            Assert.assertNull(node);
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(99));
+            Assert.assertFalse(node.isPresent());
         }
         serviceFinder.stop();
-        //while (true);
     }
 
     private void registerService(String host, int port, int shardId) {

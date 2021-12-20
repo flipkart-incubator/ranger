@@ -23,8 +23,8 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class ZkServiceDataSource implements ServiceDataSource {
 
     private final String namespace;
-    private String connectionString;
+    private final String connectionString;
     private CuratorFramework curatorFramework;
     private boolean curatorProvided;
 
@@ -47,7 +47,7 @@ public class ZkServiceDataSource implements ServiceDataSource {
     }
 
     @Override
-    public Collection<Service> services() throws Exception {
+    public Set<Service> services() throws Exception {
         final List<String> children = curatorFramework.getChildren()
                 .forPath("/");
         return children.stream()

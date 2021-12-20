@@ -20,11 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.config.HttpClientConfig;
-import com.flipkart.ranger.http.model.ServiceRegistrationResponse;
+import com.flipkart.ranger.http.response.model.GenericResponse;
+import com.flipkart.ranger.http.response.model.RangerResponseCode;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import lombok.Builder;
 import lombok.Data;
 import lombok.val;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -52,8 +54,8 @@ public class HttpShardedServiceProviderBuilderTest {
         val nm5NodeData = TestNodeData.builder().farmId("nm5").build();
         val testNode = new ServiceNode<>("localhost-1", 80, nm5NodeData);
         val response = MAPPER.writeValueAsBytes(
-                ServiceRegistrationResponse.builder()
-                        .success(true)
+                GenericResponse.builder()
+                        .code(RangerResponseCode.SUCCESS)
                         .build());
         byte[] requestBytes = MAPPER.writeValueAsBytes(testNode);
         server.stubFor(post(urlEqualTo("/ranger/nodes/v1/add/testns/test"))
@@ -80,6 +82,8 @@ public class HttpShardedServiceProviderBuilderTest {
                 .withSerializer(node -> requestBytes)
                 .build();
         serviceProvider.start();
+        Assert.assertNotNull(serviceProvider);
+        Assert.assertTrue(serviceProvider.getDataSink().isActive());
     }
 
 }

@@ -15,7 +15,9 @@
  */
 package com.flipkart.ranger.http.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.flipkart.ranger.http.response.model.RangerResponseCode;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -26,6 +28,11 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceRegistrationResponse {
-    boolean success;
+    RangerResponseCode code;
     String error;
+
+    @JsonIgnore
+    public boolean isSuccess(){
+        return code == RangerResponseCode.SUCCESS;
+    }
 }

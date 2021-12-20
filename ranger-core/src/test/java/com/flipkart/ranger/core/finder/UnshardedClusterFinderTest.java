@@ -46,7 +46,7 @@ public class UnshardedClusterFinderTest {
                 new TestUnshardedNodeSelector()
         );
         val serviceNode = simpleUnshardedServiceFinder.get(RangerTestUtils.getCriteria(1));
-        Assert.assertNotNull(serviceNode);
-        Assert.assertEquals("localhost-1", serviceNode.getHost());
+        Assert.assertTrue(serviceNode.isPresent());
+        Assert.assertEquals("localhost-1", serviceNode.get().getHost());
     }
 }

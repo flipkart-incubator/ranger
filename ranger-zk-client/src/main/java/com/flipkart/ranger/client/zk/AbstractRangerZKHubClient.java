@@ -29,7 +29,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 
-import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -40,13 +40,13 @@ public abstract class AbstractRangerZKHubClient<T, R extends ServiceRegistry<T>,
     private final boolean disablePushUpdaters;
     private final String connectionString;
     private final CuratorFramework curatorFramework;
-    /*
-        Use this if you don't want the datasource to fetch the entire list of services;
-         but know beforehand about the services you are going to build the hub for.
-    */
-    private final List<Service> services;
+    /**
+        Use this if you don't want the datasource to fetch the entire set of services;
+        but know beforehand about the services you are going to build the hub for.
+    **/
+    private final Set<Service> services;
 
-    public AbstractRangerZKHubClient(
+    protected AbstractRangerZKHubClient(
             String namespace,
             ObjectMapper mapper,
             int nodeRefreshIntervalMs,
@@ -55,7 +55,7 @@ public abstract class AbstractRangerZKHubClient<T, R extends ServiceRegistry<T>,
             CuratorFramework curatorFramework,
             Predicate<T> criteria,
             D deserializer,
-            List<Service> services
+            Set<Service> services
     ) {
         super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer);
         this.disablePushUpdaters = disablePushUpdaters;

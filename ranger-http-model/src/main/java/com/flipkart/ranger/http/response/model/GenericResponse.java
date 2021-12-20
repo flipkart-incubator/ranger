@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flipkart.ranger.zk.server.bundle.model;
+package com.flipkart.ranger.http.response.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -22,8 +24,14 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GenericResponse<T> {
-    boolean success;
+    RangerResponseCode code;
     String error;
     T data;
+
+    @JsonIgnore
+    public boolean success(){
+        return code == RangerResponseCode.SUCCESS;
+    }
 }

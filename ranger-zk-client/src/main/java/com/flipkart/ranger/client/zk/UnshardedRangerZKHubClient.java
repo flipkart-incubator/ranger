@@ -27,7 +27,7 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 
-import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -44,7 +44,7 @@ public class UnshardedRangerZKHubClient<T>
             CuratorFramework curatorFramework,
             Predicate<T> criteria,
             ZkNodeDataDeserializer<T> deserializer,
-            List<Service> services
+            Set<Service> services
     ) {
             super(
                     namespace,

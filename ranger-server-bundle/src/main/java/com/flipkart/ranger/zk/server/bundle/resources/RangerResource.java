@@ -19,7 +19,7 @@ import com.codahale.metrics.annotation.Metered;
 import com.flipkart.ranger.client.RangerHubClient;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.zk.server.bundle.model.GenericResponse;
+import com.flipkart.ranger.http.response.model.GenericResponse;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -28,9 +28,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.flipkart.ranger.http.response.model.RangerResponseCode.SUCCESS;
 
 @Slf4j
 @Consumes(MediaType.APPLICATION_JSON)
@@ -48,18 +50,11 @@ public class RangerResource<T> {
     @GET
     @Path("/services/v1")
     @Metered
-    public GenericResponse<Collection<Service>> getServices() {
-        Collection<Service> services = new ArrayList<>();
-        rangerHubs.forEach(hub -> {
-            try {
-                services.addAll(hub.getServices());
-            } catch (Exception e) {
-                log.warn("Call to a hub failed with exception, {}", e.getMessage());
-            }
-        });
-        return GenericResponse.<Collection<Service>>builder()
-                .success(true)
-                .data(services)
+    public GenericResponse<Set<Service>> getServices() {
+        return GenericResponse.<Set<Service>>builder()
+                .code(SUCCESS)
+                .data(rangerHubs.stream().map(RangerHubClient::getServices)
+                        .flatMap(Set::stream).collect(Collectors.toSet()))
                 .build();
     }
 
@@ -71,17 +66,10 @@ public class RangerResource<T> {
             @NotNull @NotEmpty @PathParam("serviceName") final String serviceName
     ){
         val service = Service.builder().namespace(namespace).serviceName(serviceName).build();
-        List<ServiceNode<T>> serviceNodes = new ArrayList<>();
-        rangerHubs.forEach(hub -> {
-            try {
-                serviceNodes.addAll(hub.getAllNodes(service));
-            } catch (Exception e) {
-                log.warn("Call to a hub failed with exception, {}", e.getMessage());
-            }
-        });
         return GenericResponse.<List<ServiceNode<T>>>builder()
-                .success(true)
-                .data(serviceNodes)
+                .code(SUCCESS)
+                .data(rangerHubs.stream().map(hub -> hub.getAllNodes(service))
+                        .flatMap(List::stream).collect(Collectors.toList()))
                 .build();
     }
 }

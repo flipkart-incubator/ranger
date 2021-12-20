@@ -19,6 +19,7 @@
         <module>ranger-server-bundle</module>
         <module>ranger-zk-server</module>
         <module>ranger-http-server</module>
+        <module>ranger-http-model</module>
     </modules>
 
     <distributionManagement>

@@ -73,6 +73,7 @@ public class BaseServiceProviderBuilderTest {
                     .withPort(port)
                     .withHealthUpdateIntervalMs(1000)
                     .build();
+            serviceProvider.start();
         } catch (Exception e) {
             exception = e;
         }

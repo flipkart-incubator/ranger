@@ -36,7 +36,7 @@ public class HttpNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> 
 
     public HttpNodeDataStoreConnector(
             final HttpClientConfig config,
-            ObjectMapper mapper) {
+            final ObjectMapper mapper) {
         this.httpClient = new OkHttpClient.Builder()
                 .callTimeout(config.getOperationTimeoutMs() == 0
                              ? 3000

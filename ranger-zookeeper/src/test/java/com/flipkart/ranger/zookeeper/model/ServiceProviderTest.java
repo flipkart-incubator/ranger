@@ -39,6 +39,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.LongStream;
 
 @Slf4j
 public class ServiceProviderTest {
@@ -85,31 +86,29 @@ public class ServiceProviderTest {
         serviceFinder.start();
         {
             val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
+            Assert.assertTrue(node.isPresent());
+            Assert.assertEquals(1, node.get().getNodeData().getShardId());
         }
         {
             val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
+            Assert.assertTrue(node.isPresent());
+            Assert.assertEquals(1, node.get().getNodeData().getShardId());
         }
         long startTime = System.currentTimeMillis();
-        for (long i = 0; i < 1000000; i++) {
-            val node = serviceFinder.get(RangerTestUtils.getCriteria(2));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(2, node.getNodeData().getShardId());
-        }
+        LongStream.range(0, 1000000).mapToObj(i -> serviceFinder.get(RangerTestUtils.getCriteria(2))).forEach(node -> {
+            Assert.assertTrue(node.isPresent());
+            Assert.assertEquals(2, node.get().getNodeData().getShardId());
+        });
         log.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
             val node = serviceFinder.get(RangerTestUtils.getCriteria(99));
-            Assert.assertNull(node);
+            Assert.assertFalse(node.isPresent());
         }
         serviceFinder.stop();
-        //while (true);
     }
 
     @Test
-    public void testBasicDiscoveryRR() throws Exception {
+    public void testBasicDiscoveryRR() {
         val serviceFinder
                 = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
@@ -130,24 +129,23 @@ public class ServiceProviderTest {
         serviceFinder.start();
         {
             val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
+            Assert.assertTrue(node.isPresent());
+            Assert.assertEquals(1, node.get().getNodeData().getShardId());
         }
         {
             val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(1, node.getNodeData().getShardId());
+            Assert.assertTrue(node.isPresent());
+            Assert.assertEquals(1, node.get().getNodeData().getShardId());
         }
         long startTime = System.currentTimeMillis();
-        for (long i = 0; i < 1000000; i++) {
-            ServiceNode<TestNodeData> node = serviceFinder.get(RangerTestUtils.getCriteria(2));
-            Assert.assertNotNull(node);
-            Assert.assertEquals(2, node.getNodeData().getShardId());
-        }
+        LongStream.range(0, 1000000).mapToObj(i -> serviceFinder.get(RangerTestUtils.getCriteria(2))).forEach(node -> {
+            Assert.assertTrue(node.isPresent());
+            Assert.assertEquals(2, node.get().getNodeData().getShardId());
+        });
         log.info("PERF::RoundRobinSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
             val node = serviceFinder.get(RangerTestUtils.getCriteria(99));
-            Assert.assertNull(node);
+            Assert.assertFalse(node.isPresent());
         }
         serviceFinder.stop();
         //while (true);
@@ -173,7 +171,7 @@ public class ServiceProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        List<ServiceNode<TestNodeData>> all = serviceFinder.getAll(RangerTestUtils.getCriteria(1));
+        val all = serviceFinder.getAll(RangerTestUtils.getCriteria(1));
         log.info("Testing ServiceFinder.getAll()");
         all.stream().map(serviceNode -> "node = " + serviceNode.getHost() + ":" + serviceNode.getPort() + "  " + serviceNode.getHealthcheckStatus() + " " + serviceNode
                 .getLastUpdatedTimeStamp()).forEach(log::info);

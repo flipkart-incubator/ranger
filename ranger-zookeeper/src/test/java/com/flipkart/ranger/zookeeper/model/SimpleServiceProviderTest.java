@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.stream.LongStream;
 
 public class SimpleServiceProviderTest {
 
@@ -90,20 +91,17 @@ public class SimpleServiceProviderTest {
         serviceFinder.start();
         {
             val node = serviceFinder.get(null);
-            Assert.assertNotNull(node);
-            System.out.println(node.getHost());
+            Assert.assertTrue(node.isPresent());
+            System.out.println(node.get().getHost());
         }
         Multiset<String> frequency = HashMultiset.create();
         long startTime = System.currentTimeMillis();
-        for(long i = 0; i <1000000; i++)
-        {
-            val node = serviceFinder.get(null);
-            Assert.assertNotNull(node);
-            frequency.add(node.getHost());
-        }
+        LongStream.range(0, 1000000).mapToObj(i -> serviceFinder.get(null)).forEach(node -> {
+            Assert.assertTrue(node.isPresent());
+            frequency.add(node.get().getHost());
+        });
         System.out.println("1 Million lookups and freq counting took (ms):" + (System.currentTimeMillis() -startTime));
         System.out.println("Frequency: " + frequency);
-        //while (true);
     }
 
     private void registerService(String host, int port, int shardId) {

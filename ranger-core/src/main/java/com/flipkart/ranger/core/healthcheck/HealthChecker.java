@@ -16,6 +16,7 @@
 package com.flipkart.ranger.core.healthcheck;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -66,7 +67,7 @@ public class HealthChecker implements Supplier<HealthcheckResult> {
         //1. First time
         //2. Stale update threshold breach
         //3. Update in health status
-        long currentTime = System.currentTimeMillis();
+        val currentTime = System.currentTimeMillis();
         if (lastHealthcheckStatus == null
                 || (currentTime - lastUpdatedTime) > staleUpdateThreshold
                 || lastHealthcheckStatus != healthcheckStatus) {

@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.flipkart.ranger.client.RangerHubClient;
 import com.flipkart.ranger.client.http.UnshardedRangerHttpHubClient;
 import com.flipkart.ranger.common.server.ShardInfo;
-import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.server.AppConfiguration;
 import com.flipkart.ranger.zk.server.bundle.RangerServerBundle;
@@ -32,7 +31,6 @@ import lombok.val;
 
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -44,6 +44,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.function.Predicate;
 
 /**
  *
@@ -120,9 +121,8 @@ public class ServiceHubTest {
 
         TestUtils.sleepForSeconds(3);
         val node = hub.finder(RangerTestUtils.getService(NAMESPACE, "s1"))
-                .map(finder -> finder.get(nodeData -> nodeData.getShardId() == 1))
-                .orElse(null);
-        Assert.assertNotNull(node);
+                .flatMap(finder -> finder.get(nodeData -> nodeData.getShardId() == 1));
+        Assert.assertTrue(node.isPresent());
         hub.stop();
         provider1.stop();
     }

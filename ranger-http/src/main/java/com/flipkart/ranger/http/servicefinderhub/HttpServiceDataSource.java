@@ -30,9 +30,8 @@ import okhttp3.Request;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Slf4j
 public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> implements ServiceDataSource {
@@ -42,7 +41,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
     }
 
     @Override
-    public Collection<Service> services() {
+    public Set<Service> services() {
         Preconditions.checkNotNull(config, "client config has not been set for node data");
         Preconditions.checkNotNull(mapper, "mapper has not been set for node data");
 
@@ -61,7 +60,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                 .get()
                 .build();
 
-        List<Service> services = Collections.emptyList();
+        Set<Service> services = Collections.emptySet();
         try (val response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 try (final ResponseBody body = response.body()) {

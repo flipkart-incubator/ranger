@@ -20,8 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceDataSourceResponse;
+import com.flipkart.ranger.http.response.model.RangerResponseCode;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.Builder;
 import lombok.Data;
 import lombok.val;
@@ -53,8 +54,8 @@ public class HttpServiceDataSourceTest {
     @Test
     public void testServiceDataSource() throws IOException {
         val responseObj = ServiceDataSourceResponse.builder()
-                .success(true)
-                .data(Lists.newArrayList(
+                .code(RangerResponseCode.SUCCESS)
+                .data(Sets.newHashSet(
                         RangerTestUtils.getService("test-n", "test-s"),
                         RangerTestUtils.getService("test-n", "test-s1"),
                         RangerTestUtils.getService("test-n", "test-s2")

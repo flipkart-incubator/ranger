@@ -18,9 +18,9 @@ package com.flipkart.ranger.client;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public interface RangerHubClient<T> {
@@ -28,7 +28,7 @@ public interface RangerHubClient<T> {
 
     void stop();
 
-    Collection<Service> getServices() throws Exception;
+    Set<Service> getServices();
 
     Optional<ServiceNode<T>> getNode(final Service service);
 

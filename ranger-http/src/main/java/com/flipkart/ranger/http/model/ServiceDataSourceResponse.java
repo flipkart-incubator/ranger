@@ -15,13 +15,15 @@
  */
 package com.flipkart.ranger.http.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.http.response.model.RangerResponseCode;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.List;
+import java.util.Set;
 
 
 @Value
@@ -29,7 +31,12 @@ import java.util.List;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceDataSourceResponse {
-    boolean success;
+    RangerResponseCode code;
     String error;
-    List<Service> data;
+    Set<Service> data;
+
+    @JsonIgnore
+    public boolean isSuccess(){
+        return code == RangerResponseCode.SUCCESS;
+    }
 }

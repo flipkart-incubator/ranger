@@ -21,7 +21,7 @@ import com.flipkart.ranger.client.utils.RangerHubTestUtils;
 import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finderhub.*;
 import com.flipkart.ranger.core.units.TestNodeData;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.Builder;
 
 import java.util.function.Predicate;
@@ -54,7 +54,7 @@ public class RangerTestHub extends AbstractRangerHubClient<TestNodeData,
 
     @Override
     protected ServiceDataSource buildServiceDataSource() {
-        return new StaticDataSource(Lists.newArrayList(RangerHubTestUtils.service));
+        return new StaticDataSource(Sets.newHashSet(RangerHubTestUtils.service));
     }
 
     @Override

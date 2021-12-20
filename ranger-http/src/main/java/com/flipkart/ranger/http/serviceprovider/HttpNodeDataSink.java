@@ -30,7 +30,6 @@ import lombok.val;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -63,7 +62,8 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
         val requestBody = RequestBody.create(serializer.serialize(serviceNode));
         val serviceRegistrationResponse = registerService(httpUrl, requestBody);
         if(!serviceRegistrationResponse.isPresent() || !serviceRegistrationResponse.get().isSuccess()){
-            Exceptions.illegalState("Error updating state on the server for nodedata: " + httpUrl);
+            log.warn("Http call to {} returned a failure response", httpUrl);
+            Exceptions.illegalState("Error updating state on the server for node data: " + httpUrl);
         }
     }
 
@@ -74,17 +74,13 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
                 .build();
         try (val response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                try (final ResponseBody body = response.body()) {
+                try (val body = response.body()) {
                     if (null == body) {
                         log.warn("HTTP call to {} returned empty body", httpUrl);
                     }
                     else {
-                        final byte[] bytes = body.bytes();
-                        val serviceRegistrationResponse = mapper.readValue(bytes, ServiceRegistrationResponse.class);
-                        if(!serviceRegistrationResponse.isSuccess()){
-                            log.warn("Http call to {} returned a failure response with code {} and error {}", httpUrl, response.code(), serviceRegistrationResponse.getError());
-                        }
-                        return Optional.of(serviceRegistrationResponse);
+                        val bytes = body.bytes();
+                        return Optional.of(mapper.readValue(bytes, ServiceRegistrationResponse.class));
                     }
                 }
             }

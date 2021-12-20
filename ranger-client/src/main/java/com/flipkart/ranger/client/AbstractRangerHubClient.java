@@ -28,10 +28,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -44,9 +44,9 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
 
     private int nodeRefreshTimeMs;
     private ServiceFinderHub<T, R> hub;
-    private Predicate<T> criteria;
+    private final Predicate<T> criteria;
 
-    public AbstractRangerHubClient(
+    protected AbstractRangerHubClient(
             String namespace,
             ObjectMapper mapper,
             int nodeRefreshTimeMs,
@@ -96,7 +96,7 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
             final Predicate<T> criteria
     ){
         val optionalFinder = this.getHub().finder(service);
-        return optionalFinder.map(trcServiceFinder -> trcServiceFinder.get(criteria));
+        return optionalFinder.flatMap(trServiceFinder -> trServiceFinder.get(criteria));
     }
 
     public List<ServiceNode<T>> getAllNodes(
@@ -107,8 +107,13 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
         return optionalFinder.map(trServiceFinder -> trServiceFinder.getAll(criteria)).orElse(Collections.emptyList());
     }
 
-    public Collection<Service> getServices() throws Exception {
-        return this.getHub().getServiceDataSource().services();
+    public Set<Service> getServices() {
+        try{
+            return this.getHub().getServiceDataSource().services();
+        }catch (Exception e){
+            log.warn("Call to a hub failed with exception, {}", e.getMessage());
+            return Collections.emptySet();
+        }
     }
 
     protected abstract ServiceFinderHub<T, R> buildHub();

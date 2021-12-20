@@ -49,6 +49,6 @@ public class SimpleShardFinderTest {
                 serviceRegistry, shardSelector, roundRobinServiceNodeSelector);
         val testNodeDataServiceNode = simpleShardedFinder.get(
                 RangerTestUtils.getCriteria(2));
-        Assert.assertNull(testNodeDataServiceNode);
+        Assert.assertFalse(testNodeDataServiceNode.isPresent());
     }
 }

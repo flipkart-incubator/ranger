@@ -33,14 +33,14 @@ import com.flipkart.ranger.http.servicefinderhub.HttpUnshardedServiceFinderFacto
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 @Slf4j
 public class UnshardedRangerHttpHubClient<T>
         extends AbstractRangerHubClient<T, ListBasedServiceRegistry<T>, HTTPResponseDataDeserializer<T>> {
 
-    private final List<Service> services;
+    private final Set<Service> services;
     private final HttpClientConfig clientConfig;
 
     @Builder
@@ -51,7 +51,7 @@ public class UnshardedRangerHttpHubClient<T>
             Predicate<T> criteria,
             HTTPResponseDataDeserializer<T> deserializer,
             HttpClientConfig clientConfig,
-            List<Service> services
+            Set<Service> services
     ) {
         super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer);
         this.clientConfig = clientConfig;

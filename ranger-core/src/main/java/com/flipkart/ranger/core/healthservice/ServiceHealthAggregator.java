@@ -106,18 +106,14 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
         }
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(isolatedHealthMonitorList.size());
         scheduledFutureList = Lists.newArrayListWithCapacity(isolatedHealthMonitorList.size());
-        for (IsolatedHealthMonitor isolatedHealthMonitor : isolatedHealthMonitorList) {
-            final ScheduledFuture<?> scheduledFuture =
-                    scheduledExecutorService.scheduleWithFixedDelay(
-                            isolatedHealthMonitor,
-                            isolatedHealthMonitor.getRunInterval()
-                                    .getInitialDelay(),
-                            isolatedHealthMonitor.getRunInterval()
-                                    .getTimeInterval(),
-                            isolatedHealthMonitor.getRunInterval()
-                                    .getTimeUnit());
-            scheduledFutureList.add(scheduledFuture);
-        }
+        isolatedHealthMonitorList.stream().map(isolatedHealthMonitor -> scheduledExecutorService.scheduleWithFixedDelay(
+                isolatedHealthMonitor,
+                isolatedHealthMonitor.getRunInterval()
+                        .getInitialDelay(),
+                isolatedHealthMonitor.getRunInterval()
+                        .getTimeInterval(),
+                isolatedHealthMonitor.getRunInterval()
+                        .getTimeUnit())).forEach(scheduledFuture -> scheduledFutureList.add(scheduledFuture));
         running.set(true);
     }
 

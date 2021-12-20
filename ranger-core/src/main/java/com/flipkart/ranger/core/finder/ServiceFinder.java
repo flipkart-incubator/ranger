@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -48,12 +49,12 @@ public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegist
         this.nodeSelector = nodeSelector;
     }
 
-    public ServiceNode<T> get(Predicate<T> criteria) {
+    public Optional<ServiceNode<T>> get(Predicate<T> criteria) {
         List<ServiceNode<T>> nodes = shardSelector.nodes(criteria, serviceRegistry);
         if (null == nodes || nodes.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
-        return nodeSelector.select(nodes);
+        return Optional.of(nodeSelector.select(nodes));
     }
 
     public List<ServiceNode<T>> getAll(Predicate<T> criteria) {
