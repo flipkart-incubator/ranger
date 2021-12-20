@@ -19,6 +19,7 @@ import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lombok.experimental.UtilityClass;
 import lombok.val;
@@ -31,10 +32,11 @@ public class RegistryTestUtils {
     public static MapBasedServiceRegistry<TestNodeData> getServiceRegistry(){
         val service = RangerTestUtils.getService();
         val serviceRegistry = new MapBasedServiceRegistry<TestNodeData>(service);
-        List<ServiceNode<TestNodeData>> serviceNodes = Lists.newArrayList();
-        serviceNodes.add(new ServiceNode<>("localhost-1", 9000, TestNodeData.builder().shardId(1).build()));
-        serviceNodes.add(new ServiceNode<>("localhost-2", 9001, TestNodeData.builder().shardId(2).build()));
-        serviceNodes.add(new ServiceNode<>("localhost-3", 9002, TestNodeData.builder().shardId(3).build()));
+        val serviceNodes = ImmutableList.of(
+            new ServiceNode<>("localhost-1", 9000, TestNodeData.builder().shardId(1).build()),
+            new ServiceNode<>("localhost-2", 9001, TestNodeData.builder().shardId(2).build()),
+            new ServiceNode<>("localhost-3", 9002, TestNodeData.builder().shardId(3).build())
+        );
         serviceRegistry.updateNodes(serviceNodes);
         return serviceRegistry;
     }
@@ -42,10 +44,11 @@ public class RegistryTestUtils {
     public static ListBasedServiceRegistry<TestNodeData> getUnshardedRegistry(){
         val service = RangerTestUtils.getService();
         val serviceRegistry = new ListBasedServiceRegistry<TestNodeData>(service);
-        List<ServiceNode<TestNodeData>> serviceNodes = Lists.newArrayList();
-        serviceNodes.add(new ServiceNode<>("localhost-1", 9000, TestNodeData.builder().shardId(1).build()));
-        serviceNodes.add(new ServiceNode<>("localhost-2", 9001, TestNodeData.builder().shardId(2).build()));
-        serviceNodes.add(new ServiceNode<>("localhost-3", 9002, TestNodeData.builder().shardId(3).build()));
+        val serviceNodes = ImmutableList.of(
+                new ServiceNode<>("localhost-1", 9000, TestNodeData.builder().shardId(1).build()),
+                new ServiceNode<>("localhost-2", 9001, TestNodeData.builder().shardId(2).build()),
+                new ServiceNode<>("localhost-3", 9002, TestNodeData.builder().shardId(3).build())
+        );
         serviceRegistry.updateNodes(serviceNodes);
         return serviceRegistry;
     }

@@ -17,12 +17,10 @@ package com.flipkart.ranger.zookeeper;
 
 import com.flipkart.ranger.zookeeper.servicefinder.ZkSimpleShardedServiceFinderBuilder;
 import com.flipkart.ranger.zookeeper.servicefinder.ZkSimpleUnshardedServiceFinderBuilder;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class ServiceFinderBuilders {
-    
-    private ServiceFinderBuilders() {
-        throw new InstantiationError("Must not instantiate this class");
-    }
     
     public static <T> ZkSimpleShardedServiceFinderBuilder<T> shardedFinderBuilder() {
         return new ZkSimpleShardedServiceFinderBuilder<>();

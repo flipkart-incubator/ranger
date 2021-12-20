@@ -51,8 +51,8 @@ public class HttpShardedServiceProviderBuilderTest {
 
     @Test
     public void testProvider() throws Exception {
-        val nm5NodeData = TestNodeData.builder().farmId("nm5").build();
-        val testNode = new ServiceNode<>("localhost-1", 80, nm5NodeData);
+        val farmNodeData = TestNodeData.builder().farmId("farm1").build();
+        val testNode = new ServiceNode<>("localhost-1", 80, farmNodeData);
         val response = MAPPER.writeValueAsBytes(
                 GenericResponse.builder()
                         .code(RangerResponseCode.SUCCESS)
@@ -78,12 +78,11 @@ public class HttpShardedServiceProviderBuilderTest {
                 .withHealthUpdateIntervalMs(1000)
                 .withObjectMapper(MAPPER)
                 .withClientConfiguration(clientConfig)
-                .withNodeData(nm5NodeData)
+                .withNodeData(farmNodeData)
                 .withSerializer(node -> requestBytes)
                 .build();
         serviceProvider.start();
         Assert.assertNotNull(serviceProvider);
-        Assert.assertTrue(serviceProvider.getDataSink().isActive());
     }
 
 }

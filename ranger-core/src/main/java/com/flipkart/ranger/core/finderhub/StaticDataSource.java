@@ -19,6 +19,7 @@ import com.flipkart.ranger.core.model.Service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.Set;
 
 /*
@@ -32,7 +33,7 @@ public class StaticDataSource implements ServiceDataSource{
     private final Set<Service> services;
 
     @Override
-    public Set<Service> services() throws Exception {
+    public Collection<Service> services() throws Exception {
         return services;
     }
 

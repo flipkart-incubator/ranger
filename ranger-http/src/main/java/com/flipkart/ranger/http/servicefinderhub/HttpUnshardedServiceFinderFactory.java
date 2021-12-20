@@ -29,7 +29,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.val;
 
-@Getter
 public class HttpUnshardedServiceFinderFactory<T> implements ServiceFinderFactory<T, ListBasedServiceRegistry<T>> {
 
     private final HttpClientConfig clientConfig;

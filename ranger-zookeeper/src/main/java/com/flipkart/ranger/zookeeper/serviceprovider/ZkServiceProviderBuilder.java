@@ -34,7 +34,6 @@ public class ZkServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T, Z
     private CuratorFramework curatorFramework;
     private String connectionString;
 
-
     public ZkServiceProviderBuilder<T> withCuratorFramework(CuratorFramework curatorFramework) {
         this.curatorFramework = curatorFramework;
         return this;

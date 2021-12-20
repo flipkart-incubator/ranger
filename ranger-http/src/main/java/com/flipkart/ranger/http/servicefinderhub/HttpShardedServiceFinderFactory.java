@@ -29,8 +29,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.val;
 
-@Getter
-public class  HttpShardedServiceFinderFactory <T> implements ServiceFinderFactory<T, MapBasedServiceRegistry<T>> {
+public class HttpShardedServiceFinderFactory <T> implements ServiceFinderFactory<T, MapBasedServiceRegistry<T>> {
 
     private final HttpClientConfig clientConfig;
     private final ObjectMapper mapper;

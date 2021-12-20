@@ -19,10 +19,13 @@ import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,13 +50,13 @@ public class ZkServiceDataSource implements ServiceDataSource {
     }
 
     @Override
-    public Set<Service> services() throws Exception {
-        final List<String> children = curatorFramework.getChildren()
+    public Collection<Service> services() throws Exception {
+        val children = curatorFramework.getChildren()
                 .forPath("/");
-        return children.stream()
-                .map(child -> Service.builder().namespace(namespace).serviceName(child).build())
-                .collect(Collectors.toSet());
-
+        return null == children ? Collections.emptySet() :
+                children.stream()
+                        .map(child -> Service.builder().namespace(namespace).serviceName(child).build())
+                        .collect(Collectors.toSet());
     }
 
     @Override
@@ -74,6 +77,7 @@ public class ZkServiceDataSource implements ServiceDataSource {
         }
         catch (InterruptedException e) {
             log.error("Curator block interrupted", e);
+            Thread.currentThread().interrupt();
         }
         log.info("Service data source started. Curator state is: {}", curatorFramework.getState().name());
     }

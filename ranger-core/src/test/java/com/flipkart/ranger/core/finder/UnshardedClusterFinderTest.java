@@ -33,7 +33,7 @@ public class UnshardedClusterFinderTest {
 
         @Override
         public ServiceNode<TestNodeData> select(List<ServiceNode<TestNodeData>> serviceNodes) {
-            return serviceNodes.get(0);
+            return serviceNodes.isEmpty() ? null : serviceNodes.get(0);
         }
     }
     @Test

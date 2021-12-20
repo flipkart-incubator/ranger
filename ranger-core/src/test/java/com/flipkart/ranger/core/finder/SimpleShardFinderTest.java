@@ -27,6 +27,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -36,7 +37,7 @@ public class SimpleShardFinderTest {
 
         @Override
         public List<ServiceNode<T>> nodes(Predicate<T> criteria, MapBasedServiceRegistry<T> serviceRegistry) {
-            return Lists.newArrayList();
+            return Collections.emptyList();
         }
     }
 

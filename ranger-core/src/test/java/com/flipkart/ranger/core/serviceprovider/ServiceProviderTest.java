@@ -52,14 +52,14 @@ public class ServiceProviderTest {
         }
     }
 
-    static class TestNodeDataSink<T, S extends TestSerializer<T>> implements NodeDataSink<T, S>{
+    static class TestNodeDataSink<T extends TestNodeData, S extends TestSerializer<T>> implements NodeDataSink<T, S>{
 
         public TestNodeDataSink(){
         }
 
         @Override
         public void updateState(S serializer, ServiceNode<T> serviceNode) {
-            testNodeData = (TestNodeData) serviceNode.getNodeData();
+            testNodeData = serviceNode.getNodeData();
         }
 
         @Override
@@ -83,7 +83,8 @@ public class ServiceProviderTest {
         }
     }
 
-    public class TestServiceProviderBuilder<T> extends BaseServiceProviderBuilder<T, TestServiceProviderBuilder<T>, TestSerializer<T>> {
+    public static class TestServiceProviderBuilder<T extends TestNodeData> extends
+            BaseServiceProviderBuilder<T, TestServiceProviderBuilder<T>, TestSerializer<T>> {
 
         @Override
         public ServiceProvider<T, TestSerializer<T>> build() {
@@ -98,7 +99,7 @@ public class ServiceProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void testInvalidServiceProvider(){
-        new TestServiceProviderBuilder<TestNodeData>()
+        new TestServiceProviderBuilder<>()
                 .withServiceName("test-service")
                 .withNamespace("test")
                 .withHostname("localhost-1")
@@ -108,7 +109,7 @@ public class ServiceProviderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidServiceProviderNoHealthCheck(){
-        new TestServiceProviderBuilder<TestNodeData>()
+        new TestServiceProviderBuilder<>()
                 .withServiceName("test-service")
                 .withNamespace("test")
                 .withHostname("localhost-1")
@@ -119,7 +120,7 @@ public class ServiceProviderTest {
 
     @Test
     public void testBuildServiceProvider(){
-        val testProvider = new TestServiceProviderBuilder<TestNodeData>()
+        val testProvider = new TestServiceProviderBuilder<>()
                 .withServiceName("test-service")
                 .withNamespace("test")
                 .withHostname("localhost-1")

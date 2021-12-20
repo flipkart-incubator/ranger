@@ -49,6 +49,9 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
         Preconditions.checkNotNull(config, "client config has not been set for node data");
         Preconditions.checkNotNull(mapper, "mapper has not been set for node data");
 
+        val url = String.format("/ranger/nodes/v1/add/%s/%s", service.getNamespace(), service.getServiceName());
+        log.debug("Updating state at the url {}", url);
+
         val httpUrl = new HttpUrl.Builder()
                 .scheme(config.isSecure()
                         ? "https"
@@ -57,7 +60,7 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
                 .port(config.getPort() == 0
                         ? defaultPort()
                         : config.getPort())
-                .encodedPath(String.format("/ranger/nodes/v1/add/%s/%s", service.getNamespace(), service.getServiceName()))
+                .encodedPath(url)
                 .build();
         val requestBody = RequestBody.create(serializer.serialize(serviceNode));
         val serviceRegistrationResponse = registerService(httpUrl, requestBody);

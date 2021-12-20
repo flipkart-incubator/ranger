@@ -17,12 +17,10 @@ package com.flipkart.ranger.http;
 
 import com.flipkart.ranger.http.servicefinder.HttpShardedServiceFinderBuilder;
 import com.flipkart.ranger.http.servicefinder.HttpUnshardedServiceFinderBuilider;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public final class HttpServiceFinderBuilders {
-
-    private void HttpServiceProviderBuilders(){
-        throw new InstantiationError("Must not instantiate this class");
-    }
 
     public static <T> HttpShardedServiceFinderBuilder<T> httpShardedServiceFinderBuilder(){
         return new HttpShardedServiceFinderBuilder<>();

@@ -17,13 +17,11 @@
 package com.flipkart.ranger.zookeeper;
 
 import com.flipkart.ranger.zookeeper.serviceprovider.ZkServiceProviderBuilder;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class ServiceProviderBuilders {
-    
-    private ServiceProviderBuilders() {
-        throw new InstantiationError("Must not instantiate this class");
-    }
-    
+
     public static <T> ZkServiceProviderBuilder<T> shardedServiceProviderBuilder() {
         return new ZkServiceProviderBuilder<>();
     }

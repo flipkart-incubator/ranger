@@ -33,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
@@ -63,7 +64,7 @@ public class HttpShardedServiceFinderBuilderTest {
         node.setLastUpdatedTimeStamp(System.currentTimeMillis());
         val payload = MAPPER.writeValueAsBytes(
                 ServiceNodesResponse.<NodeData>builder()
-                        .data(Lists.newArrayList(node))
+                        .data(Collections.singletonList(node))
                         .code(RangerResponseCode.SUCCESS)
                         .build());
         server.stubFor(get(urlEqualTo("/ranger/nodes/v1/testns/test"))

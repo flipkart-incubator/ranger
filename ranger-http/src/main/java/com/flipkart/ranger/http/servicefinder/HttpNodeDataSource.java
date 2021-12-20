@@ -54,6 +54,9 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
     public List<ServiceNode<T>> refresh(D deserializer) {
         Preconditions.checkNotNull(config, "client config has not been set for node data");
         Preconditions.checkNotNull(mapper, "mapper has not been set for node data");
+        val url = String.format("/ranger/nodes/v1/%s/%s", service.getNamespace(), service.getServiceName());
+
+        log.debug("Refreshing the node list from url {}", url);
         val httpUrl = new HttpUrl.Builder()
                 .scheme(config.isSecure()
                         ? "https"
@@ -62,28 +65,27 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                 .port(config.getPort() == 0
                         ? defaultPort()
                         : config.getPort())
-                .encodedPath(String.format("/ranger/nodes/v1/%s/%s", service.getNamespace(), service.getServiceName()))
+                .encodedPath(url)
                 .build();
         val request = new Request.Builder()
                 .url(httpUrl)
                 .get()
                 .build();
 
-        List<ServiceNode<T>> serviceNodes = Collections.emptyList();
         try (val response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                try (final ResponseBody body = response.body()) {
+                try (val body = response.body()) {
                     if (null == body) {
                         log.warn("HTTP call to {} returned empty body", httpUrl);
                     } else {
-                        final byte[] bytes = body.bytes();
+                        val bytes = body.bytes();
                         val serviceNodesResponse = deserializer.deserialize(bytes);
                         if(serviceNodesResponse.isSuccess()){
-                            serviceNodes = FinderUtils.filterValidNodes(
+                            return FinderUtils.filterValidNodes(
                                     service,
                                     serviceNodesResponse.getData(),
                                     healthcheckZombieCheckThresholdTime(service));
-                        }else{
+                        } else{
                             log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceNodesResponse.getError());
                         }
                     }
@@ -94,7 +96,7 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
         } catch (IOException e) {
             log.error("Error getting service data from the http endPoint: ", e);
         }
-        return serviceNodes;
+        return Collections.emptyList();
     }
 
     @Override

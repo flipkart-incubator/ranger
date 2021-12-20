@@ -2,6 +2,7 @@ package com.flipkart.ranger.common.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,10 +12,11 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+
 public class ShardInfoTest {
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static String getResource(String path) {
+    private String getResource(String path) {
         final InputStream data = ShardInfoTest.class.getClassLoader().getResourceAsStream(path);
         return new BufferedReader(
                 new InputStreamReader(data))
@@ -23,7 +25,7 @@ public class ShardInfoTest {
     }
 
     @SneakyThrows
-    public static <T> T getResource(String path, Class<T> klass) {
+    private  <T> T getResource(String path, Class<T> klass) {
         final String data = getResource(path);
         return mapper.readValue(data, klass);
     }

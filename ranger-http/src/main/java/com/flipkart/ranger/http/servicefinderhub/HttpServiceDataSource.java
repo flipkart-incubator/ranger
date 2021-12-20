@@ -30,6 +30,7 @@ import okhttp3.Request;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -41,7 +42,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
     }
 
     @Override
-    public Set<Service> services() {
+    public Collection<Service> services() {
         Preconditions.checkNotNull(config, "client config has not been set for node data");
         Preconditions.checkNotNull(mapper, "mapper has not been set for node data");
 
@@ -59,8 +60,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                 .url(httpUrl)
                 .get()
                 .build();
-
-        Set<Service> services = Collections.emptySet();
+        
         try (val response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 try (val body = response.body()) {
@@ -71,7 +71,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                         val bytes = body.bytes();
                         val serviceDataSourceResponse = mapper.readValue(bytes, ServiceDataSourceResponse.class);
                         if(serviceDataSourceResponse.isSuccess()){
-                            services = serviceDataSourceResponse.getData();
+                            return serviceDataSourceResponse.getData();
                         }else{
                             log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceDataSourceResponse.getError());
                         }
@@ -87,6 +87,6 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
         }
 
         log.error("No data returned from server: " + httpUrl);
-        return services;
+        return Collections.emptySet();
     }
 }

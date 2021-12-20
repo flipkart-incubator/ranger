@@ -30,7 +30,7 @@ public class ExternalTriggeredSignal<T> extends Signal<T> {
         super(signalDataGenerator, consumers);
     }
 
-    public void trigger() {
+    public final void trigger() {
         super.onSignalReceived();
     }
 

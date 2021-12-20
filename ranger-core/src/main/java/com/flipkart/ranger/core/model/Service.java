@@ -20,7 +20,7 @@ import lombok.*;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@AllArgsConstructor
 @Builder
 public class Service {
     String namespace;

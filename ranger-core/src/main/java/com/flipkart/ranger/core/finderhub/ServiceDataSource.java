@@ -17,6 +17,7 @@ package com.flipkart.ranger.core.finderhub;
 
 import com.flipkart.ranger.core.model.Service;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -24,7 +25,7 @@ import java.util.Set;
  */
 public interface ServiceDataSource {
 
-    Set<Service> services() throws Exception;
+    Collection<Service> services() throws Exception;
 
     void start();
     void stop();
