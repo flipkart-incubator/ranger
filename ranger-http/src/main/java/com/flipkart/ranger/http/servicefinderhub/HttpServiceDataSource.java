@@ -63,12 +63,12 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
         Set<Service> services = Collections.emptySet();
         try (val response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                try (final ResponseBody body = response.body()) {
+                try (val body = response.body()) {
                     if (null == body) {
                         log.warn("HTTP call to {} returned empty body", httpUrl);
                     }
                     else {
-                        final byte[] bytes = body.bytes();
+                        val bytes = body.bytes();
                         val serviceDataSourceResponse = mapper.readValue(bytes, ServiceDataSourceResponse.class);
                         if(serviceDataSourceResponse.isSuccess()){
                             services = serviceDataSourceResponse.getData();

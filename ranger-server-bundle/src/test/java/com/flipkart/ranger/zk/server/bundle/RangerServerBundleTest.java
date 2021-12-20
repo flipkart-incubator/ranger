@@ -76,7 +76,7 @@ public class RangerServerBundleTest {
 
         @Override
         protected List<RangerHubClient<TestNodeData>> withHubs(Configuration configuration) {
-            return Lists.newArrayList(RangerHubTestUtils.getTestHub());
+            return Collections.singletonList(RangerHubTestUtils.getTestHub());
         }
 
         @Override

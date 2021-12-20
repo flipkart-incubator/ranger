@@ -41,14 +41,14 @@ public class ShardedRangerHttpClientTest extends BaseRangerHttpClientTest {
         TestUtils.sleepForSeconds(6);
 
         val service = RangerTestUtils.getService("test-n", "test-s");
-        Optional<ServiceNode<TestNodeData>> node = client.getNode(service);
-        Assert.assertTrue(null != node && node.isPresent());
+        ServiceNode<TestNodeData> node = client.getNode(service).orElse(null);
+        Assert.assertNotNull(node);
 
-        node = client.getNode(service, nodeData -> nodeData.getShardId() == 1);
-        Assert.assertTrue(null != node && node.isPresent());
+        node = client.getNode(service, nodeData -> nodeData.getShardId() == 1).orElse(null);
+        Assert.assertNotNull(node);
 
-        node = client.getNode(service, nodeData -> nodeData.getShardId() == 2);
-        Assert.assertTrue(null != node && node.isPresent());
+        node = client.getNode(service, nodeData -> nodeData.getShardId() == 2).orElse(null);
+        Assert.assertNull(node);
 
         client.stop();
     }

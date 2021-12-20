@@ -121,8 +121,8 @@ public class ServiceHubTest {
 
         TestUtils.sleepForSeconds(3);
         val node = hub.finder(RangerTestUtils.getService(NAMESPACE, "s1"))
-                .flatMap(finder -> finder.get(nodeData -> nodeData.getShardId() == 1));
-        Assert.assertTrue(node.isPresent());
+                .flatMap(finder -> finder.get(nodeData -> nodeData.getShardId() == 1)).orElse(null);
+        Assert.assertNotNull(node);
         hub.stop();
         provider1.stop();
     }

@@ -25,6 +25,7 @@ import com.flipkart.ranger.core.units.TestNodeData;
 import com.google.common.collect.Lists;
 import lombok.Builder;
 
+import java.util.Collections;
 import java.util.List;
 
 @Builder
@@ -45,9 +46,9 @@ public class TestSimpleUnshardedServiceFinder <T>
 
         @Override
         public List<ServiceNode<TestNodeData>> refresh(Deserializer<TestNodeData> deserializer) {
-            return Lists.newArrayList(
-                            new ServiceNode<>("localhost", 9200, TestNodeData.builder().shardId(1).build())
-                    );
+            return Collections.singletonList(
+                    new ServiceNode<>("localhost", 9200, TestNodeData.builder().shardId(1).build())
+            );
         }
 
         @Override

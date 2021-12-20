@@ -80,10 +80,10 @@ public class ServiceProviderHealthcheckTest {
                 .withNodeRefreshIntervalMs(1000)
                 .build();
         serviceFinder.start();
-        val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-        Assert.assertTrue(node.isPresent());
-        Assert.assertEquals("localhost-1", node.get().getHost());
-        TestServiceProvider testServiceProvider = serviceProviders.get(node.get().getHost());
+        val node = serviceFinder.get(RangerTestUtils.getCriteria(1)).orElse(null);
+        Assert.assertNotNull(node);
+        Assert.assertEquals("localhost-1", node.getHost());
+        TestServiceProvider testServiceProvider = serviceProviders.get(node.getHost());
         testServiceProvider.oor();
         TestUtils.sleepForSeconds(6);
         Assert.assertFalse(serviceFinder.get(RangerTestUtils.getCriteria(1)).isPresent());

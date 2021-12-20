@@ -90,15 +90,15 @@ public class SimpleServiceProviderTest {
                 .build();
         serviceFinder.start();
         {
-            val node = serviceFinder.get(null);
-            Assert.assertTrue(node.isPresent());
-            System.out.println(node.get().getHost());
+            val node = serviceFinder.get(null).orElse(null);
+            Assert.assertNotNull(node);
+            System.out.println(node.getHost());
         }
         Multiset<String> frequency = HashMultiset.create();
         long startTime = System.currentTimeMillis();
-        LongStream.range(0, 1000000).mapToObj(i -> serviceFinder.get(null)).forEach(node -> {
-            Assert.assertTrue(node.isPresent());
-            frequency.add(node.get().getHost());
+        LongStream.range(0, 1000000).mapToObj(i -> serviceFinder.get(null).orElse(null)).forEach(node -> {
+            Assert.assertNotNull(node);
+            frequency.add(node.getHost());
         });
         System.out.println("1 Million lookups and freq counting took (ms):" + (System.currentTimeMillis() -startTime));
         System.out.println("Frequency: " + frequency);

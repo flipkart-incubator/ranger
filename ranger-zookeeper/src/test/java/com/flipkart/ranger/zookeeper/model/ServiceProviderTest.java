@@ -85,24 +85,24 @@ public class ServiceProviderTest {
                 .build();
         serviceFinder.start();
         {
-            val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-            Assert.assertTrue(node.isPresent());
-            Assert.assertEquals(1, node.get().getNodeData().getShardId());
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(1)).orElse(null);
+            Assert.assertNotNull(node);
+            Assert.assertEquals(1, node.getNodeData().getShardId());
         }
         {
-            val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-            Assert.assertTrue(node.isPresent());
-            Assert.assertEquals(1, node.get().getNodeData().getShardId());
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(1)).orElse(null);
+            Assert.assertNotNull(node);
+            Assert.assertEquals(1, node.getNodeData().getShardId());
         }
         long startTime = System.currentTimeMillis();
-        LongStream.range(0, 1000000).mapToObj(i -> serviceFinder.get(RangerTestUtils.getCriteria(2))).forEach(node -> {
-            Assert.assertTrue(node.isPresent());
-            Assert.assertEquals(2, node.get().getNodeData().getShardId());
+        LongStream.range(0, 1000000).mapToObj(i -> serviceFinder.get(RangerTestUtils.getCriteria(2)).orElse(null)).forEach(node -> {
+            Assert.assertNotNull(node);
+            Assert.assertEquals(2, node.getNodeData().getShardId());
         });
         log.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
-            val node = serviceFinder.get(RangerTestUtils.getCriteria(99));
-            Assert.assertFalse(node.isPresent());
+            val node = serviceFinder.get(RangerTestUtils.getCriteria(99)).orElse(null);
+            Assert.assertNull(node);
         }
         serviceFinder.stop();
     }

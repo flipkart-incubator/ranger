@@ -150,13 +150,13 @@ public class CustomShardSelectorTest {
                 .build();
         serviceFinder.start();
         {
-            val node = serviceFinder.get(TestShardInfo.getCriteria(1, 10));
-            Assert.assertFalse(node.isPresent());
+            val node = serviceFinder.get(TestShardInfo.getCriteria(1, 10)).orElse(null);
+            Assert.assertNotNull(node);
         }
         {
-            val node = serviceFinder.get(TestShardInfo.getCriteria(1, 2));
-            Assert.assertTrue(node.isPresent());
-            Assert.assertEquals(new TestShardInfo(1, 2), node.get().getNodeData());
+            val node = serviceFinder.get(TestShardInfo.getCriteria(1, 2)).orElse(null);
+            Assert.assertNotNull(node);
+            Assert.assertEquals(new TestShardInfo(1, 2), node.getNodeData());
         }
         serviceFinder.stop();
     }

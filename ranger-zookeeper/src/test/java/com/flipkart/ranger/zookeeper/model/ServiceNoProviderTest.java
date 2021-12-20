@@ -70,8 +70,8 @@ public class ServiceNoProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-        Assert.assertFalse(node.isPresent());
+        val node = serviceFinder.get(RangerTestUtils.getCriteria(1)).orElse(null);
+        Assert.assertNull(node);
         serviceFinder.stop();
 
     }
@@ -96,8 +96,8 @@ public class ServiceNoProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        val node = serviceFinder.get(RangerTestUtils.getCriteria(1));
-        Assert.assertFalse(node.isPresent());
+        val node = serviceFinder.get(RangerTestUtils.getCriteria(1)).orElse(null);
+        Assert.assertNull(node);
         serviceFinder.stop();
     }
 

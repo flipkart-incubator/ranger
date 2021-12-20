@@ -30,12 +30,7 @@ public class TestServiceFinderFactory  implements ServiceFinderFactory<TestNodeD
         val finder = new TestSimpleUnshardedServiceFinder<TestNodeData>()
                 .withNamespace(service.getNamespace())
                 .withServiceName(service.getServiceName())
-                .withDeserializer(new Deserializer<TestNodeData>() {
-                    @Override
-                    public int hashCode() {
-                        return super.hashCode();
-                    }
-                })
+                .withDeserializer(new Deserializer<TestNodeData>() {})
                 .build();
         finder.start();
         return finder;
