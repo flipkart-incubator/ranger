@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -60,7 +61,7 @@ public abstract class AbstractRangerZKHubClient<T, R extends ServiceRegistry<T>,
         super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer);
         this.disablePushUpdaters = disablePushUpdaters;
         this.connectionString = connectionString;
-        this.services = services;
+        this.services = null != services ? services : Collections.emptySet();
         this.curatorFramework = curatorFramework;
 
     }

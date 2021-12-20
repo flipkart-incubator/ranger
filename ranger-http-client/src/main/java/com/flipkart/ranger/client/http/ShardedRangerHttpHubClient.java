@@ -33,6 +33,7 @@ import com.flipkart.ranger.http.servicefinderhub.HttpShardedServiceFinderFactory
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -55,7 +56,7 @@ public class ShardedRangerHttpHubClient<T>
     ) {
         super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer);
         this.clientConfig = clientConfig;
-        this.services = services;
+        this.services = null != services ? services : Collections.emptySet();
     }
 
     @Override
