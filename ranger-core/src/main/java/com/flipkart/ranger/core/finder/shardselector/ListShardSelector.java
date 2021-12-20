@@ -27,10 +27,7 @@ public class ListShardSelector<T> implements ShardSelector<T, ListBasedServiceRe
 
     @Override
     public List<ServiceNode<T>> nodes(Predicate<T> criteria, ListBasedServiceRegistry<T> serviceRegistry) {
-        if(null == criteria){
-            return serviceRegistry.nodeList();
-        }
-        return serviceRegistry.nodeList()
+        return null == criteria ? serviceRegistry.nodeList() : serviceRegistry.nodeList()
                 .stream()
                 .filter(node -> criteria.test(node.getNodeData()))
                 .collect(Collectors.toList());

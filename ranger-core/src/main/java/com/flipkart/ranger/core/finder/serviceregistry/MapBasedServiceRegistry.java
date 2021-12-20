@@ -19,6 +19,7 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
 import lombok.val;
@@ -43,7 +44,7 @@ public class MapBasedServiceRegistry<T> extends ServiceRegistry<T> {
     @Override
     public List<ServiceNode<T>> nodeList() {
         val nodeList = nodes.get();
-        return null == nodeList ? Collections.emptyList() : new ArrayList<>(nodeList.values());
+        return null == nodeList ? ImmutableList.of() : new ArrayList<>(nodeList.values());
     }
 
     @Override

@@ -29,8 +29,8 @@ public class MatchingShardSelector<T> implements ShardSelector<T, MapBasedServic
 
     @Override
     public List<ServiceNode<T>> nodes(Predicate<T> criteria, MapBasedServiceRegistry<T> serviceRegistry) {
-        if(null == criteria) return serviceRegistry.nodeList();
-        return serviceRegistry.nodes()
+        return null == criteria ? serviceRegistry.nodeList() :
+            serviceRegistry.nodes()
                 .entries()
                 .stream()
                 .filter(e -> criteria.test(e.getKey()))
