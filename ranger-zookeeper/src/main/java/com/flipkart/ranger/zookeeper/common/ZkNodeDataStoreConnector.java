@@ -23,6 +23,7 @@ import com.github.rholder.retry.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.zookeeper.KeeperException;
@@ -40,6 +41,7 @@ public class ZkNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> {
     protected final Service service;
     @Getter(AccessLevel.PROTECTED)
     protected final CuratorFramework curatorFramework;
+    protected final ZkStoreType storeType;
 
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicBoolean stopped = new AtomicBoolean(false);
@@ -60,19 +62,27 @@ public class ZkNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> {
 
     protected ZkNodeDataStoreConnector(
             final Service service,
-            final CuratorFramework curatorFramework) {
+            final CuratorFramework curatorFramework,
+            final ZkStoreType storeType) {
         this.service = service;
         this.curatorFramework = curatorFramework;
+        this.storeType = storeType;
     }
 
     @Override
     public void start() {
+        if(storeType == ZkStoreType.SOURCE){
+            log.info("Start called on a data source will not do anything, since we don't have to create paths for services found in source. Ignoring after setting started");
+            started.set(true);
+            return;
+        }
+
         if (started.get()) {
             log.info("Start called on already initialized data source for service {}. Ignoring.",
                      service.getServiceName());
             return;
         }
-        final String path = PathBuilder.servicePath(service);
+        val path = PathBuilder.servicePath(service);
         try {
             curatorFramework.blockUntilConnected();
             log.info("Connected to zookeeper cluster for {}", service.getServiceName());

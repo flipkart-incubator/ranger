@@ -25,10 +25,10 @@ import lombok.NoArgsConstructor;
 public class PathBuilder {
 
     public static String servicePath(final Service service) {
-        return String.format("/%s", service.getServiceName());
+        return String.format("/%s/%s", service.getNamespace(), service.getServiceName());
     }
 
     public static<T> String instancePath(final Service service, final ServiceNode<T> node) {
-        return String.format("/%s/%s", service.getServiceName(), node.representation());
+        return String.format("/%s/%s/%s", service.getNamespace(), service.getServiceName(), node.representation());
     }
 }

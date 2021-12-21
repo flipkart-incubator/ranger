@@ -20,6 +20,7 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.util.FinderUtils;
 import com.flipkart.ranger.zookeeper.common.ZkNodeDataStoreConnector;
+import com.flipkart.ranger.zookeeper.common.ZkStoreType;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.util.PathBuilder;
 import com.google.common.base.Preconditions;
@@ -42,7 +43,7 @@ public class ZkNodeDataSource<T, D extends ZkNodeDataDeserializer<T>> extends Zk
     public ZkNodeDataSource(
             Service service,
             CuratorFramework curatorFramework) {
-        super(service, curatorFramework);
+        super(service, curatorFramework, ZkStoreType.SOURCE);
     }
 
     @Override
