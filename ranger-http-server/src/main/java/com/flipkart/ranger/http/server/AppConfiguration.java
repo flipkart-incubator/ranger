@@ -17,8 +17,10 @@ package com.flipkart.ranger.http.server;
 
 import com.flipkart.ranger.http.server.config.RangerHttpConfiguration;
 import io.dropwizard.Configuration;
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;

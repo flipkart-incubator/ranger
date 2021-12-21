@@ -2,7 +2,6 @@ package com.flipkart.ranger.common.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import org.junit.Assert;
 import org.junit.Test;
 

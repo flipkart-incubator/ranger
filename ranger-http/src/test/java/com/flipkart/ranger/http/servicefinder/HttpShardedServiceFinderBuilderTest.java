@@ -25,7 +25,6 @@ import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.response.model.RangerResponseCode;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.val;
 import org.junit.Assert;

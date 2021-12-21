@@ -15,11 +15,12 @@
  */
 package com.flipkart.ranger.zk.server;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.flipkart.ranger.zk.server.config.RangerConfiguration;
 import io.dropwizard.Configuration;
-import lombok.*;
-import lombok.extern.jackson.Jacksonized;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;

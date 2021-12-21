@@ -24,7 +24,6 @@ import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinder.ZkSimpleUnshardedServiceFinderBuilder;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 

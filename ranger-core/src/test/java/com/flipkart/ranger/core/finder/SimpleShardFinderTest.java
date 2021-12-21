@@ -22,7 +22,6 @@ import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.RegistryTestUtils;
-import com.google.common.collect.Lists;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;

@@ -22,9 +22,11 @@ import com.flipkart.ranger.client.http.UnshardedRangerHttpHubClient;
 import com.flipkart.ranger.common.server.ShardInfo;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.server.AppConfiguration;
+import com.flipkart.ranger.http.server.healthcheck.RangerHttpHealthCheck;
 import com.flipkart.ranger.zk.server.bundle.RangerServerBundle;
 import com.flipkart.ranger.zk.server.bundle.model.LifecycleSignal;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -90,6 +92,6 @@ public class HttpServerBundle extends RangerServerBundle<ShardInfo, AppConfigura
 
     @Override
     protected List<HealthCheck> withHealthChecks(AppConfiguration configuration) {
-        return Collections.emptyList();
+        return ImmutableList.of(new RangerHttpHealthCheck());
     }
 }

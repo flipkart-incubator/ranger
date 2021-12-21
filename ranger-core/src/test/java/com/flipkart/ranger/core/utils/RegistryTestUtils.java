@@ -20,11 +20,8 @@ import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import lombok.experimental.UtilityClass;
 import lombok.val;
-
-import java.util.List;
 
 @UtilityClass
 public class RegistryTestUtils {

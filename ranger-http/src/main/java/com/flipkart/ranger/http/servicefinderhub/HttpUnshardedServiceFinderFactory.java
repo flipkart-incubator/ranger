@@ -26,7 +26,6 @@ import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import com.flipkart.ranger.http.servicefinder.HttpUnshardedServiceFinderBuilider;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.val;
 
 public class HttpUnshardedServiceFinderFactory<T> implements ServiceFinderFactory<T, ListBasedServiceRegistry<T>> {

@@ -25,7 +25,6 @@ import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zk.server.bundle.model.LifecycleSignal;
-import com.google.common.collect.Lists;
 import io.dropwizard.Configuration;
 import io.dropwizard.jersey.DropwizardResourceConfig;
 import io.dropwizard.jersey.setup.JerseyEnvironment;

@@ -17,8 +17,9 @@ package com.flipkart.ranger.http.server.config;
 
 import com.flipkart.ranger.client.RangerClientConstants;
 import com.flipkart.ranger.http.config.HttpClientConfig;
-import lombok.*;
-import lombok.extern.jackson.Jacksonized;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;

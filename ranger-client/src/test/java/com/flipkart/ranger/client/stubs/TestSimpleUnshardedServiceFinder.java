@@ -22,7 +22,6 @@ import com.flipkart.ranger.core.model.NodeDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
-import com.google.common.collect.Lists;
 import lombok.Builder;
 
 import java.util.Collections;

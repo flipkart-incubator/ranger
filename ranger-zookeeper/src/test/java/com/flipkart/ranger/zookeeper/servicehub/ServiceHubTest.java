@@ -44,7 +44,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.function.Predicate;
 
 /**
  *

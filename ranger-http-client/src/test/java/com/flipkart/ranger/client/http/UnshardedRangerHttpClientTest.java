@@ -23,8 +23,6 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Optional;
-
 public class UnshardedRangerHttpClientTest extends BaseRangerHttpClientTest {
 
     @Test
