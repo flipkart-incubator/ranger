@@ -20,9 +20,14 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public class PathBuilder {
+
+    public static String registeredServicesPath(final String namespace){
+        return String.format("/%s", namespace);
+    }
 
     public static String servicePath(final Service service) {
         return String.format("/%s/%s", service.getNamespace(), service.getServiceName());

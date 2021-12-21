@@ -17,6 +17,7 @@ package com.flipkart.ranger.zookeeper.servicefinderhub;
 
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.zookeeper.util.PathBuilder;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,7 @@ public class ZkServiceDataSource implements ServiceDataSource {
     @Override
     public Collection<Service> services() throws Exception {
         val children = curatorFramework.getChildren()
-                .forPath("/" + namespace);
+                .forPath(PathBuilder.registeredServicesPath(namespace));
         return null == children ? Collections.emptySet() :
                 children.stream()
                         .map(child -> Service.builder().namespace(namespace).serviceName(child).build())
