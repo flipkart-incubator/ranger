@@ -17,18 +17,16 @@ package com.flipkart.ranger.zk.server.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.flipkart.ranger.client.RangerClientConstants;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-@Value
-@Jacksonized
-@Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RangerConfiguration {
     @NotEmpty
     @NotNull

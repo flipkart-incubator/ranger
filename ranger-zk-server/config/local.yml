@@ -11,10 +11,10 @@ server:
   minThreads: 128
   applicationConnectors:
     - type: http
-      port: 8080
+      port: 7080
   adminConnectors:
     - type: http
-      port: 8081
+      port: 7081
   applicationContextPath: /
   requestLog:
     appenders:

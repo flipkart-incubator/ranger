@@ -63,19 +63,19 @@ public class ZkNodeDataSource<T, D extends ZkNodeDataDeserializer<T>> extends Zk
         }
         Preconditions.checkNotNull(deserializer, "Deserializer has not been set for node data");
         try {
-            final long healthcheckZombieCheckThresholdTime = healthcheckZombieCheckThresholdTime(service); //1 Minute
-            final String serviceName = service.getServiceName();
+            val healthcheckZombieCheckThresholdTime = healthcheckZombieCheckThresholdTime(service); //1 Minute
+            val serviceName = service.getServiceName();
             if (!isActive()) {
                 log.warn("ZK connection is not active. Ignoring refresh request for service: {}",
                          service.getServiceName());
                 return Collections.emptyList();
             }
-            final String parentPath = PathBuilder.servicePath(service);
+            val parentPath = PathBuilder.servicePath(service);
             log.debug("Looking for node list of [{}]", serviceName);
-            List<String> children = curatorFramework.getChildren().forPath(parentPath);
+            val children = curatorFramework.getChildren().forPath(parentPath);
             List<ServiceNode<T>> nodes = Lists.newArrayListWithCapacity(children.size());
             log.debug("Found {} nodes for [{}]", children.size(), serviceName);
-            for (String child : children) {
+            for (val child : children) {
                 byte[] data = readChild(parentPath, child).orElse(null);
                 if (data == null || data.length <= 0) {
                     continue;

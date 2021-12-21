@@ -15,22 +15,21 @@
  */
 package com.flipkart.ranger.http.server;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.flipkart.ranger.http.server.config.RangerHttpConfiguration;
 import io.dropwizard.Configuration;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
+import lombok.*;
+
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 
-@Value
-@Jacksonized
-@Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class AppConfiguration extends Configuration {
     @NotEmpty
     @NotNull

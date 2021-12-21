@@ -74,7 +74,7 @@ public class ShardedRangerHttpHubClient<T>
      */
     @Override
     protected ServiceDataSource buildServiceDataSource() {
-        return null != services && !services.isEmpty() ?
+        return !services.isEmpty() ?
                 new StaticDataSource(services) :
                 new HttpServiceDataSource<>(clientConfig, getMapper());
     }

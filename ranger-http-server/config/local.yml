@@ -6,17 +6,17 @@ rangerConfiguration:
   namespace: test
   httpClientConfigs:
     - host: localhost
-      port: 8080
+      port: 7080
 
 server:
   maxThreads: 128
   minThreads: 128
   applicationConnectors:
     - type: http
-      port: 7080
+      port: 6080
   adminConnectors:
     - type: http
-      port: 7081
+      port: 6081
   applicationContextPath: /
   requestLog:
     appenders:

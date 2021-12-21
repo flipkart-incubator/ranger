@@ -77,7 +77,7 @@ public class ZKServerBundle extends RangerServerBundle<ShardInfo, AppConfigurati
                 .refreshTimeMs(rangerConfiguration.getNodeRefreshTimeMs())
                 .deserializer(data -> {
                     try {
-                        getMapper().readValue(data, new TypeReference<ServiceNode<ShardInfo>>() {
+                        return getMapper().readValue(data, new TypeReference<ServiceNode<ShardInfo>>() {
                         });
                     } catch (IOException e) {
                         log.warn("Error parsing node data with value {}", new String(data));

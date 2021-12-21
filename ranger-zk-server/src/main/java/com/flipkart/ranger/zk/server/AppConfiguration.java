@@ -18,28 +18,25 @@ package com.flipkart.ranger.zk.server;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.flipkart.ranger.zk.server.config.RangerConfiguration;
 import io.dropwizard.Configuration;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-@Value
-@Jacksonized
-@Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class AppConfiguration extends Configuration {
 
     @NotEmpty
     @NotNull
     String name;
-
     @Valid
     @NotNull
     RangerConfiguration rangerConfiguration;
-
     boolean initialRotationStatus;
 
 }

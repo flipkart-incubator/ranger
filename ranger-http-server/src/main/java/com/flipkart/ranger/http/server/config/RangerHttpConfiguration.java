@@ -15,18 +15,19 @@
  */
 package com.flipkart.ranger.http.server.config;
 
+import com.flipkart.ranger.client.RangerClientConstants;
 import com.flipkart.ranger.http.config.HttpClientConfig;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Value
-@Builder
-@Jacksonized
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RangerHttpConfiguration {
 
     @NotEmpty
@@ -35,6 +36,6 @@ public class RangerHttpConfiguration {
     @NotEmpty
     @NotNull
     List<HttpClientConfig> httpClientConfigs;
-    int nodeRefreshTimeMs;
-
+    @Min(1000)
+    int nodeRefreshTimeMs = RangerClientConstants.MINIMUM_REFRESH_TIME;;
 }

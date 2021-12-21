@@ -68,7 +68,7 @@ public class HttpServerBundle extends RangerServerBundle<ShardInfo, AppConfigura
                 .nodeRefreshIntervalMs(rangerConfiguration.getNodeRefreshTimeMs())
                 .deserializer(data -> {
                     try {
-                        getMapper().readValue(data, new TypeReference<ServiceNodesResponse<ShardInfo>>() {
+                        return getMapper().readValue(data, new TypeReference<ServiceNodesResponse<ShardInfo>>() {
                         });
                     } catch (IOException e) {
                         log.warn("Error parsing node data with value {}", new String(data));

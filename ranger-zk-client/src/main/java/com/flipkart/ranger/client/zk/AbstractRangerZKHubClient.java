@@ -80,7 +80,7 @@ public abstract class AbstractRangerZKHubClient<T, R extends ServiceRegistry<T>,
 
     @Override
     protected ServiceDataSource buildServiceDataSource() {
-        return null != services && !services.isEmpty() ?
+        return !services.isEmpty() ?
                 new StaticDataSource(services) :
                 new ZkServiceDataSource(getNamespace(), connectionString, curatorFramework);
     }
