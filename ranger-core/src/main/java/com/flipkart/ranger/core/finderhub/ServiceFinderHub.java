@@ -144,8 +144,8 @@ public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
         alreadyUpdating.set(true);
         final Map<Service, ServiceFinder<T, R>> updatedFinders = new HashMap<>();
         try {
-            final Collection<Service> services = serviceDataSource.services();
-            final Map<Service, ServiceFinder<T, R>> knownServiceFinders = finders.get();
+            val services = serviceDataSource.services();
+            val knownServiceFinders = finders.get();
             val newFinders = services.stream()
                     .filter(service -> !knownServiceFinders.containsKey(service))
                     .collect(Collectors.toMap(Function.identity(), finderFactory::buildFinder));
