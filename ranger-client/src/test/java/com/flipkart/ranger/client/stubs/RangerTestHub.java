@@ -32,7 +32,7 @@ public class RangerTestHub extends AbstractRangerHubClient<TestNodeData,
     @Builder
     public RangerTestHub(String namespace, ObjectMapper mapper, int nodeRefreshTimeMs,
                          Predicate<TestNodeData> criteria, TestDeserializer<TestNodeData> deserilizer) {
-        super(namespace, mapper, nodeRefreshTimeMs, criteria, deserilizer);
+        super(namespace, mapper, nodeRefreshTimeMs, criteria, deserilizer, false);
     }
 
     @Override

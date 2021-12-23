@@ -16,11 +16,11 @@
 package com.flipkart.ranger.client.zk;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.client.RangerClient;
+import com.flipkart.ranger.client.AbstractRangerClient;
 import com.flipkart.ranger.client.RangerClientConstants;
 import com.flipkart.ranger.core.finder.SimpleShardedServiceFinder;
+import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.MatchingShardSelector;
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.google.common.base.Preconditions;
@@ -31,16 +31,13 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 @Slf4j
 @Getter
-public class SimpleRangerZKClient<T> implements RangerClient<T> {
+public class SimpleRangerZKClient<T> extends AbstractRangerClient<T, MapBasedServiceRegistry<T>> {
 
     private final SimpleShardedServiceFinder<T> serviceFinder;
-    private final Predicate<T> criteria;
     private final ZkNodeDataDeserializer<T> deserializer;
 
     @Builder(builderMethodName = "fromConnectionString", builderClassName = "FromConnectionStringBuilder")
@@ -51,8 +48,9 @@ public class SimpleRangerZKClient<T> implements RangerClient<T> {
             int nodeRefreshIntervalMs,
             boolean disableWatchers,
             String connectionString,
-            Predicate<T> criteria,
-            ZkNodeDataDeserializer<T> deserializer
+            Predicate<T> initialCriteria,
+            ZkNodeDataDeserializer<T> deserializer,
+            boolean alwaysUseInitialCriteria
     ){
         this(
                 namespace,
@@ -61,8 +59,9 @@ public class SimpleRangerZKClient<T> implements RangerClient<T> {
                 nodeRefreshIntervalMs,
                 disableWatchers,
                 CuratorFrameworkFactory.newClient(connectionString, new RetryForever(RangerClientConstants.CONNECTION_RETRY_TIME)),
-                criteria,
-                deserializer
+                initialCriteria,
+                deserializer,
+                alwaysUseInitialCriteria
         );
     }
 
@@ -74,9 +73,12 @@ public class SimpleRangerZKClient<T> implements RangerClient<T> {
             int nodeRefreshIntervalMs,
             boolean disableWatchers,
             CuratorFramework curatorFramework,
-            Predicate<T> criteria,
-            ZkNodeDataDeserializer<T> deserializer
+            Predicate<T> initialCriteria,
+            ZkNodeDataDeserializer<T> deserializer,
+            boolean alwaysUseInitialCriteria
     ){
+        super(initialCriteria, alwaysUseInitialCriteria);
+
         Preconditions.checkNotNull(mapper, "Mapper can't be null");
         Preconditions.checkNotNull(namespace, "namespace can't be null");
         Preconditions.checkNotNull(deserializer, "deserializer can't be null");
@@ -89,7 +91,6 @@ public class SimpleRangerZKClient<T> implements RangerClient<T> {
                     RangerClientConstants.MINIMUM_REFRESH_TIME);
         }
 
-        this.criteria = criteria;
         this.deserializer = deserializer;
         this.serviceFinder = ServiceFinderBuilders.<T>shardedFinderBuilder()
                 .withCuratorFramework(curatorFramework)
@@ -112,25 +113,5 @@ public class SimpleRangerZKClient<T> implements RangerClient<T> {
     public void stop() {
         log.info("Stopping the service finder");
         this.serviceFinder.stop();
-    }
-
-    @Override
-    public Optional<ServiceNode<T>> getNode() {
-        return getNode(criteria);
-    }
-
-    @Override
-    public List<ServiceNode<T>> getAllNodes() {
-        return getAllNodes(criteria);
-    }
-
-    @Override
-    public Optional<ServiceNode<T>> getNode(Predicate<T> criteria) {
-        return this.serviceFinder.get(criteria);
-    }
-
-    @Override
-    public List<ServiceNode<T>> getAllNodes(Predicate<T> criteria) {
-        return this.serviceFinder.getAll(criteria);
     }
 }

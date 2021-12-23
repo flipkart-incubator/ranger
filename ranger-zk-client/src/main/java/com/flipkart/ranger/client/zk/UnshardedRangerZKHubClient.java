@@ -44,7 +44,8 @@ public class UnshardedRangerZKHubClient<T>
             CuratorFramework curatorFramework,
             Predicate<T> criteria,
             ZkNodeDataDeserializer<T> deserializer,
-            Set<Service> services
+            Set<Service> services,
+            boolean alwaysUseInitialCriteria
     ) {
             super(
                     namespace,
@@ -55,7 +56,8 @@ public class UnshardedRangerZKHubClient<T>
                     curatorFramework,
                     criteria,
                     deserializer,
-                    services
+                    services,
+                    alwaysUseInitialCriteria
             );
     }
 

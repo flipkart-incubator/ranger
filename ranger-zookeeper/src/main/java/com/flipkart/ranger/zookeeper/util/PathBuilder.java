@@ -18,8 +18,6 @@ package com.flipkart.ranger.zookeeper.util;
 
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceNode;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

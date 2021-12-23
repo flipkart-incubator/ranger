@@ -56,9 +56,10 @@ public abstract class AbstractRangerZKHubClient<T, R extends ServiceRegistry<T>,
             CuratorFramework curatorFramework,
             Predicate<T> criteria,
             D deserializer,
-            Set<Service> services
+            Set<Service> services,
+            boolean alwaysUseInitialCriteria
     ) {
-        super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer);
+        super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer, alwaysUseInitialCriteria);
         this.disablePushUpdaters = disablePushUpdaters;
         this.connectionString = connectionString;
         this.services = null != services ? services : Collections.emptySet();

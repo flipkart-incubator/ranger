@@ -18,7 +18,6 @@ package com.flipkart.ranger.zookeeper.servicefinderhub;
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.zookeeper.util.PathBuilder;
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;

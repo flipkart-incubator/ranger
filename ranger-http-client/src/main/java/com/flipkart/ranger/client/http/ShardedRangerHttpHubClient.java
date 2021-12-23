@@ -52,9 +52,10 @@ public class ShardedRangerHttpHubClient<T>
             Predicate<T> criteria,
             HTTPResponseDataDeserializer<T> deserializer,
             HttpClientConfig clientConfig,
-            Set<Service> services
+            Set<Service> services,
+            boolean alwaysUseInitialCriteria
     ) {
-        super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer);
+        super(namespace, mapper, nodeRefreshIntervalMs, criteria, deserializer, alwaysUseInitialCriteria);
         this.clientConfig = clientConfig;
         this.services = null != services ? services : Collections.emptySet();
     }

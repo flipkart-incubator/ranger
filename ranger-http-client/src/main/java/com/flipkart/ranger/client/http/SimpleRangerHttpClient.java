@@ -16,25 +16,24 @@
 package com.flipkart.ranger.client.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.client.RangerClient;
+import com.flipkart.ranger.client.AbstractRangerClient;
 import com.flipkart.ranger.core.finder.SimpleUnshardedServiceFinder;
+import com.flipkart.ranger.core.finder.serviceregistry.ListBasedServiceRegistry;
 import com.flipkart.ranger.core.finder.shardselector.ListShardSelector;
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.HttpServiceFinderBuilders;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.serde.HTTPResponseDataDeserializer;
 import com.google.common.base.Preconditions;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 @Slf4j
-public class SimpleRangerHttpClient<T> implements RangerClient<T> {
+public class SimpleRangerHttpClient<T> extends AbstractRangerClient<T, ListBasedServiceRegistry<T>> {
 
-    private final Predicate<T> criteria;
+    @Getter
     private final SimpleUnshardedServiceFinder<T> serviceFinder;
 
     @Builder
@@ -44,14 +43,16 @@ public class SimpleRangerHttpClient<T> implements RangerClient<T> {
             ObjectMapper mapper,
             int nodeRefreshIntervalMs,
             HttpClientConfig clientConfig,
-            Predicate<T> criteria,
-            HTTPResponseDataDeserializer<T> deserializer
+            Predicate<T> initialCriteria,
+            HTTPResponseDataDeserializer<T> deserializer,
+            boolean alwaysUseInitialCriteria
     ) {
+
+        super(initialCriteria, alwaysUseInitialCriteria);
+
         Preconditions.checkNotNull(mapper, "Mapper can't be null");
         Preconditions.checkNotNull(namespace, "namespace can't be null");
         Preconditions.checkNotNull(deserializer, "deserializer can't be null");
-
-        this.criteria = criteria;
 
         this.serviceFinder = HttpServiceFinderBuilders.<T>httpUnshardedServiceFinderBuilider()
                 .withClientConfig(clientConfig)
@@ -76,24 +77,5 @@ public class SimpleRangerHttpClient<T> implements RangerClient<T> {
         this.serviceFinder.stop();
     }
 
-    @Override
-    public Optional<ServiceNode<T>> getNode() {
-        return getNode(criteria);
-    }
-
-    @Override
-    public List<ServiceNode<T>> getAllNodes() {
-        return getAllNodes(criteria);
-    }
-
-    @Override
-    public Optional<ServiceNode<T>> getNode(Predicate<T> criteria) {
-        return this.serviceFinder.get(criteria);
-    }
-
-    @Override
-    public List<ServiceNode<T>> getAllNodes(Predicate<T> criteria) {
-        return this.serviceFinder.getAll(criteria);
-    }
 }
 

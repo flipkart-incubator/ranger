@@ -16,6 +16,7 @@
 package com.flipkart.ranger.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.ranger.client.utils.CriteriaUtils;
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.finderhub.ServiceFinderFactory;
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
@@ -44,20 +45,23 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
 
     private int nodeRefreshTimeMs;
     private ServiceFinderHub<T, R> hub;
-    private final Predicate<T> criteria;
+    private final Predicate<T> initialCriteria;
+    private final boolean alwaysUseInitialCriteria;
 
     protected AbstractRangerHubClient(
             String namespace,
             ObjectMapper mapper,
             int nodeRefreshTimeMs,
-            Predicate<T> criteria,
-            D deserializer
+            Predicate<T> initialCriteria,
+            D deserializer,
+            boolean alwaysUseInitialCriteria
     ){
         this.namespace = namespace;
         this.mapper = mapper;
         this.nodeRefreshTimeMs = nodeRefreshTimeMs;
-        this.criteria = criteria;
+        this.initialCriteria = initialCriteria;
         this.deserializer = deserializer;
+        this.alwaysUseInitialCriteria = alwaysUseInitialCriteria;
     }
 
     public void start(){
@@ -82,13 +86,13 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
     public Optional<ServiceNode<T>> getNode(
             final Service service
     ){
-        return getNode(service, criteria);
+        return getNode(service, initialCriteria);
     }
 
     public List<ServiceNode<T>> getAllNodes(
             final Service service
     ){
-        return getAllNodes(service, criteria);
+        return getAllNodes(service, initialCriteria);
     }
 
     public Optional<ServiceNode<T>> getNode(
@@ -96,7 +100,9 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
             final Predicate<T> criteria
     ){
         val optionalFinder = this.getHub().finder(service);
-        return optionalFinder.flatMap(trServiceFinder -> trServiceFinder.get(criteria));
+        return optionalFinder.flatMap(trServiceFinder -> trServiceFinder.get(
+                CriteriaUtils.getCriteria(alwaysUseInitialCriteria, initialCriteria, criteria))
+        );
     }
 
     public List<ServiceNode<T>> getAllNodes(
@@ -104,7 +110,9 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
             final Predicate<T> criteria
     ){
         val optionalFinder = this.getHub().finder(service);
-        return optionalFinder.map(trServiceFinder -> trServiceFinder.getAll(criteria)).orElse(Collections.emptyList());
+        return optionalFinder.map(trServiceFinder -> trServiceFinder.getAll(
+                CriteriaUtils.getCriteria(alwaysUseInitialCriteria, initialCriteria, criteria))
+        ).orElse(Collections.emptyList());
     }
 
     public Collection<Service> getRegisteredServices() {
