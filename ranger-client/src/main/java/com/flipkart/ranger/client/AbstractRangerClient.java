@@ -39,25 +39,21 @@ public abstract class AbstractRangerClient<T, R extends ServiceRegistry<T>> impl
 
     @Override
     public Optional<ServiceNode<T>> getNode() {
-        val finder = getServiceFinder();
-        return finder.get(initialCriteria);
+        return getServiceFinder().get(initialCriteria);
     }
 
     @Override
     public Optional<ServiceNode<T>> getNode(Predicate<T> criteria) {
-        val finder = getServiceFinder();
-        return finder.get(CriteriaUtils.getCriteria(alwaysUseInitialCriteria, initialCriteria, criteria));
+        return getServiceFinder().get(CriteriaUtils.getCriteria(alwaysUseInitialCriteria, initialCriteria, criteria));
     }
 
     @Override
     public List<ServiceNode<T>> getAllNodes() {
-        val finder = getServiceFinder();
-        return finder.getAll(initialCriteria);
+        return getServiceFinder().getAll(initialCriteria);
     }
 
     @Override
     public List<ServiceNode<T>> getAllNodes(Predicate<T> criteria) {
-        val finder = getServiceFinder();
-        return finder.getAll(CriteriaUtils.getCriteria(alwaysUseInitialCriteria, initialCriteria, criteria));
+        return getServiceFinder().getAll(CriteriaUtils.getCriteria(alwaysUseInitialCriteria, initialCriteria, criteria));
     }
 }

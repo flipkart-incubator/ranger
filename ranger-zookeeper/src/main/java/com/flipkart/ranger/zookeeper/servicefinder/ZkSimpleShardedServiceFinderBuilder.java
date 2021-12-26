@@ -24,6 +24,7 @@ import com.flipkart.ranger.zookeeper.serde.ZkNodeDataDeserializer;
 import com.flipkart.ranger.zookeeper.servicefinder.signals.ZkWatcherRegistryUpdateSignal;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -51,7 +52,7 @@ public class ZkSimpleShardedServiceFinderBuilder<T> extends SimpleShardedService
 
     @Override
     public SimpleShardedServiceFinder<T> build() {
-        boolean curatorProvided = curatorFramework != null;
+        val curatorProvided = curatorFramework != null;
         if (!curatorProvided) {
             Preconditions.checkNotNull(connectionString);
             curatorFramework = CuratorFrameworkFactory.builder()

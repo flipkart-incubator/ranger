@@ -94,8 +94,8 @@ public class SimpleServiceProviderTest {
             Assert.assertNotNull(node);
             System.out.println(node.getHost());
         }
-        Multiset<String> frequency = HashMultiset.create();
-        long startTime = System.currentTimeMillis();
+        val frequency = HashMultiset.create();
+        val startTime = System.currentTimeMillis();
         LongStream.range(0, 1000000).mapToObj(i -> serviceFinder.get(null).orElse(null)).forEach(node -> {
             Assert.assertNotNull(node);
             frequency.add(node.getHost());

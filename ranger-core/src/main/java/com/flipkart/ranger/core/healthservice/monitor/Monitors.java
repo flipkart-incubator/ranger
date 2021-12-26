@@ -16,6 +16,7 @@
 package com.flipkart.ranger.core.healthservice.monitor;
 
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
+import lombok.val;
 
 import java.io.File;
 
@@ -32,12 +33,8 @@ public class Monitors {
         return new Monitor<HealthcheckStatus>() {
             @Override
             public HealthcheckStatus monitor() {
-                File file = new File(filePath);
-                if (file.exists()) {
-                    return HealthcheckStatus.healthy;
-                } else {
-                    return HealthcheckStatus.unhealthy;
-                }
+                val file = new File(filePath);
+                return file.exists() ? HealthcheckStatus.healthy : HealthcheckStatus.unhealthy;
             }
 
             @Override

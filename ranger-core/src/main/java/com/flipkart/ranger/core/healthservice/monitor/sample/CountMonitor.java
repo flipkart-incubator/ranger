@@ -18,6 +18,7 @@ package com.flipkart.ranger.core.healthservice.monitor.sample;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
+import lombok.val;
 
 /**
  * A monitor that can be used as a counting monitor to check if any countable entity breaches a threashhold
@@ -56,7 +57,7 @@ public abstract class CountMonitor extends IsolatedHealthMonitor {
 
     @Override
     public HealthcheckStatus monitor() {
-        final long count = getCount().longValue();
+        val count = getCount().longValue();
         switch (checkSign) {
             case LESSER_THAN:
                 if (count < threshold) {

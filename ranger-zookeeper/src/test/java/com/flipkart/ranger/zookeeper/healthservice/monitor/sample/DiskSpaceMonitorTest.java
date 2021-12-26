@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DiskSpaceMonitorTest {
 
-    IsolatedHealthMonitor diskSpaceMonitor = new DiskSpaceMonitor("/", 1000, new TimeEntity(2, TimeUnit.SECONDS));
+    final IsolatedHealthMonitor diskSpaceMonitor = new DiskSpaceMonitor("/", 1000, new TimeEntity(2, TimeUnit.SECONDS));
 
     @Test
     public void testGetCount() throws Exception {

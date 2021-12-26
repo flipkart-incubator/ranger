@@ -29,6 +29,7 @@ import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import lombok.val;
+import lombok.var;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
@@ -104,11 +105,11 @@ public class ServiceProviderIntegrationTest {
     public void testBasicDiscovery() throws Exception {
 
         /* clean slate */
-        boolean delete = file.delete();
+        var delete = file.delete();
         delete = anotherFile.delete();
 
         /* with file existing, 3 nodes should be healthy */
-        boolean filecreate = file.createNewFile();
+        var filecreate = file.createNewFile();
         System.out.println("created file");
         TestUtils.sleepForSeconds(8);
         List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll(null);

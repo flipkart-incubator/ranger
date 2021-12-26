@@ -99,8 +99,7 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
             final Service service,
             final Predicate<T> criteria
     ){
-        val optionalFinder = this.getHub().finder(service);
-        return optionalFinder.flatMap(trServiceFinder -> trServiceFinder.get(
+        return  this.getHub().finder(service).flatMap(trServiceFinder -> trServiceFinder.get(
                 CriteriaUtils.getCriteria(alwaysUseInitialCriteria, initialCriteria, criteria))
         );
     }
@@ -109,8 +108,7 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
             final Service service,
             final Predicate<T> criteria
     ){
-        val optionalFinder = this.getHub().finder(service);
-        return optionalFinder.map(trServiceFinder -> trServiceFinder.getAll(
+        return this.getHub().finder(service).map(trServiceFinder -> trServiceFinder.getAll(
                 CriteriaUtils.getCriteria(alwaysUseInitialCriteria, initialCriteria, criteria))
         ).orElse(Collections.emptyList());
     }

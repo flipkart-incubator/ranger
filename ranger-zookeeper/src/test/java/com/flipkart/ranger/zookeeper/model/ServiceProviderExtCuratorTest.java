@@ -29,6 +29,7 @@ import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.var;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -40,6 +41,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.LongStream;
 
 @Slf4j
 public class ServiceProviderExtCuratorTest {
@@ -101,13 +103,11 @@ public class ServiceProviderExtCuratorTest {
             Assert.assertNotNull(node);
             Assert.assertEquals(1, node.getNodeData().getShardId());
         }
-        long startTime = System.currentTimeMillis();
-        for(long i = 0; i <1000000; i++)
-        {
-            val node = serviceFinder.get(RangerTestUtils.getCriteria(2)).orElse(null);
+        val startTime = System.currentTimeMillis();
+        LongStream.range(0, 1000000).mapToObj(i -> serviceFinder.get(RangerTestUtils.getCriteria(2)).orElse(null)).forEach(node -> {
             Assert.assertNotNull(node);
             Assert.assertEquals(2, node.getNodeData().getShardId());
-        }
+        });
         log.info("PERF::RandomSelector::Took (ms):" + (System.currentTimeMillis() - startTime));
         {
             val node = serviceFinder.get(RangerTestUtils.getCriteria(99)).orElse(null);

@@ -36,14 +36,8 @@ public class SimpleRangerZKClientTest extends BaseRangerZKClientTest {
                 .mapper(getObjectMapper())
                 .build();
         client.start();
-
-        Optional<ServiceNode<TestNodeData>> node = client.getNode();
-        Assert.assertTrue(node.isPresent());
-
-        node = client.getNode(c -> c.getShardId() == 1);
-        Assert.assertTrue(node.isPresent());
-
-        node = client.getNode(c -> c.getShardId() == 2);
-        Assert.assertFalse(node.isPresent());
+        Assert.assertNotNull( client.getNode().orElse(null));
+        Assert.assertNotNull(client.getNode(c -> c.getShardId() == 1).orElse(null));
+        Assert.assertNull(client.getNode(c -> c.getShardId() == 2).orElse(null));
     }
 }

@@ -20,6 +20,7 @@ import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
 import lombok.val;
+import lombok.var;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,17 +38,10 @@ public class ShardedRangerHttpClientTest extends BaseRangerHttpClientTest {
         client.start();
 
         TestUtils.sleepForSeconds(6);
-
         val service = RangerTestUtils.getService("test-n", "test-s");
-        ServiceNode<TestNodeData> node = client.getNode(service).orElse(null);
-        Assert.assertNotNull(node);
-
-        node = client.getNode(service, nodeData -> nodeData.getShardId() == 1).orElse(null);
-        Assert.assertNotNull(node);
-
-        node = client.getNode(service, nodeData -> nodeData.getShardId() == 2).orElse(null);
-        Assert.assertNull(node);
-
+        Assert.assertNotNull(client.getNode(service).orElse(null));
+        Assert.assertNotNull(client.getNode(service, nodeData -> nodeData.getShardId() == 1).orElse(null));
+        Assert.assertNull(client.getNode(service, nodeData -> nodeData.getShardId() == 2).orElse(null));
         client.stop();
     }
 }

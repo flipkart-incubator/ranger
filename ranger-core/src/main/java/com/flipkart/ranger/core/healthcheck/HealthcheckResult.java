@@ -17,13 +17,14 @@ package com.flipkart.ranger.core.healthcheck;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Value;
 
 /**
  *
  */
-@Data
+@Value
 @Builder
 public class HealthcheckResult {
-    private final HealthcheckStatus status;
-    private final long updatedTime;
+    HealthcheckStatus status;
+    long updatedTime;
 }

@@ -19,6 +19,7 @@ package com.flipkart.ranger.core.healthservice.monitor.sample;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
+import lombok.val;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -73,11 +74,7 @@ public class RotationStatusMonitor extends IsolatedHealthMonitor {
      */
     @Override
     public HealthcheckStatus monitor() {
-        File file = new File(filePath);
-        if (file.exists()) {
-            return HealthcheckStatus.healthy;
-        } else {
-            return HealthcheckStatus.unhealthy;
-        }
+        val file = new File(filePath);
+        return file.exists() ? HealthcheckStatus.healthy : HealthcheckStatus.unhealthy;
     }
 }

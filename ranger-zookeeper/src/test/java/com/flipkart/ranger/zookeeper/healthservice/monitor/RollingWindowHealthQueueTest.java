@@ -17,14 +17,15 @@ package com.flipkart.ranger.zookeeper.healthservice.monitor;
 
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.healthservice.monitor.RollingWindowHealthQueue;
+import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class RollingWindowHealthQueueTest {
 
     @Test
-    public void testCheckInRollingWindow1() throws Exception {
-        RollingWindowHealthQueue rollingWindowHealthQueue = new RollingWindowHealthQueue(5, 3);
+    public void testCheckInRollingWindow1() {
+        val rollingWindowHealthQueue = new RollingWindowHealthQueue(5, 3);
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.healthy));
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.healthy));
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.healthy));
@@ -33,9 +34,9 @@ public class RollingWindowHealthQueueTest {
     }
 
     @Test
-    public void testCheckInRollingWindowEdge() throws Exception {
+    public void testCheckInRollingWindowEdge() {
         try {
-            RollingWindowHealthQueue rollingWindowHealthQueue = new RollingWindowHealthQueue(1, 3);
+            val rollingWindowHealthQueue = new RollingWindowHealthQueue(1, 3);
             Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.unhealthy));
         } catch (Exception u) {
             Assert.assertTrue(u instanceof UnsupportedOperationException);
@@ -43,8 +44,8 @@ public class RollingWindowHealthQueueTest {
     }
 
     @Test
-    public void testCheckInRollingWindowEdge2() throws Exception {
-        RollingWindowHealthQueue rollingWindowHealthQueue = new RollingWindowHealthQueue(3, 3);
+    public void testCheckInRollingWindowEdge2() {
+        val rollingWindowHealthQueue = new RollingWindowHealthQueue(3, 3);
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.unhealthy));
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.unhealthy));
         Assert.assertFalse(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.unhealthy));
@@ -55,8 +56,8 @@ public class RollingWindowHealthQueueTest {
     }
 
     @Test
-    public void testCheckInRollingWindowEdge3() throws Exception {
-        RollingWindowHealthQueue rollingWindowHealthQueue = new RollingWindowHealthQueue(5, 1);
+    public void testCheckInRollingWindowEdge3() {
+        val rollingWindowHealthQueue = new RollingWindowHealthQueue(5, 1);
         Assert.assertFalse(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.unhealthy));
         Assert.assertFalse(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.unhealthy));
         Assert.assertFalse(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.unhealthy));
@@ -70,8 +71,8 @@ public class RollingWindowHealthQueueTest {
 
 
     @Test
-    public void testCheckInRollingWindow2() throws Exception {
-        RollingWindowHealthQueue rollingWindowHealthQueue = new RollingWindowHealthQueue(5, 3);
+    public void testCheckInRollingWindow2() {
+        val rollingWindowHealthQueue = new RollingWindowHealthQueue(5, 3);
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.healthy));
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.healthy));
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.healthy));
@@ -83,8 +84,8 @@ public class RollingWindowHealthQueueTest {
 
 
     @Test
-    public void testCheckInRollingWindow3() throws Exception {
-        RollingWindowHealthQueue rollingWindowHealthQueue = new RollingWindowHealthQueue(5, 3);
+    public void testCheckInRollingWindow3() {
+        val rollingWindowHealthQueue = new RollingWindowHealthQueue(5, 3);
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.unhealthy));
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.healthy));
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.healthy));
@@ -96,8 +97,8 @@ public class RollingWindowHealthQueueTest {
     }
 
     @Test
-    public void testCheckInRollingWindow4() throws Exception {
-        RollingWindowHealthQueue rollingWindowHealthQueue = new RollingWindowHealthQueue(5, 3);
+    public void testCheckInRollingWindow4() {
+        val rollingWindowHealthQueue = new RollingWindowHealthQueue(5, 3);
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.unhealthy));
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.healthy));
         Assert.assertTrue(rollingWindowHealthQueue.checkInRollingWindow(HealthcheckStatus.healthy));

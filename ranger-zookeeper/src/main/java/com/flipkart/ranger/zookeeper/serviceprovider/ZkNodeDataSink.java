@@ -49,7 +49,7 @@ public class ZkNodeDataSink<T, S extends ZkNodeDataSerializer<T>> extends ZkNode
             return;
         }
         Preconditions.checkNotNull(serializer, "Serializer has not been set for node data");
-        final String path = PathBuilder.instancePath(service, serviceNode);
+        val path = PathBuilder.instancePath(service, serviceNode);
         try {
             if (null == curatorFramework.checkExists().forPath(path)) {
                 log.info("No node exists for path: {}. Will create now.", path);

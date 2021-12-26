@@ -33,6 +33,7 @@ import io.dropwizard.setup.AdminEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.val;
+import lombok.var;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.junit.After;
 import org.junit.Assert;
@@ -106,7 +107,7 @@ public class RangerServerBundleTest {
 
         rangerServerBundle.initialize(bootstrap);
         rangerServerBundle.run(configuration, environment);
-        for (LifeCycle lifeCycle : lifecycleEnvironment.getManagedObjects()){
+        for (val lifeCycle : lifecycleEnvironment.getManagedObjects()){
             lifeCycle.start();
         }
     }
@@ -116,20 +117,14 @@ public class RangerServerBundleTest {
     public void testRangerBundle(){
         TestUtils.sleepForSeconds(3);
         val hub = rangerServerBundle.getHubs().get(0);
-        Optional<ServiceNode<TestNodeData>> node = hub.getNode(service);
-        Assert.assertTrue(node.isPresent());
-        Assert.assertTrue(node.get().getHost().equalsIgnoreCase("localhost"));
-        Assert.assertEquals(9200, node.get().getPort());
-        Assert.assertEquals(1, node.get().getNodeData().getShardId());
-
-        node = hub.getNode(RangerTestUtils.getService("test", "test"));
-        Assert.assertFalse(node.isPresent());
-
-        node = hub.getNode(service, nodeData -> nodeData.getShardId() == 2);
-        Assert.assertFalse(node.isPresent());
-
-        node = hub.getNode(RangerTestUtils.getService("test", "test"), nodeData -> nodeData.getShardId() == 1);
-        Assert.assertFalse(node.isPresent());
+        var node = hub.getNode(service).orElse(null);
+        Assert.assertNotNull(node);
+        Assert.assertTrue(node.getHost().equalsIgnoreCase("localhost"));
+        Assert.assertEquals(9200, node.getPort());
+        Assert.assertEquals(1, node.getNodeData().getShardId());
+        Assert.assertNull(hub.getNode(RangerTestUtils.getService("test", "test")).orElse(null));
+        Assert.assertNull(hub.getNode(service, nodeData -> nodeData.getShardId() == 2).orElse(null));
+        Assert.assertNull(hub.getNode(RangerTestUtils.getService("test", "test"), nodeData -> nodeData.getShardId() == 1).orElse(null));
     }
 
     @After

@@ -16,6 +16,7 @@
 package com.flipkart.ranger.core.healthservice.monitor.sample;
 
 import com.flipkart.ranger.core.healthservice.TimeEntity;
+import lombok.val;
 
 import java.io.File;
 
@@ -49,7 +50,7 @@ public class DiskSpaceMonitor extends CountMonitor {
 
     @Override
     public Number getCount() {
-        File file = new File(partition);
+        val file = new File(partition);
         return file.getFreeSpace();
     }
 }

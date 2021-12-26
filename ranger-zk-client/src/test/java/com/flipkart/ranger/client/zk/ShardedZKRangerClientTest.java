@@ -42,14 +42,8 @@ public class ShardedZKRangerClientTest extends BaseRangerZKClientTest {
 
         zkHubClient.start();
         TestUtils.sleepForSeconds(6);
-
-        val service = RangerTestUtils.getService("test-n", "s1");
-        Optional<ServiceNode<TestNodeData>> node = zkHubClient.getNode(RangerTestUtils.getService("test-n", "s1"));
-        Assert.assertTrue(node.isPresent());
-
-        node = zkHubClient.getNode(service, nodeData -> nodeData.getShardId() == 1);
-        Assert.assertTrue(node.isPresent());
-
+        Assert.assertNotNull(zkHubClient.getNode(RangerTestUtils.getService("test-n", "s1")).orElse(null));
+        Assert.assertNotNull(zkHubClient.getNode(RangerTestUtils.getService("test-n", "s1"), nodeData -> nodeData.getShardId() == 1).orElse(null));
         zkHubClient.stop();
     }
 }

@@ -105,7 +105,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
             log.info("Service aggregator is already running");
             return;
         }
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(isolatedHealthMonitorList.size());
+        val scheduledExecutorService = Executors.newScheduledThreadPool(isolatedHealthMonitorList.size());
         scheduledFutureList = Lists.newArrayListWithCapacity(isolatedHealthMonitorList.size());
         isolatedHealthMonitorList.stream().map(isolatedHealthMonitor -> scheduledExecutorService.scheduleWithFixedDelay(
                 isolatedHealthMonitor,
@@ -127,9 +127,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
             log.error("Service aggregator is currently not running, cannot stop..");
             return;
         }
-        for (ScheduledFuture<?> scheduledFuture : scheduledFutureList) {
-            scheduledFuture.cancel(true);
-        }
+        scheduledFutureList.forEach(scheduledFuture -> scheduledFuture.cancel(true));
         running.set(false);
     }
 
@@ -145,8 +143,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
                                                             "Please start the aggregator before trying to get health");*/
         }
         healthcheckStatus.set(HealthcheckStatus.healthy);
-        Date currentTime = new Date();
-
+        val currentTime = new Date();
         /* check health status of isolated monitors */
         val hasUnhealthyMonitor = isolatedHealthMonitorList.stream()
                 .filter(isolatedHealthMonitor -> !isolatedHealthMonitor.isDisabled())

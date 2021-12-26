@@ -31,6 +31,7 @@ import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.var;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
@@ -94,7 +95,7 @@ public class ServiceProviderTest {
             Assert.assertNotNull(node);
             Assert.assertEquals(1, node.getNodeData().getShardId());
         }
-        long startTime = System.currentTimeMillis();
+        val startTime = System.currentTimeMillis();
         LongStream.range(0, 1000000).mapToObj(i -> serviceFinder.get(RangerTestUtils.getCriteria(2)).orElse(null)).forEach(node -> {
             Assert.assertNotNull(node);
             Assert.assertEquals(2, node.getNodeData().getShardId());

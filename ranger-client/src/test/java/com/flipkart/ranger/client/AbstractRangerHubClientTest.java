@@ -23,6 +23,7 @@ import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.var;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,23 +38,15 @@ public class AbstractRangerHubClientTest {
     public void testAbstractHubClient() {
         val testAbstractHub = RangerHubTestUtils.getTestHub();
         testAbstractHub.start();
-
         TestUtils.sleepForSeconds(3);
-        Optional<ServiceNode<TestNodeData>> node = testAbstractHub.getNode(service);
-        Assert.assertTrue(node.isPresent());
-        Assert.assertTrue(node.get().getHost().equalsIgnoreCase("localhost"));
-        Assert.assertEquals(9200, node.get().getPort());
-        Assert.assertEquals(1, node.get().getNodeData().getShardId());
-
-        node = testAbstractHub.getNode(RangerTestUtils.getService("test", "test"));
-        Assert.assertFalse(node.isPresent());
-
-        node = testAbstractHub.getNode(service, nodeData -> nodeData.getShardId() == 2);
-        Assert.assertFalse(node.isPresent());
-
-        node = testAbstractHub.getNode(RangerTestUtils.getService("test", "test"), nodeData -> nodeData.getShardId() == 1);
-        Assert.assertFalse(node.isPresent());
-
+        var node = testAbstractHub.getNode(service).orElse(null);
+        Assert.assertNotNull(node);
+        Assert.assertTrue(node.getHost().equalsIgnoreCase("localhost"));
+        Assert.assertEquals(9200, node.getPort());
+        Assert.assertEquals(1, node.getNodeData().getShardId());
+        Assert.assertFalse(testAbstractHub.getNode(RangerTestUtils.getService("test", "test")).isPresent());
+        Assert.assertFalse(testAbstractHub.getNode(service, nodeData -> nodeData.getShardId() == 2).isPresent());
+        Assert.assertFalse(testAbstractHub.getNode(RangerTestUtils.getService("test", "test"), nodeData -> nodeData.getShardId() == 1).isPresent());
         testAbstractHub.stop();
     }
 }

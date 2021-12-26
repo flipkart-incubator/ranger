@@ -27,6 +27,9 @@ public class CriteriaUtils {
         The idea is to check if this has to be merged with the initialCriteria or not.
 
         So the default return is always argCriteria, in case the initial criteria is null!
+
+        So when useInitialCriteria is true, the initial criteria defined will always be used, no matter what,
+        it is a predicate and. (Not to be confused with or)
      */
     public static <T>Predicate<T> getCriteria(
             boolean useInitialCriteria,

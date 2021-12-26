@@ -17,6 +17,7 @@ package com.flipkart.ranger.zookeeper.healthservice.monitor.sample;
 
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.healthservice.monitor.sample.RotationStatusMonitor;
+import lombok.val;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,8 +43,8 @@ public class RotationStatusMonitorTest {
     @Test
     public void testMonitor() throws Exception {
         deleteRotationFile();
-        RotationStatusMonitor rotationStatusMonitor = new RotationStatusMonitor("/tmp/rotationFile.html");
-        final HealthcheckStatus monitorResult = rotationStatusMonitor.monitor();
+        val rotationStatusMonitor = new RotationStatusMonitor("/tmp/rotationFile.html");
+        val monitorResult = rotationStatusMonitor.monitor();
         Assert.assertEquals(HealthcheckStatus.unhealthy, monitorResult);
     }
 
@@ -51,8 +52,8 @@ public class RotationStatusMonitorTest {
     public void testMonitor2() throws Exception {
         deleteRotationFile();
         if (file.createNewFile()) {
-            RotationStatusMonitor rotationStatusMonitor = new RotationStatusMonitor(filePath);
-            final HealthcheckStatus monitorResult = rotationStatusMonitor.monitor();
+            val rotationStatusMonitor = new RotationStatusMonitor(filePath);
+            val monitorResult = rotationStatusMonitor.monitor();
             Assert.assertEquals(HealthcheckStatus.healthy, monitorResult);
         } else {
             System.out.println("Unable to create file = " + filePath);

@@ -39,15 +39,9 @@ public class UnshardedRangerHttpClientTest extends BaseRangerHttpClientTest {
         TestUtils.sleepForSeconds(6);
 
         val service = RangerTestUtils.getService("test-n", "test-s");
-        ServiceNode<TestNodeData> node = client.getNode(service).orElse(null);
-        Assert.assertNotNull(node);
-
-        node = client.getNode(service, nodeData -> nodeData.getShardId() == 1).orElse(null);
-        Assert.assertNotNull(node);
-
-        node = client.getNode(service, nodeData -> nodeData.getShardId() == 2).orElse(null);
-        Assert.assertNull(node);
-
+        Assert.assertNotNull(client.getNode(service).orElse(null));
+        Assert.assertNotNull(client.getNode(service, nodeData -> nodeData.getShardId() == 1).orElse(null));
+        Assert.assertNull(client.getNode(service, nodeData -> nodeData.getShardId() == 2).orElse(null));
         client.stop();
     }
 }

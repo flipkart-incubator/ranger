@@ -53,8 +53,8 @@ public class BaseServiceProviderBuilderTest {
 
     @Test
     public void testbuilder() {
-        final String host = "localhost";
-        final int port = 9000;
+        val host = "localhost";
+        val port = 9000;
         Exception exception = null;
         try {
             val serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
