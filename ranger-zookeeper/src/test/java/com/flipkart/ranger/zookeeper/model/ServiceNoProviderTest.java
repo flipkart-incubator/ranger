@@ -53,7 +53,7 @@ public class ServiceNoProviderTest {
 
     @Test
     public void testBasicDiscovery() {
-        SimpleShardedServiceFinder<TestNodeData> serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
+        val serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
