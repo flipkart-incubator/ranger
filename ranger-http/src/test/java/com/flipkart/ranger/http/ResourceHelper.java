@@ -17,12 +17,14 @@ package com.flipkart.ranger.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class ResourceHelper {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -42,5 +44,4 @@ public class ResourceHelper {
         if(null == data) return null;
         return objectMapper.readValue(data, klass);
     }
-
 }
