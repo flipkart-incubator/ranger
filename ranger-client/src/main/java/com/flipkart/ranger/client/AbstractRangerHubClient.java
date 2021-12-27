@@ -27,7 +27,6 @@ import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 
 import java.util.Collection;
 import java.util.Collections;

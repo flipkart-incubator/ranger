@@ -197,8 +197,7 @@ public abstract class BaseServiceProviderBuilder<T, B extends BaseServiceProvide
                 .add(healthcheckUpdateSignalGenerator)
                 .addAll(additionalRefreshSignals)
                 .build();
-        val serviceProvider = new ServiceProvider<>(service,
-                                                                         new ServiceNode<>(hostname, port, nodeData),
+        val serviceProvider = new ServiceProvider<>(service, ServiceNode.<T>builder().host(hostname).port(port).nodeData(nodeData).build(),
                                                                          serializer,
                                                                          usableNodeDataSource,
                                                                          signalGenerators);

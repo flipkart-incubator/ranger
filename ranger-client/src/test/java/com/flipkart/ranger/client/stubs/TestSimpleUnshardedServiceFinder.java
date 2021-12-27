@@ -46,7 +46,11 @@ public class TestSimpleUnshardedServiceFinder <T>
         @Override
         public List<ServiceNode<TestNodeData>> refresh(Deserializer<TestNodeData> deserializer) {
             return Collections.singletonList(
-                    new ServiceNode<>("localhost", 9200, TestNodeData.builder().shardId(1).build())
+                    ServiceNode.<TestNodeData>builder()
+                            .host("localhost")
+                            .port(9200)
+                            .nodeData(TestNodeData.builder().shardId(1).build())
+                            .build()
             );
         }
 

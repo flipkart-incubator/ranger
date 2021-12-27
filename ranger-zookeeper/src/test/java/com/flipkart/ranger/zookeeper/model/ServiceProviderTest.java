@@ -31,7 +31,6 @@ import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import lombok.var;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;

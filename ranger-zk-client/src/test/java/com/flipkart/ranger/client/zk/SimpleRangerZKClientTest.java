@@ -15,13 +15,10 @@
  */
 package com.flipkart.ranger.client.zk;
 
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Optional;
 
 public class SimpleRangerZKClientTest extends BaseRangerZKClientTest {
 

@@ -24,7 +24,6 @@ import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import lombok.val;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;

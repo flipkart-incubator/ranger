@@ -52,7 +52,7 @@ public abstract class BaseRangerHttpClientTest {
     @Before
     public void startTestCluster() throws Exception {
         val testNode = TestNodeData.builder().shardId(1).build();
-        val node = new ServiceNode<>("127.0.0.1", 80, testNode);
+        val node = ServiceNode.<TestNodeData>builder().host("127.0.0.1").port(80).nodeData(testNode).build();
         node.setHealthcheckStatus(HealthcheckStatus.healthy);
         node.setLastUpdatedTimeStamp(System.currentTimeMillis());
         val payload = objectMapper.writeValueAsBytes(

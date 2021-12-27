@@ -17,24 +17,21 @@
 package com.flipkart.ranger.core.model;
 
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ServiceNode<T> {
     private String host;
     private int port;
     private T nodeData;
     private HealthcheckStatus healthcheckStatus = HealthcheckStatus.healthy;
     private long lastUpdatedTimeStamp = Long.MIN_VALUE;
-
-    public ServiceNode() {
-    }
-
-    public ServiceNode(String host, int port, T nodeData) {
-        this.host = host;
-        this.port = port;
-        this.nodeData = nodeData;
-    }
 
     public String representation() {
         return String.format("%s:%d", host, port);

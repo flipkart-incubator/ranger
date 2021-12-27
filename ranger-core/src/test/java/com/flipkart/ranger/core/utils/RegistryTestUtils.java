@@ -30,9 +30,9 @@ public class RegistryTestUtils {
         val service = RangerTestUtils.getService();
         val serviceRegistry = new MapBasedServiceRegistry<TestNodeData>(service);
         val serviceNodes = ImmutableList.of(
-            new ServiceNode<>("localhost-1", 9000, TestNodeData.builder().shardId(1).build()),
-            new ServiceNode<>("localhost-2", 9001, TestNodeData.builder().shardId(2).build()),
-            new ServiceNode<>("localhost-3", 9002, TestNodeData.builder().shardId(3).build())
+                ServiceNode.<TestNodeData>builder().host("localhost-1").port(9000).nodeData(TestNodeData.builder().shardId(1).build()).build(),
+                ServiceNode.<TestNodeData>builder().host("localhost-2").port(9001).nodeData(TestNodeData.builder().shardId(2).build()).build(),
+                ServiceNode.<TestNodeData>builder().host("localhost-3").port(9002).nodeData(TestNodeData.builder().shardId(3).build()).build()
         );
         serviceRegistry.updateNodes(serviceNodes);
         return serviceRegistry;
@@ -42,9 +42,9 @@ public class RegistryTestUtils {
         val service = RangerTestUtils.getService();
         val serviceRegistry = new ListBasedServiceRegistry<TestNodeData>(service);
         val serviceNodes = ImmutableList.of(
-                new ServiceNode<>("localhost-1", 9000, TestNodeData.builder().shardId(1).build()),
-                new ServiceNode<>("localhost-2", 9001, TestNodeData.builder().shardId(2).build()),
-                new ServiceNode<>("localhost-3", 9002, TestNodeData.builder().shardId(3).build())
+                ServiceNode.<TestNodeData>builder().host("localhost-1").port(9000).nodeData(TestNodeData.builder().shardId(1).build()).build(),
+                ServiceNode.<TestNodeData>builder().host("localhost-2").port(9001).nodeData(TestNodeData.builder().shardId(2).build()).build(),
+                ServiceNode.<TestNodeData>builder().host("localhost-3").port(9002).nodeData(TestNodeData.builder().shardId(3).build()).build()
         );
         serviceRegistry.updateNodes(serviceNodes);
         return serviceRegistry;

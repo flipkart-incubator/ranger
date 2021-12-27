@@ -52,7 +52,7 @@ public class HttpShardedServiceProviderBuilderTest {
     @Test
     public void testProvider() throws Exception {
         val farmNodeData = TestNodeData.builder().farmId("farm1").build();
-        val testNode = new ServiceNode<>("localhost-1", 80, farmNodeData);
+        val testNode = ServiceNode.<TestNodeData>builder().host("127.0.0.1").port(80).nodeData(farmNodeData).build();
         val response = MAPPER.writeValueAsBytes(
                 GenericResponse.builder()
                         .code(RangerResponseCode.SUCCESS)

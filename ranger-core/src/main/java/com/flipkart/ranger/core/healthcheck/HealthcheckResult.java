@@ -16,7 +16,6 @@
 package com.flipkart.ranger.core.healthcheck;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Value;
 
 /**

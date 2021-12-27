@@ -18,7 +18,6 @@ package com.flipkart.ranger.core.finder.nodeselector;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import lombok.val;
-import lombok.var;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,9 +28,9 @@ public class RoundRobinServiceNodeSelectorTest {
     public void testRandomNodeSelector(){
         val roundRobinSelector = new RoundRobinServiceNodeSelector<TestNodeData>();
         val serviceNodes = new ArrayList<ServiceNode<TestNodeData>>();
-        serviceNodes.add(new ServiceNode<>("localhost-1", 9000, TestNodeData.builder().shardId(1).build()));
-        serviceNodes.add(new ServiceNode<>("localhost-2", 9001, TestNodeData.builder().shardId(2).build()));
-        serviceNodes.add(new ServiceNode<>("localhost-3", 9002, TestNodeData.builder().shardId(3).build()));
+        serviceNodes.add(ServiceNode.<TestNodeData>builder().host("localhost-1").port(9000).nodeData(TestNodeData.builder().shardId(1).build()).build());
+        serviceNodes.add(ServiceNode.<TestNodeData>builder().host("localhost-2").port(9001).nodeData(TestNodeData.builder().shardId(2).build()).build());
+        serviceNodes.add(ServiceNode.<TestNodeData>builder().host("localhost-3").port(9002).nodeData(TestNodeData.builder().shardId(3).build()).build());
         Assert.assertEquals("localhost-2", roundRobinSelector.select(serviceNodes).getHost());
         Assert.assertEquals("localhost-3", roundRobinSelector.select(serviceNodes).getHost());
         Assert.assertEquals("localhost-1", roundRobinSelector.select(serviceNodes).getHost());

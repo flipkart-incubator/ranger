@@ -15,7 +15,6 @@
  */
 package com.flipkart.ranger.client.http;
 
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.TestUtils;
 import lombok.val;

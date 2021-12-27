@@ -58,7 +58,7 @@ public class HttpShardedServiceFinderBuilderTest {
     @Test
     public void testFinder() throws Exception {
         val testNode = new NodeData("testNode");
-        val node = new ServiceNode<>("127.0.0.1", 80, testNode);
+        val node = ServiceNode.<NodeData>builder().host("127.0.0.1").port(80).nodeData(testNode).build();
         node.setHealthcheckStatus(HealthcheckStatus.healthy);
         node.setLastUpdatedTimeStamp(System.currentTimeMillis());
         val payload = MAPPER.writeValueAsBytes(

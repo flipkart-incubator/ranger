@@ -21,7 +21,6 @@ import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.google.common.collect.ImmutableList;
 import lombok.val;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;

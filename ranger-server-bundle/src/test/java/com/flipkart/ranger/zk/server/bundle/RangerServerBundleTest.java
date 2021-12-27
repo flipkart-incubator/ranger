@@ -20,7 +20,6 @@ import com.codahale.metrics.health.HealthCheck;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.RangerHubClient;
 import com.flipkart.ranger.client.utils.RangerHubTestUtils;
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
@@ -42,7 +41,6 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static com.flipkart.ranger.client.utils.RangerHubTestUtils.service;
 import static org.mockito.ArgumentMatchers.any;

@@ -15,7 +15,6 @@
  */
 package com.flipkart.ranger.client.zk;
 
-import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
@@ -23,8 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Optional;
 
 @Slf4j
 public class UnshardedZKRangerClientTest extends BaseRangerZKClientTest {
