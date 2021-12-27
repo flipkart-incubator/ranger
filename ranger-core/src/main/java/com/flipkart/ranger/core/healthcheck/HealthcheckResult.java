@@ -18,9 +18,6 @@ package com.flipkart.ranger.core.healthcheck;
 import lombok.Builder;
 import lombok.Value;
 
-/**
- *
- */
 @Value
 @Builder
 public class HealthcheckResult {
