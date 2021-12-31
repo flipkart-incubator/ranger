@@ -67,10 +67,10 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                     else {
                         val bytes = body.bytes();
                         val serviceDataSourceResponse = mapper.readValue(bytes, ServiceDataSourceResponse.class);
-                        if(serviceDataSourceResponse.isSuccess()){
+                        if(serviceDataSourceResponse.valid()){
                             return serviceDataSourceResponse.getData();
                         }else{
-                            log.warn("Http call to {} returned a failure response with code {}", httpUrl, serviceDataSourceResponse.getCode());
+                            log.warn("Http call to {} returned a failure response with data {}", httpUrl, serviceDataSourceResponse);
                         }
                     }
                 }

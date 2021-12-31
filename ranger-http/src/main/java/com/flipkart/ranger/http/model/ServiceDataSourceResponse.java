@@ -35,7 +35,7 @@ public class ServiceDataSourceResponse {
     Set<Service> data;
 
     @JsonIgnore
-    public boolean isSuccess(){
-        return code == RangerResponseCode.SUCCESS;
+    public boolean valid(){
+        return code == RangerResponseCode.SUCCESS && null != data;
     }
 }

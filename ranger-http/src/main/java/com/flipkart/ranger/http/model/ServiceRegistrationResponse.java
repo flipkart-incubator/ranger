@@ -31,7 +31,7 @@ public class ServiceRegistrationResponse {
     RangerResponseCode code;
 
     @JsonIgnore
-    public boolean isSuccess(){
+    public boolean valid(){
         return code == RangerResponseCode.SUCCESS;
     }
 }

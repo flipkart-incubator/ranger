@@ -64,7 +64,7 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
                 .build();
         val requestBody = RequestBody.create(serializer.serialize(serviceNode));
         val serviceRegistrationResponse = registerService(httpUrl, requestBody).orElse(null);
-        if(null == serviceRegistrationResponse || !serviceRegistrationResponse.isSuccess()){
+        if(null == serviceRegistrationResponse || !serviceRegistrationResponse.valid()){
             log.warn("Http call to {} returned a failure response {}", httpUrl, serviceRegistrationResponse);
             Exceptions.illegalState("Error updating state on the server for node data: " + httpUrl);
         }

@@ -37,7 +37,7 @@ public class ServiceNodesResponse<T> {
     List<ServiceNode<T>> data;
 
     @JsonIgnore
-    public boolean isSuccess(){
-        return code == RangerResponseCode.SUCCESS;
+    public boolean valid(){
+        return code == RangerResponseCode.SUCCESS && null != data;
     }
 }

@@ -79,13 +79,13 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                     } else {
                         val bytes = body.bytes();
                         val serviceNodesResponse = deserializer.deserialize(bytes);
-                        if(serviceNodesResponse.isSuccess()){
+                        if(serviceNodesResponse.valid()){
                             return FinderUtils.filterValidNodes(
                                     service,
                                     serviceNodesResponse.getData(),
                                     healthcheckZombieCheckThresholdTime(service));
                         } else{
-                            log.warn("Http call to {} returned a failure response with code {}", httpUrl, serviceNodesResponse.getCode());
+                            log.warn("Http call to {} returned a failure response with response {}", httpUrl, serviceNodesResponse);
                         }
                     }
                 }
