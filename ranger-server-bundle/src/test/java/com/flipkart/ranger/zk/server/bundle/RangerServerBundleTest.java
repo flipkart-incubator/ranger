@@ -92,7 +92,7 @@ public class RangerServerBundleTest {
     public void testRangerBundle(){
         var hub = rangerServerBundle.getHubs().get(0);
         Assert.assertTrue(hub instanceof RangerTestHub);
-        TestUtils.sleepUntil(() -> ((RangerTestHub) hub).getHub().getFinders().get().values().stream().allMatch(ServiceFinder::isStarted));
+        TestUtils.sleepUntilHubIsActive(((RangerTestHub) hub).getHub());
         var node = hub.getNode(service).orElse(null);
         Assert.assertNotNull(node);
         Assert.assertTrue(node.getHost().equalsIgnoreCase("localhost"));

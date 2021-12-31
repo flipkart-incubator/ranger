@@ -15,10 +15,14 @@
  */
 package com.flipkart.ranger.core.utils;
 
+import com.flipkart.ranger.core.finder.ServiceFinder;
+import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
+import com.flipkart.ranger.core.model.ServiceRegistry;
 import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.awaitility.Awaitility.await;
 
@@ -39,5 +43,14 @@ public class TestUtils {
 
     public static void sleepUntil(Callable<Boolean> conditionEvaluator) {
         await().until(conditionEvaluator);
+    }
+
+    public static <T, R extends ServiceRegistry<T>> void sleepUntilFinderIsActive(ServiceFinder<T, R> finder){
+        await().untilAsserted(finder::start);
+    }
+
+    public static <T, R extends ServiceRegistry<T>> void sleepUntilHubIsActive(ServiceFinderHub<T, R> hub){
+        await().untilAsserted(() -> hub.getFinders().get().values().forEach(ServiceFinder::start));
+        await().untilAsserted(() -> hub.getServiceDataSource().start());
     }
 }

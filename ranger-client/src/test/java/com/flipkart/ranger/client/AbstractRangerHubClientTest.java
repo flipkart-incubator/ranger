@@ -35,7 +35,7 @@ public class AbstractRangerHubClientTest {
     public void testAbstractHubClient() {
         val testAbstractHub = RangerHubTestUtils.getTestHub();
         testAbstractHub.start();
-        TestUtils.sleepUntil(() -> testAbstractHub.getHub().getFinders().get().values().stream().allMatch(ServiceFinder::isStarted));
+        TestUtils.sleepUntilHubIsActive(testAbstractHub.getHub());
         var node = testAbstractHub.getNode(service).orElse(null);
         Assert.assertNotNull(node);
         Assert.assertTrue(node.getHost().equalsIgnoreCase("localhost"));

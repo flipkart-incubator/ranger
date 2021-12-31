@@ -35,7 +35,7 @@ public class UnshardedRangerHttpClientTest extends BaseRangerHttpClientTest {
                 .nodeRefreshIntervalMs(5000)
                 .build();
         client.start();
-        TestUtils.sleepUntil(() -> client.getHub().getFinders().get().values().stream().allMatch(ServiceFinder::isStarted));
+        TestUtils.sleepUntilHubIsActive(client.getHub());
         val service = RangerTestUtils.getService("test-n", "test-s");
         Assert.assertNotNull(client.getNode(service).orElse(null));
         Assert.assertNotNull(client.getNode(service, nodeData -> nodeData.getShardId() == 1).orElse(null));

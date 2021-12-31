@@ -40,8 +40,6 @@ public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegist
     private final ExternalTriggeredSignal<Void> startSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
     @Getter
     private final ExternalTriggeredSignal<Void> stopSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
-    @Getter
-    private boolean started = false;
 
     protected ServiceFinder(
             ServiceRegistryType serviceRegistry,
@@ -63,11 +61,9 @@ public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegist
 
     public void start() {
         startSignal.trigger();
-        started = true;
     }
 
     public void stop() {
         stopSignal.trigger();
-        started = false;
     }
 }
