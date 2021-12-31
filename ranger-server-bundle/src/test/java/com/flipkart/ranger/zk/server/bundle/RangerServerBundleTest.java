@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.RangerHubClient;
 import com.flipkart.ranger.client.stubs.RangerTestHub;
 import com.flipkart.ranger.client.utils.RangerHubTestUtils;
+import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
@@ -91,7 +92,7 @@ public class RangerServerBundleTest {
     public void testRangerBundle(){
         var hub = rangerServerBundle.getHubs().get(0);
         Assert.assertTrue(hub instanceof RangerTestHub);
-        TestUtils.sleepUntil(() -> ((RangerTestHub) hub).getHub().isStarted());
+        TestUtils.sleepUntil(() -> ((RangerTestHub) hub).getHub().getFinders().get().values().stream().allMatch(ServiceFinder::isStarted));
         var node = hub.getNode(service).orElse(null);
         Assert.assertNotNull(node);
         Assert.assertTrue(node.getHost().equalsIgnoreCase("localhost"));

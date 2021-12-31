@@ -15,6 +15,7 @@
  */
 package com.flipkart.ranger.client.zk;
 
+import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
@@ -37,7 +38,7 @@ public class UnshardedZKRangerClientTest extends BaseRangerZKClientTest {
                 .deserializer(this::read)
                 .build();
         zkHubClient.start();
-        TestUtils.sleepUntil(() -> zkHubClient.getHub().isStarted());
+        TestUtils.sleepUntil(() -> zkHubClient.getHub().getFinders().get().values().stream().allMatch(ServiceFinder::isStarted));
         val service = RangerTestUtils.getService("test-n", "s1");
         Assert.assertNotNull(zkHubClient.getNode(service).orElse(null));
         Assert.assertNotNull(zkHubClient.getNode(service, nodeData -> nodeData.getShardId() == 1).orElse(null));

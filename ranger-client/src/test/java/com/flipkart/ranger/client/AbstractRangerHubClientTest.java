@@ -16,6 +16,7 @@
 package com.flipkart.ranger.client;
 
 import com.flipkart.ranger.client.utils.RangerHubTestUtils;
+import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
@@ -34,7 +35,7 @@ public class AbstractRangerHubClientTest {
     public void testAbstractHubClient() {
         val testAbstractHub = RangerHubTestUtils.getTestHub();
         testAbstractHub.start();
-        TestUtils.sleepUntil(() -> testAbstractHub.getHub().isStarted());
+        TestUtils.sleepUntil(() -> testAbstractHub.getHub().getFinders().get().values().stream().allMatch(ServiceFinder::isStarted));
         var node = testAbstractHub.getNode(service).orElse(null);
         Assert.assertNotNull(node);
         Assert.assertTrue(node.getHost().equalsIgnoreCase("localhost"));

@@ -15,6 +15,7 @@
  */
 package com.flipkart.ranger.client.zk;
 
+import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
@@ -38,7 +39,7 @@ public class ShardedZKRangerClientTest extends BaseRangerZKClientTest {
                 .build();
 
         zkHubClient.start();
-        TestUtils.sleepUntil(() -> zkHubClient.getHub().isStarted());
+        TestUtils.sleepUntil(() -> zkHubClient.getHub().getFinders().get().values().stream().allMatch(ServiceFinder::isStarted));
         Assert.assertNotNull(zkHubClient.getNode(RangerTestUtils.getService("test-n", "s1")).orElse(null));
         Assert.assertNotNull(zkHubClient.getNode(RangerTestUtils.getService("test-n", "s1"), nodeData -> nodeData.getShardId() == 1).orElse(null));
         zkHubClient.stop();

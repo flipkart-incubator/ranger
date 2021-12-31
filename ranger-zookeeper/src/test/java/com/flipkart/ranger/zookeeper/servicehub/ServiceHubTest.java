@@ -17,6 +17,7 @@ package com.flipkart.ranger.zookeeper.servicehub;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.finder.serviceregistry.MapBasedServiceRegistry;
 import com.flipkart.ranger.core.healthcheck.HealthcheckResult;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
@@ -118,7 +119,7 @@ public class ServiceHubTest {
         refreshProviderSignal.trigger();
         refreshHubSignal.trigger();
 
-        TestUtils.sleepUntil(hub::isStarted);
+        TestUtils.sleepUntil(() -> hub.getFinders().get().values().stream().allMatch(ServiceFinder::isStarted));
         val node = hub.finder(RangerTestUtils.getService(NAMESPACE, "s1"))
                 .flatMap(finder -> finder.get(nodeData -> nodeData.getShardId() == 1)).orElse(null);
         Assert.assertNotNull(node);

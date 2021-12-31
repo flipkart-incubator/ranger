@@ -64,8 +64,6 @@ public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
 
     private final AtomicBoolean alreadyUpdating = new AtomicBoolean(false);
     private Future<?> monitorFuture = null;
-    @Getter
-    private boolean started = false;
 
     public ServiceFinderHub(
             ServiceDataSource serviceDataSource,
@@ -87,13 +85,11 @@ public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
         refreshSignals.forEach(signal -> signal.registerConsumer(x -> updateAvailable()));
         startSignal.trigger();
         updateAvailable();
-        started = true;
         log.info("Service finder hub started");
     }
 
     public void stop() {
         stopSignal.trigger();
-        started = false;
         if (null != monitorFuture) {
             try {
                 monitorFuture.cancel(true);

@@ -15,6 +15,7 @@
  */
 package com.flipkart.ranger.client.http;
 
+import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
@@ -35,7 +36,7 @@ public class ShardedRangerHttpClientTest extends BaseRangerHttpClientTest {
                 .build();
         client.start();
 
-        TestUtils.sleepUntil(() -> client.getHub().isStarted());
+        TestUtils.sleepUntil(() -> client.getHub().getFinders().get().values().stream().allMatch(ServiceFinder::isStarted));
         val service = RangerTestUtils.getService("test-n", "test-s");
         Assert.assertNotNull(client.getNode(service).orElse(null));
         Assert.assertNotNull(client.getNode(service, nodeData -> nodeData.getShardId() == 1).orElse(null));
