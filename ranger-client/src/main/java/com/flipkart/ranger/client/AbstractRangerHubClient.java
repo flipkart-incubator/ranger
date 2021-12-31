@@ -116,7 +116,7 @@ public abstract class AbstractRangerHubClient<T, R extends ServiceRegistry<T>, D
         try{
             return this.getHub().getServiceDataSource().services();
         }catch (Exception e){
-            log.warn("Call to a hub failed with exception, {}", e.getMessage());
+            log.error("Call to the hub failed with exception, {}", e.getMessage());
             return Collections.emptySet();
         }
     }

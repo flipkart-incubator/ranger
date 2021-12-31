@@ -34,7 +34,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceNodesResponse<T> {
     RangerResponseCode code;
-    String error;
     List<ServiceNode<T>> data;
 
     @JsonIgnore

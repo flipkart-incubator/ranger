@@ -29,7 +29,6 @@ import lombok.extern.jackson.Jacksonized;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceRegistrationResponse {
     RangerResponseCode code;
-    String error;
 
     @JsonIgnore
     public boolean isSuccess(){

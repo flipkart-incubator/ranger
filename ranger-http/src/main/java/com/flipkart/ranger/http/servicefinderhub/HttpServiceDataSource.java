@@ -18,7 +18,6 @@ package com.flipkart.ranger.http.servicefinderhub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.finderhub.ServiceDataSource;
 import com.flipkart.ranger.core.model.Service;
-import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.http.common.HttpNodeDataStoreConnector;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceDataSourceResponse;
@@ -71,7 +70,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
                         if(serviceDataSourceResponse.isSuccess()){
                             return serviceDataSourceResponse.getData();
                         }else{
-                            log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceDataSourceResponse.getError());
+                            log.warn("Http call to {} returned a failure response with code {}", httpUrl, serviceDataSourceResponse.getCode());
                         }
                     }
                 }
@@ -81,7 +80,7 @@ public class HttpServiceDataSource<T> extends HttpNodeDataStoreConnector<T> impl
             }
         }
         catch (IOException e) {
-            Exceptions.illegalState("Error fetching data from server: " + httpUrl, e);
+            log.info("Error parsing the response from server for : {} with exception {}", httpUrl, e);
         }
 
         log.error("No data returned from server: " + httpUrl);

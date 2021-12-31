@@ -27,7 +27,6 @@ import lombok.extern.jackson.Jacksonized;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GenericResponse<T> {
     RangerResponseCode code;
-    String error;
     T data;
 
     @JsonIgnore

@@ -85,7 +85,7 @@ public class HttpNodeDataSource<T, D extends HTTPResponseDataDeserializer<T>> ex
                                     serviceNodesResponse.getData(),
                                     healthcheckZombieCheckThresholdTime(service));
                         } else{
-                            log.warn("Http call to {} returned a failure response with error {}", httpUrl, serviceNodesResponse.getError());
+                            log.warn("Http call to {} returned a failure response with code {}", httpUrl, serviceNodesResponse.getCode());
                         }
                     }
                 }

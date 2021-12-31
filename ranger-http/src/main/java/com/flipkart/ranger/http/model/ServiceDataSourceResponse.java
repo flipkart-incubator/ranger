@@ -32,7 +32,6 @@ import java.util.Set;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceDataSourceResponse {
     RangerResponseCode code;
-    String error;
     Set<Service> data;
 
     @JsonIgnore

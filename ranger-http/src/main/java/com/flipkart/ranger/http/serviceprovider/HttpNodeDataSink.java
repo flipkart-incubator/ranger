@@ -63,9 +63,9 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
                 .encodedPath(url)
                 .build();
         val requestBody = RequestBody.create(serializer.serialize(serviceNode));
-        val serviceRegistrationResponse = registerService(httpUrl, requestBody);
-        if(!serviceRegistrationResponse.isPresent() || !serviceRegistrationResponse.get().isSuccess()){
-            log.warn("Http call to {} returned a failure response", httpUrl);
+        val serviceRegistrationResponse = registerService(httpUrl, requestBody).orElse(null);
+        if(null == serviceRegistrationResponse || !serviceRegistrationResponse.isSuccess()){
+            log.warn("Http call to {} returned a failure response {}", httpUrl, serviceRegistrationResponse);
             Exceptions.illegalState("Error updating state on the server for node data: " + httpUrl);
         }
     }
@@ -92,7 +92,7 @@ public class HttpNodeDataSink<T, S extends HttpRequestDataSerializer<T>> extends
             }
         }
         catch (IOException e) {
-            Exceptions.illegalState("Error updating state on the server: " + httpUrl, e);
+            log.error("Error updating state on the server with httpUrl {} with exception {} ",  httpUrl, e);
         }
         return Optional.empty();
     }
