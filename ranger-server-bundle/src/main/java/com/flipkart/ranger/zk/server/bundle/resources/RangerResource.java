@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.flipkart.ranger.http.response.model.RangerResponseCode.SUCCESS;
-
 @Slf4j
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -53,7 +51,6 @@ public class RangerResource<T> {
     @Metered
     public GenericResponse<Set<Service>> getServices() {
         return GenericResponse.<Set<Service>>builder()
-                .code(SUCCESS)
                 .data(rangerHubs.stream().map(RangerHubClient::getRegisteredServices)
                         .flatMap(Collection::stream).collect(Collectors.toSet()))
                 .build();
@@ -68,7 +65,6 @@ public class RangerResource<T> {
     ){
         val service = Service.builder().namespace(namespace).serviceName(serviceName).build();
         return GenericResponse.<List<ServiceNode<T>>>builder()
-                .code(SUCCESS)
                 .data(rangerHubs.stream().map(hub -> hub.getAllNodes(service))
                         .flatMap(List::stream).collect(Collectors.toList()))
                 .build();

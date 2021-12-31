@@ -26,11 +26,10 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GenericResponse<T> {
-    RangerResponseCode code;
     T data;
 
     @JsonIgnore
-    public boolean success(){
-        return code == RangerResponseCode.SUCCESS;
+    public boolean valid(){
+        return null != data;
     }
 }

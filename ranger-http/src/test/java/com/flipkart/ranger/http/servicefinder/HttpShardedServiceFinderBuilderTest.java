@@ -23,7 +23,6 @@ import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
-import com.flipkart.ranger.http.response.model.RangerResponseCode;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import lombok.Data;
 import lombok.val;
@@ -64,7 +63,6 @@ public class HttpShardedServiceFinderBuilderTest {
         val payload = MAPPER.writeValueAsBytes(
                 ServiceNodesResponse.<NodeData>builder()
                         .data(Collections.singletonList(node))
-                        .code(RangerResponseCode.SUCCESS)
                         .build());
         server.stubFor(get(urlEqualTo("/ranger/nodes/v1/testns/test"))
                                .willReturn(aResponse()

@@ -21,7 +21,6 @@ import com.flipkart.ranger.core.healthcheck.Healthchecks;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.response.model.GenericResponse;
-import com.flipkart.ranger.http.response.model.RangerResponseCode;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import lombok.Builder;
 import lombok.Data;
@@ -55,7 +54,6 @@ public class HttpShardedServiceProviderBuilderTest {
         val testNode = ServiceNode.<TestNodeData>builder().host("127.0.0.1").port(80).nodeData(farmNodeData).build();
         val response = MAPPER.writeValueAsBytes(
                 GenericResponse.builder()
-                        .code(RangerResponseCode.SUCCESS)
                         .data(ServiceNode.<TestNodeData>builder()
                                 .host("localhost")
                                 .port(8080)

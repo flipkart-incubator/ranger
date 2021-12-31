@@ -25,7 +25,6 @@ import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceDataSourceResponse;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
-import com.flipkart.ranger.http.response.model.RangerResponseCode;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -58,7 +57,6 @@ public abstract class BaseRangerHttpClientTest {
         val payload = objectMapper.writeValueAsBytes(
                 ServiceNodesResponse.<TestNodeData>builder()
                         .data(Lists.newArrayList(node))
-                        .code(RangerResponseCode.SUCCESS)
                         .build());
         server.stubFor(get(urlEqualTo("/ranger/nodes/v1/test-n/test-s"))
                 .willReturn(aResponse()
@@ -66,7 +64,6 @@ public abstract class BaseRangerHttpClientTest {
                         .withStatus(200)));
 
         val responseObj = ServiceDataSourceResponse.builder()
-                .code(RangerResponseCode.SUCCESS)
                 .data(Sets.newHashSet(
                         RangerTestUtils.getService("test-n", "test-s")
                 ))

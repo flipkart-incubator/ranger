@@ -112,7 +112,7 @@ public class ServiceProviderIntegrationTest {
         /* with file existing, 3 nodes should be healthy */
         var filecreate = file.createNewFile();
         System.out.println("created file");
-        TestUtils.sleepUntil(2);
+        TestUtils.sleepUntil(3);
         List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(3, all.size());
@@ -120,7 +120,7 @@ public class ServiceProviderIntegrationTest {
         /* with file deleted, all 3 nodes should be unhealthy */
         delete = file.delete();
         System.out.println("deleted file");
-        TestUtils.sleepUntil(2);
+        TestUtils.sleepUntil(3);
         all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(0, all.size());
@@ -128,7 +128,7 @@ public class ServiceProviderIntegrationTest {
         /* with anotherFile created, the 4th node should become healthy and discoverable */
         filecreate = anotherFile.createNewFile();
         System.out.println("created anotherFile");
-        TestUtils.sleepUntil(2);
+        TestUtils.sleepUntil(3);
         all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(1, all.size());
