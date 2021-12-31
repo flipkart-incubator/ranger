@@ -26,13 +26,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Date;
+
 public class ServiceHealthAggregatorTest {
 
 
     ServiceHealthAggregator serviceHealthAggregator = new ServiceHealthAggregator();
     TestMonitor testMonitor;
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         testMonitor = new TestMonitor("TestHealthMonitor", TimeEntity.everySecond(), 1000);
         serviceHealthAggregator.addIsolatedMonitor(testMonitor);
         serviceHealthAggregator.addInlineMonitor(new Monitor<HealthcheckStatus>() {
@@ -48,29 +50,28 @@ public class ServiceHealthAggregatorTest {
         });
 
         serviceHealthAggregator.start();
-        TestUtils.sleepForSeconds(1);
+        TestUtils.sleepUntil(() -> serviceHealthAggregator.getRunning().get());
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         serviceHealthAggregator.stop();
     }
 
     @Test
-    public void testStaleRun() throws Exception {
+    public void testStaleRun() {
 
         testMonitor.run();
         testMonitor.setThreadSleep(2000);
 
-        TestUtils.sleepForSeconds(4);
+        TestUtils.sleepUntil(() -> !testMonitor.hasValidUpdatedTime(new Date()));
 
         /* in the TestMonitor, thread was sleeping for 2 seconds, */
         /* so its state is supposed to be stale (>1 second) and service has to be unhealthy */
         Assert.assertEquals(HealthcheckStatus.unhealthy, serviceHealthAggregator.getServiceHealth());
 
-
-        testMonitor.setThreadSleep(10);
-        TestUtils.sleepForSeconds(4);
+        testMonitor.setThreadSleep(5);
+        TestUtils.sleepUntil(() -> testMonitor.hasValidUpdatedTime(new Date()));
 
         /* in the TestMonitor, thread is sleeping only for 10 milliseconds, */
         /* so its state is supposed to be NOT stale (>1 second) and service has to be healthy */

@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class PingCheckMonitorTest {
 
     @Test
-    public void testMonitor() throws Exception {
+    public void testMonitor() {
         val httpRequest = new HttpGet("/");
         val pingCheckMonitor = new PingCheckMonitor(new TimeEntity(2, TimeUnit.SECONDS), httpRequest, 5000, 5, 3, "google.com", 80);
         Assert.assertEquals(HealthcheckStatus.healthy, pingCheckMonitor.monitor());
@@ -40,7 +40,7 @@ public class PingCheckMonitorTest {
     }
 
     @Test
-    public void testMonitor2() throws Exception {
+    public void testMonitor2() {
         val httpRequest = new HttpGet("/help");
         val pingCheckMonitor = new PingCheckMonitor(new TimeEntity(2, TimeUnit.SECONDS), httpRequest, 5000, 5, 3, "google.com", 80);
         Assert.assertEquals(HealthcheckStatus.healthy, pingCheckMonitor.monitor());

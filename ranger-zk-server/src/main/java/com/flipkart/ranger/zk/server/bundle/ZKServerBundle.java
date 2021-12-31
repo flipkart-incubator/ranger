@@ -22,11 +22,10 @@ import com.flipkart.ranger.client.RangerHubClient;
 import com.flipkart.ranger.client.zk.UnshardedRangerZKHubClient;
 import com.flipkart.ranger.common.server.ShardInfo;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.signals.Signal;
 import com.flipkart.ranger.zk.server.AppConfiguration;
-import com.flipkart.ranger.zk.server.bundle.model.LifecycleSignal;
 import com.flipkart.ranger.zk.server.healthcheck.RangerHealthCheck;
 import com.flipkart.ranger.zk.server.lifecycle.CuratorLifecycle;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,17 +44,6 @@ import java.util.List;
 public class ZKServerBundle extends RangerServerBundle<ShardInfo, AppConfiguration> {
 
     private CuratorFramework curatorFramework;
-
-    @Override
-    protected void verifyPreconditions(AppConfiguration configuration) {
-        val rangerConfiguration = configuration.getRangerConfiguration();
-        Preconditions.checkNotNull(rangerConfiguration,
-                "ranger configuration can't be null");
-        Preconditions.checkNotNull(rangerConfiguration.getNamespace(),
-                "Namespace can't be null");
-        Preconditions.checkNotNull(rangerConfiguration.getZookeeper(),
-                "Zookeeper can't be null");
-    }
 
     @Override
     protected void preBundle(AppConfiguration configuration) {
@@ -93,7 +81,7 @@ public class ZKServerBundle extends RangerServerBundle<ShardInfo, AppConfigurati
     }
 
     @Override
-    protected List<LifecycleSignal> withLifecycleSignals(AppConfiguration configuration) {
+    protected List<Signal<ShardInfo>> withLifecycleSignals(AppConfiguration configuration) {
         return ImmutableList.of(
                 new CuratorLifecycle(curatorFramework)
         );

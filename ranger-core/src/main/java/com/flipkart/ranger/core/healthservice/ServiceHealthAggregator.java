@@ -21,6 +21,7 @@ import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.Monitor;
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -52,6 +53,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
     private List<IsolatedHealthMonitor> isolatedHealthMonitorList;
 
     /* If aggregator is running or not */
+    @Getter
     private AtomicBoolean running;
 
     public ServiceHealthAggregator() {
@@ -137,10 +139,6 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
      */
     @Override
     public HealthcheckStatus getServiceHealth() {
-        if (!running.get()) {
-            /*throw new IllegalStateException("Cannot get HealthStatus, when Aggregator isnt running. " +
-                                                            "Please start the aggregator before trying to get health");*/
-        }
         healthcheckStatus.set(HealthcheckStatus.healthy);
         val currentTime = new Date();
         /* check health status of isolated monitors */
@@ -160,13 +158,11 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
         return getServiceHealth();
     }
 
-    private boolean isIsolatedMonitorHealthy( IsolatedHealthMonitor isolatedHealthMonitor, Date currentTime) {
+    private boolean isIsolatedMonitorHealthy(IsolatedHealthMonitor isolatedHealthMonitor, Date currentTime) {
         if (HealthcheckStatus.unhealthy == isolatedHealthMonitor.getHealthStatus()) {
             return true;
         }
-        val hasValidUpdateTime
-                = null != isolatedHealthMonitor.getLastStatusUpdateTime()
-                && hasValidUpdatedTime(isolatedHealthMonitor, currentTime);
+        val hasValidUpdateTime = isolatedHealthMonitor.hasValidUpdatedTime(currentTime);
             /* check if the monitor and its last updated time is stale, if so, mark status as unhealthy */
         if (!hasValidUpdateTime) {
             log.error("Monitor: {} is stuck and its status is stale. Marking service as unhealthy",
@@ -174,12 +170,6 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
             return true;
         }
         return false;
-    }
-
-    private boolean hasValidUpdatedTime(IsolatedHealthMonitor isolatedHealthMonitor, Date currentTime) {
-        val timeDifferenceMillis = currentTime.getTime() - isolatedHealthMonitor.getLastStatusUpdateTime()
-                .getTime();
-        return timeDifferenceMillis <= isolatedHealthMonitor.getStalenessAllowedInMillis();
     }
 
     private void processMonitors() {

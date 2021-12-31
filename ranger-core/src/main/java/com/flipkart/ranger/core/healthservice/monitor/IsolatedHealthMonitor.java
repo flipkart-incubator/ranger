@@ -110,23 +110,16 @@ public abstract class IsolatedHealthMonitor<T> implements Runnable, Monitor<T> {
         return healthStatus.get();
     }
 
-    public Date getLastStatusUpdateTime() {
-        return null != lastStatusUpdateTime ? new Date(lastStatusUpdateTime.getTime()) : null;
-    }
-
     public String getName() {
         return name;
-    }
-
-    /**
-     * @return default of 60 seconds if not set
-     */
-    public long getStalenessAllowedInMillis() {
-        return stalenessAllowedInMillis;
     }
 
     @Override
     public boolean isDisabled() {
         return disabled.get();
+    }
+
+    public boolean hasValidUpdatedTime(Date currentTime){
+        return null != lastStatusUpdateTime && (currentTime.getTime() - lastStatusUpdateTime.getTime() <= stalenessAllowedInMillis);
     }
 }

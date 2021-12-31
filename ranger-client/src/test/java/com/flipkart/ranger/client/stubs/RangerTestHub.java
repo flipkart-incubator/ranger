@@ -23,9 +23,11 @@ import com.flipkart.ranger.core.finderhub.*;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.google.common.collect.Sets;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.util.function.Predicate;
 
+@Getter
 public class RangerTestHub extends AbstractRangerHubClient<TestNodeData,
         ListBasedServiceRegistry<TestNodeData>, TestDeserializer<TestNodeData>> {
 

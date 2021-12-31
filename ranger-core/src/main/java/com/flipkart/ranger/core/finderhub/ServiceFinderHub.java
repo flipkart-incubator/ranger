@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
+    @Getter
     private final AtomicReference<Map<Service, ServiceFinder<T, R>>> finders = new AtomicReference<>(new HashMap<>());
     private final Lock updateLock = new ReentrantLock();
     private final Condition updateCond = updateLock.newCondition();
@@ -63,6 +64,8 @@ public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
 
     private final AtomicBoolean alreadyUpdating = new AtomicBoolean(false);
     private Future<?> monitorFuture = null;
+    @Getter
+    private boolean started = false;
 
     public ServiceFinderHub(
             ServiceDataSource serviceDataSource,
@@ -84,11 +87,13 @@ public class ServiceFinderHub<T, R extends ServiceRegistry<T>> {
         refreshSignals.forEach(signal -> signal.registerConsumer(x -> updateAvailable()));
         startSignal.trigger();
         updateAvailable();
+        started = true;
         log.info("Service finder hub started");
     }
 
     public void stop() {
         stopSignal.trigger();
+        started = false;
         if (null != monitorFuture) {
             try {
                 monitorFuture.cancel(true);

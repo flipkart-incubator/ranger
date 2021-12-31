@@ -17,6 +17,7 @@ package com.flipkart.ranger.core.utils;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
@@ -27,7 +28,16 @@ import static org.awaitility.Awaitility.await;
 @UtilityClass
 public class TestUtils {
 
-    public static void sleepForSeconds(int numSeconds) {
+    /*
+        If we know the upper bound condition, please use the until with the upper bound.
+        Only for cases, where you have to wait till the refreshInterval periods, don't want to introduce
+        refreshed and other boolean flags throughout the code.
+     */
+    public static void sleepUntil(int numSeconds) {
         await().pollDelay(numSeconds, TimeUnit.SECONDS).until(() -> true);
+    }
+
+    public static void sleepUntil(Callable<Boolean> conditionEvaluator) {
+        await().until(conditionEvaluator);
     }
 }

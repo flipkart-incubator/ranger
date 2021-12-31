@@ -18,11 +18,12 @@ package com.flipkart.ranger.zk.server.bundle;
 import com.codahale.metrics.health.HealthCheck;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.RangerHubClient;
-import com.flipkart.ranger.zk.server.bundle.model.LifecycleSignal;
+import com.flipkart.ranger.core.signals.Signal;
 import com.flipkart.ranger.zk.server.bundle.resources.RangerResource;
 import com.flipkart.ranger.zk.server.bundle.rotation.BirTask;
 import com.flipkart.ranger.zk.server.bundle.rotation.OorTask;
 import com.flipkart.ranger.zk.server.bundle.rotation.RotationStatus;
+import com.google.common.collect.ImmutableList;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.lifecycle.Managed;
@@ -39,7 +40,7 @@ public abstract class RangerServerBundle<
         T,
         U extends Configuration> implements ConfiguredBundle<U>{
 
-    /**
+    /*
         Why are we taking a list of hubs, instead of one? To be able to aggregate from different dataSources if need be
         instead of just fetching from a single dataSource.
 
@@ -52,15 +53,29 @@ public abstract class RangerServerBundle<
     @Getter
     private ObjectMapper mapper;
 
-    protected abstract void verifyPreconditions(U configuration);
+    protected void preBundle(U configuration){
+        /*
+            Noop here! Let the subclasses override if there are any. Not a mandatory check everywhere. Http doesn't need it, only dataStore builders will need them.
+            Need not be abstract!
+         */
+    }
 
-    protected abstract void preBundle(U configuration);
+    /*
+        Letting the subclasses override should they have to again. The default is set to false always. Need not be abstract, not a mandatory parameter.
+     */
+    protected boolean withInitialRotationStatus(U configuration){
+        return false;
+    }
+
+    /*
+        Not a mandatory parameter (for example, needed for zk, not for http!
+        Letting the subclasses override should they have to, need not be abstract. Avoids boilerplate code everywhere, the default impl!
+     */
+    protected List<Signal<T>> withLifecycleSignals(U configuration){
+        return ImmutableList.of();
+    }
 
     protected abstract List<RangerHubClient<T>> withHubs(U configuration);
-
-    protected abstract boolean withInitialRotationStatus(U configuration);
-
-    protected abstract List<LifecycleSignal> withLifecycleSignals(U configuration);
 
     protected abstract List<HealthCheck> withHealthChecks(U configuration);
 
@@ -73,7 +88,6 @@ public abstract class RangerServerBundle<
 
     @Override
     public void run(U configuration, Environment environment) {
-        verifyPreconditions(configuration);
         preBundle(configuration);
 
         mapper = environment.getObjectMapper();
@@ -92,7 +106,7 @@ public abstract class RangerServerBundle<
             @Override
             public void start() {
                 log.info("Starting the server manager");
-                lifecycleSignals.forEach(LifecycleSignal::start);
+                lifecycleSignals.forEach(Signal::start);
                 hubs.forEach(RangerHubClient::start);
                 log.info("Started the server manager");
             }
@@ -101,7 +115,7 @@ public abstract class RangerServerBundle<
             public void stop() {
                 log.info("Stopping the server manager");
                 hubs.forEach(RangerHubClient::stop);
-                lifecycleSignals.forEach(LifecycleSignal::stop);
+                lifecycleSignals.forEach(Signal::stop);
                 log.info("Stopped the server manager");
             }
         });

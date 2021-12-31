@@ -28,6 +28,7 @@ import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import lombok.val;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
@@ -85,7 +86,7 @@ public class ServiceProviderHealthcheckTest {
         Assert.assertEquals("localhost-1", node.getHost());
         TestServiceProvider testServiceProvider = serviceProviders.get(node.getHost());
         testServiceProvider.oor();
-        TestUtils.sleepForSeconds(6);
+        TestUtils.sleepUntil(2); //Sleep till the increment refresh healthCheck interval (> 1sec), no upper bound condition.
         Assert.assertFalse(serviceFinder.get(RangerTestUtils.getCriteria(1)).isPresent());
         serviceFinder.stop();
     }
@@ -111,6 +112,8 @@ public class ServiceProviderHealthcheckTest {
         private final String host;
         private final int port;
         private final int shardId;
+        @Getter
+        private boolean started = false;
 
         public TestServiceProvider(ObjectMapper objectMapper,
                                    String connectionString,
@@ -152,6 +155,7 @@ public class ServiceProviderHealthcheckTest {
                     .withHealthUpdateIntervalMs(1000)
                     .build();
             serviceProvider.start();
+            started = true;
         }
     }
 

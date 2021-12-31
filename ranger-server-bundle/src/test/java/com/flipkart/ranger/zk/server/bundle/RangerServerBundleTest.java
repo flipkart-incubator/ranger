@@ -19,11 +19,11 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheck;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.RangerHubClient;
+import com.flipkart.ranger.client.stubs.RangerTestHub;
 import com.flipkart.ranger.client.utils.RangerHubTestUtils;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
-import com.flipkart.ranger.zk.server.bundle.model.LifecycleSignal;
 import io.dropwizard.Configuration;
 import io.dropwizard.jersey.DropwizardResourceConfig;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
@@ -59,32 +59,8 @@ public class RangerServerBundleTest {
             rangerServerBundle = new RangerServerBundle<TestNodeData, Configuration>() {
 
         @Override
-        protected void verifyPreconditions(Configuration configuration) {
-            /*
-                Nothing to do
-             */
-        }
-
-        @Override
-        protected void preBundle(Configuration configuration) {
-            /*
-                Noop
-             */
-        }
-
-        @Override
         protected List<RangerHubClient<TestNodeData>> withHubs(Configuration configuration) {
             return Collections.singletonList(RangerHubTestUtils.getTestHub());
-        }
-
-        @Override
-        protected boolean withInitialRotationStatus(Configuration configuration) {
-            return false;
-        }
-
-        @Override
-        protected List<LifecycleSignal> withLifecycleSignals(Configuration configuration) {
-            return Collections.emptyList();
         }
 
         @Override
@@ -113,8 +89,9 @@ public class RangerServerBundleTest {
 
     @Test
     public void testRangerBundle(){
-        TestUtils.sleepForSeconds(3);
-        val hub = rangerServerBundle.getHubs().get(0);
+        var hub = rangerServerBundle.getHubs().get(0);
+        Assert.assertTrue(hub instanceof RangerTestHub);
+        TestUtils.sleepUntil(() -> ((RangerTestHub) hub).getHub().isStarted());
         var node = hub.getNode(service).orElse(null);
         Assert.assertNotNull(node);
         Assert.assertTrue(node.getHost().equalsIgnoreCase("localhost"));

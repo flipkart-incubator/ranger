@@ -93,7 +93,7 @@ public class HttpShardedServiceFinderBuilderTest {
                 .withShardSelector((criteria, registry) -> registry.nodeList())
                 .build();
         finder.start();
-        TestUtils.sleepForSeconds(3);
+        TestUtils.sleepUntil(finder::isStarted);
         Assert.assertTrue(finder.get(nodeData -> true).isPresent());
     }
 

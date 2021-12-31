@@ -15,19 +15,24 @@
  */
 package com.flipkart.ranger.zk.server.lifecycle;
 
-import com.flipkart.ranger.zk.server.bundle.model.LifecycleSignal;
-import lombok.AllArgsConstructor;
+import com.flipkart.ranger.common.server.ShardInfo;
+import com.flipkart.ranger.core.signals.Signal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 
 import javax.inject.Singleton;
+import java.util.Collections;
 
 @Slf4j
 @Singleton
-@AllArgsConstructor
-public class CuratorLifecycle implements LifecycleSignal {
+public class CuratorLifecycle extends Signal<ShardInfo> {
 
     private final CuratorFramework curatorFramework;
+
+    public CuratorLifecycle(CuratorFramework curatorFramework) {
+        super(() -> null, Collections.emptyList());
+        this.curatorFramework = curatorFramework;
+    }
 
     @Override
     public void start() {

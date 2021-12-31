@@ -24,8 +24,6 @@ import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.flipkart.ranger.http.server.AppConfiguration;
 import com.flipkart.ranger.http.server.healthcheck.RangerHttpHealthCheck;
 import com.flipkart.ranger.zk.server.bundle.RangerServerBundle;
-import com.flipkart.ranger.zk.server.bundle.model.LifecycleSignal;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +31,6 @@ import lombok.val;
 
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,24 +38,6 @@ import java.util.stream.Collectors;
 @Singleton
 @NoArgsConstructor
 public class HttpServerBundle extends RangerServerBundle<ShardInfo, AppConfiguration> {
-
-    @Override
-    protected void verifyPreconditions(AppConfiguration configuration) {
-        val rangerConfiguration = configuration.getRangerConfiguration();
-        Preconditions.checkNotNull(rangerConfiguration,
-                "ranger configuration can't be null");
-        Preconditions.checkNotNull(rangerConfiguration.getNamespace(),
-                "Namespace can't be null");
-        Preconditions.checkArgument(null != rangerConfiguration.getHttpClientConfigs() && !rangerConfiguration.getHttpClientConfigs().isEmpty(),
-                "Http client config can't be null");
-    }
-
-    @Override
-    protected void preBundle(AppConfiguration configuration) {
-                /*
-                    Noop
-                 */
-    }
 
     @Override
     protected List<RangerHubClient<ShardInfo>> withHubs(AppConfiguration configuration) {
@@ -83,11 +62,6 @@ public class HttpServerBundle extends RangerServerBundle<ShardInfo, AppConfigura
     @Override
     protected boolean withInitialRotationStatus(AppConfiguration configuration) {
         return configuration.isInitialRotationStatus();
-    }
-
-    @Override
-    protected List<LifecycleSignal> withLifecycleSignals(AppConfiguration configuration) {
-        return Collections.emptyList();
     }
 
     @Override

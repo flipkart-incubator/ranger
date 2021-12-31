@@ -27,12 +27,7 @@ import java.util.function.Predicate;
 public class CriteriaUtilsTest {
 
     private Predicate<TestNodeData> getCriteria(int shardId){
-        return new Predicate<TestNodeData>() {
-            @Override
-            public boolean test(TestNodeData testNodeData) {
-                return testNodeData.getShardId() == shardId;
-            }
-        };
+        return testNodeData -> testNodeData.getShardId() == shardId;
     }
 
     @Test
