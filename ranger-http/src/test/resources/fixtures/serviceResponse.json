@@ -1,3 +1,7 @@
 {
-  "code" : "SUCCESS"
+  "code" : "SUCCESS",
+  "data" : {
+    "host" : "localhost",
+    "port" : 8080
+  }
 }

@@ -56,6 +56,11 @@ public class HttpShardedServiceProviderBuilderTest {
         val response = MAPPER.writeValueAsBytes(
                 GenericResponse.builder()
                         .code(RangerResponseCode.SUCCESS)
+                        .data(ServiceNode.<TestNodeData>builder()
+                                .host("localhost")
+                                .port(8080)
+                                .build()
+                        )
                         .build());
         byte[] requestBytes = MAPPER.writeValueAsBytes(testNode);
         server.stubFor(post(urlEqualTo("/ranger/nodes/v1/add/testns/test"))
