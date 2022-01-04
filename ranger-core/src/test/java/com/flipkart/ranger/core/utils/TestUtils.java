@@ -31,6 +31,9 @@ import static org.awaitility.Awaitility.await;
 @UtilityClass
 public class TestUtils {
 
+    static final int HUB_ACTIVE_DURATION_SECONDS = 3;
+    static final int FINDER_ACTIVE_DURATION_SECONDS = 3;
+
     /*
         If we know the upper bound condition, please use the until with the upper bound.
         Only for cases, where you have to wait till the refreshInterval periods, don't want to introduce
@@ -40,16 +43,16 @@ public class TestUtils {
         await().pollDelay(numSeconds, TimeUnit.SECONDS).until(() -> true);
     }
 
-    public static void sleepUntil(Callable<Boolean> conditionEvaluator) {
-        await().until(conditionEvaluator);
+    public static void sleepUntil(int numSeconds, Callable<Boolean> conditionEvaluator) {
+        await().pollDelay(numSeconds, TimeUnit.SECONDS).until(conditionEvaluator);
     }
 
     public static <T, R extends ServiceRegistry<T>> void sleepUntilFinderIsActive(ServiceFinder<T, R> finder){
-        await().untilAsserted(finder::start);
+        await().pollDelay(FINDER_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(finder::start);
     }
 
     public static <T, R extends ServiceRegistry<T>> void sleepUntilHubIsActive(ServiceFinderHub<T, R> hub){
-        await().untilAsserted(() -> hub.getServiceDataSource().start());
-        await().untilAsserted(() -> hub.getFinders().get().values().forEach(ServiceFinder::start));
+        await().pollDelay(HUB_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(() -> hub.getServiceDataSource().start());
+        await().pollDelay(HUB_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(() -> hub.getFinders().get().values().forEach(ServiceFinder::start));
     }
 }
