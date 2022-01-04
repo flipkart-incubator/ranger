@@ -48,11 +48,11 @@ public class TestUtils {
     }
 
     public static <T, R extends ServiceRegistry<T>> void sleepUntilFinderIsActive(ServiceFinder<T, R> finder){
-        await().pollDelay(FINDER_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(finder::start);
+        await().atMost(FINDER_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(finder::start);
     }
 
     public static <T, R extends ServiceRegistry<T>> void sleepUntilHubIsActive(ServiceFinderHub<T, R> hub){
-        await().pollDelay(HUB_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(() -> hub.getServiceDataSource().start());
-        await().pollDelay(HUB_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(() -> hub.getFinders().get().values().forEach(ServiceFinder::start));
+        await().atMost(HUB_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(() -> hub.getServiceDataSource().start());
+        await().atMost(HUB_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(() -> hub.getFinders().get().values().forEach(ServiceFinder::start));
     }
 }
