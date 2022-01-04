@@ -37,7 +37,7 @@ public class ShardedZKRangerClientTest extends BaseRangerZKClientTest {
                 .refreshTimeMs(1000)
                 .build();
         zkHubClient.start();
-        RangerTestUtils.sleepUntilHubIsActive(zkHubClient.getHub());
+        RangerTestUtils.sleepUntilHubStarts(zkHubClient.getHub());
         Assert.assertNotNull(zkHubClient.getNode(RangerTestUtils.getService("test-n", "s1")).orElse(null));
         Assert.assertNotNull(zkHubClient.getNode(RangerTestUtils.getService("test-n", "s1"), nodeData -> nodeData.getShardId() == 1).orElse(null));
         zkHubClient.stop();

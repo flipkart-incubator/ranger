@@ -116,7 +116,7 @@ public class ServiceHubTest {
 
         refreshProviderSignal.trigger();
         refreshHubSignal.trigger();
-        RangerTestUtils.sleepUntilHubIsActive(hub);
+        RangerTestUtils.sleepUntilHubStarts(hub);
 
         val node = hub.finder(RangerTestUtils.getService(NAMESPACE, "s1"))
                 .flatMap(finder -> finder.get(nodeData -> nodeData.getShardId() == 1)).orElse(null);

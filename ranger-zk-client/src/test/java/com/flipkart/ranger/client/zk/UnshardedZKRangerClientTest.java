@@ -37,7 +37,7 @@ public class UnshardedZKRangerClientTest extends BaseRangerZKClientTest {
                 .refreshTimeMs(1000)
                 .build();
         zkHubClient.start();
-        RangerTestUtils.sleepUntilHubIsActive(zkHubClient.getHub());
+        RangerTestUtils.sleepUntilHubStarts(zkHubClient.getHub());
         val service = RangerTestUtils.getService("test-n", "s1");
         Assert.assertNotNull(zkHubClient.getNode(service).orElse(null));
         Assert.assertNotNull(zkHubClient.getNode(service, nodeData -> nodeData.getShardId() == 1).orElse(null));

@@ -39,6 +39,21 @@ public class RangerTestUtils {
     static String TEST_NAMESPACE = "test";
     static String TEST_SERVICE = "test-service";
 
+    public static Predicate<TestNodeData> getCriteria(final int shardId){
+        return nodeData -> nodeData.getShardId() == shardId;
+    }
+
+    public static Service getService(){
+        return getService(TEST_NAMESPACE, TEST_SERVICE);
+    }
+
+    public static Service getService(String namespace, String serviceName){
+        return Service.builder()
+                .serviceName(serviceName)
+                .namespace(namespace)
+                .build();
+    }
+
     /*
         Node list is notEmpty only after the first updateRegistry has happened. So this should suffice for finder.start.
         However, we have to use the sleepUntil with () -> true for when we need periodic wait (deterministic)
@@ -67,34 +82,16 @@ public class RangerTestUtils {
     }
 
     /*
-        Use this when you have to alter the numSeconds in any of the specific assertions. For finder and hub, the values are appropriately coded
-        keeping the start intervals in mind.
+        Only applicable for initial node population using finder. Works when you intend to start the finder with nodes in 'em.
      */
-    public static void sleepUntil(int numSeconds, ThrowingRunnable assertion){
-        await().pollDelay(Duration.ofSeconds(numSeconds)).untilAsserted(assertion);
-    }
-
-    public static <T, R extends ServiceRegistry<T>> void sleepUntilFinderIsActive(ServiceFinder<T, R> finder){
+    public static <T, R extends ServiceRegistry<T>> void sleepUntilFinderStarts(ServiceFinder<T, R> finder){
         sleepUntil(3, () -> validate(finder));
     }
 
-    public static <T, R extends ServiceRegistry<T>> void sleepUntilHubIsActive(ServiceFinderHub<T, R> hub){
-        sleepUntil(3, () -> hub.getServiceDataSource().start());
+    /*
+        Only applicable for initial node population using hub of finders. Works when you intend to start the finder hub with nodes in 'em.
+     */
+    public static <T, R extends ServiceRegistry<T>> void sleepUntilHubStarts(ServiceFinderHub<T, R> hub){
         sleepUntil(3, () -> hub.getFinders().get().values().stream().allMatch(RangerTestUtils::validate));
-    }
-
-    public static Predicate<TestNodeData> getCriteria(final int shardId){
-        return nodeData -> nodeData.getShardId() == shardId;
-    }
-
-    public static Service getService(){
-        return getService(TEST_NAMESPACE, TEST_SERVICE);
-    }
-
-    public static Service getService(String namespace, String serviceName){
-        return Service.builder()
-                .serviceName(serviceName)
-                .namespace(namespace)
-                .build();
     }
 }

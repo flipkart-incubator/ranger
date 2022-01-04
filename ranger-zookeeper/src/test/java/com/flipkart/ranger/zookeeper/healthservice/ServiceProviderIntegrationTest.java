@@ -137,7 +137,7 @@ public class ServiceProviderIntegrationTest {
         delete = anotherFile.delete();
     }
 
-    private void registerService(String host, int port, int shardId, File file) throws Exception {
+    private void registerService(String host, int port, int shardId, File file) {
         val serviceProvider = ServiceProviderBuilders.unshardedServiceProviderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
