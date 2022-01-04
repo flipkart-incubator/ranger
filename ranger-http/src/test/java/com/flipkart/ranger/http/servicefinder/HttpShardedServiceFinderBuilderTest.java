@@ -89,6 +89,7 @@ public class HttpShardedServiceFinderBuilderTest {
                     }
                 })
                 .withShardSelector((criteria, registry) -> registry.nodeList())
+                .withNodeRefreshIntervalMs(1000)
                 .build();
         finder.start();
         TestUtils.sleepUntilFinderIsActive(finder);

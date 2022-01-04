@@ -19,7 +19,9 @@ import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import lombok.experimental.UtilityClass;
+import org.awaitility.core.ThrowingRunnable;
 
+import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -30,9 +32,6 @@ import static org.awaitility.Awaitility.await;
  */
 @UtilityClass
 public class TestUtils {
-
-    static final int HUB_ACTIVE_DURATION_SECONDS = 3;
-    static final int FINDER_ACTIVE_DURATION_SECONDS = 3;
 
     /*
         If we know the upper bound condition, please use the until with the upper bound.
@@ -47,12 +46,20 @@ public class TestUtils {
         await().pollDelay(numSeconds, TimeUnit.SECONDS).until(conditionEvaluator);
     }
 
+    /*
+        Use this when you have to alter the numSeconds in any of the specific assertions. For finder and hub, the values are appropriately coded
+        keeping the start intervals in mind.
+     */
+    public static void sleepUntil(int numSeconds, ThrowingRunnable assertion){
+        await().pollDelay(Duration.ofSeconds(numSeconds)).untilAsserted(assertion);
+    }
+
     public static <T, R extends ServiceRegistry<T>> void sleepUntilFinderIsActive(ServiceFinder<T, R> finder){
-        await().atMost(FINDER_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(finder::start);
+        sleepUntil(3, () -> finder.getStartSignal().start());
     }
 
     public static <T, R extends ServiceRegistry<T>> void sleepUntilHubIsActive(ServiceFinderHub<T, R> hub){
-        await().atMost(HUB_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(() -> hub.getServiceDataSource().start());
-        await().atMost(HUB_ACTIVE_DURATION_SECONDS, TimeUnit.SECONDS).untilAsserted(() -> hub.getFinders().get().values().forEach(ServiceFinder::start));
+        sleepUntil(3, () -> hub.getServiceDataSource().start());
+        sleepUntil(3, () -> hub.getFinders().get().values().forEach(finder -> finder.getStartSignal().start()));
     }
 }

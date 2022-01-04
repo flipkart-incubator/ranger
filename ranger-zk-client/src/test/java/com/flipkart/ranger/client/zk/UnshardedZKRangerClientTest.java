@@ -35,6 +35,7 @@ public class UnshardedZKRangerClientTest extends BaseRangerZKClientTest {
                 .disablePushUpdaters(true)
                 .mapper(getObjectMapper())
                 .deserializer(this::read)
+                .refreshTimeMs(1000)
                 .build();
         zkHubClient.start();
         TestUtils.sleepUntilHubIsActive(zkHubClient.getHub());

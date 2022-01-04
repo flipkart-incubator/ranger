@@ -31,7 +31,7 @@ public class SimpleRangerHttpClientTest extends BaseRangerHttpClientTest{
                 .deserializer(this::read)
                 .namespace("test-n")
                 .serviceName("test-s")
-                .nodeRefreshIntervalMs(5000)
+                .nodeRefreshIntervalMs(1000)
                 .build();
         client.start();
         TestUtils.sleepUntilFinderIsActive(client.getServiceFinder());
