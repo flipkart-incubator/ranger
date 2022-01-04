@@ -22,6 +22,7 @@ import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.units.TestNodeData;
 import lombok.experimental.UtilityClass;
 
+import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -51,16 +52,6 @@ public class RangerTestUtils {
     }
 
     /*
-        Node list is notEmpty only after the first updateRegistry has happened. So this should suffice for finder.start.
-        However, we have to use the sleepUntil with () -> true for when we need periodic wait (deterministic)
-     */
-    private static <T, R extends ServiceRegistry<T>> boolean validate(ServiceFinder<T, R> finder){
-        return finder.getServiceRegistry() != null &&
-                finder.getServiceRegistry().nodeList() != null &&
-                !finder.getServiceRegistry().nodeList().isEmpty();
-    }
-
-    /*
         If we know the upper bound condition, please use the until with the upper bound.
         Only for cases, where you have to wait till the refreshInterval periods, don't want to introduce
         refreshed and other boolean flags throughout the code.
@@ -81,13 +72,14 @@ public class RangerTestUtils {
         Only applicable for initial node population using finder. Works when you intend to start the finder with nodes in 'em.
      */
     public static <T, R extends ServiceRegistry<T>> void sleepUntilFinderStarts(ServiceFinder<T, R> finder){
-        sleepUntil(3, () -> validate(finder));
+        await().pollDelay(Duration.ofSeconds(3)).until(() -> !finder.getServiceRegistry().nodeList().isEmpty());
     }
 
     /*
         Only applicable for initial node population using hub of finders. Works when you intend to start the finder hub with nodes in 'em.
      */
     public static <T, R extends ServiceRegistry<T>> void sleepUntilHubStarts(ServiceFinderHub<T, R> hub){
-        sleepUntil(3, () -> hub.getFinders().get().values().stream().allMatch(RangerTestUtils::validate));
+        await().pollDelay(Duration.ofSeconds(3)).until(() -> hub.getServiceDataSource() != null &&
+                hub.getFinders().get().values().stream().noneMatch(finder -> finder.getServiceRegistry().nodeList().isEmpty()));
     }
 }
