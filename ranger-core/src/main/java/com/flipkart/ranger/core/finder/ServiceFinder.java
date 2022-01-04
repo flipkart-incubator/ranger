@@ -23,6 +23,7 @@ import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import lombok.var;
 
 import java.util.Collections;
@@ -51,7 +52,7 @@ public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegist
     }
 
     public Optional<ServiceNode<T>> get(Predicate<T> criteria) {
-        var nodes = shardSelector.nodes(criteria, serviceRegistry);
+        val nodes = shardSelector.nodes(criteria, serviceRegistry);
         return null == nodes || nodes.isEmpty() ? Optional.empty() : Optional.of(nodeSelector.select(nodes));
     }
 

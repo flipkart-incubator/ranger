@@ -35,7 +35,7 @@ public class RangerHubTestUtils {
                 .mapper(mapper)
                 .nodeRefreshTimeMs(1000)
                 .criteria(new TestCriteria())
-                .deserilizer(new TestDeserializer<>())
+                .deserializer(new TestDeserializer<>())
                 .build();
     }
 
