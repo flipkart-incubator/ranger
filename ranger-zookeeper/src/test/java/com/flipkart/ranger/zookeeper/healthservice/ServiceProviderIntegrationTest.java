@@ -25,7 +25,7 @@ import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.sample.RotationStatusMonitor;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.util.Exceptions;
-import com.flipkart.ranger.core.utils.TestUtils;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import lombok.val;
@@ -111,7 +111,7 @@ public class ServiceProviderIntegrationTest {
         /* with file existing, 3 nodes should be healthy */
         var filecreate = file.createNewFile();
         System.out.println("created file");
-        TestUtils.sleepUntil(5);
+        RangerTestUtils.sleepUntil(5);
         List<ServiceNode<UnshardedClusterInfo>> all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(3, all.size());
@@ -119,7 +119,7 @@ public class ServiceProviderIntegrationTest {
         /* with file deleted, all 3 nodes should be unhealthy */
         delete = file.delete();
         System.out.println("deleted file");
-        TestUtils.sleepUntil(5);
+        RangerTestUtils.sleepUntil(5);
         all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(0, all.size());
@@ -127,7 +127,7 @@ public class ServiceProviderIntegrationTest {
         /* with anotherFile created, the 4th node should become healthy and discoverable */
         filecreate = anotherFile.createNewFile();
         System.out.println("created anotherFile");
-        TestUtils.sleepUntil(5);
+        RangerTestUtils.sleepUntil(5);
         all = serviceFinder.getAll(null);
         System.out.println("all = " + all);
         Assert.assertEquals(1, all.size());

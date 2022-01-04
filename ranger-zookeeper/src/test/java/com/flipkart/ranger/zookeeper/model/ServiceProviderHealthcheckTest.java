@@ -24,7 +24,6 @@ import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.model.ServiceNode;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
-import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.google.common.collect.Maps;
@@ -86,7 +85,7 @@ public class ServiceProviderHealthcheckTest {
         Assert.assertEquals("localhost-1", node.getHost());
         TestServiceProvider testServiceProvider = serviceProviders.get(node.getHost());
         testServiceProvider.oor();
-        TestUtils.sleepUntil(2); //Sleep till the increment refresh healthCheck interval (> 1sec), no upper bound condition.
+        RangerTestUtils.sleepUntil(2); //Sleep till the increment refresh healthCheck interval (> 1sec), no upper bound condition.
         Assert.assertFalse(serviceFinder.get(RangerTestUtils.getCriteria(1)).isPresent());
         serviceFinder.stop();
     }

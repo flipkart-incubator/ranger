@@ -25,7 +25,6 @@ import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.util.Exceptions;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
-import com.flipkart.ranger.core.utils.TestUtils;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceDataSource;
 import com.flipkart.ranger.zookeeper.servicefinderhub.ZkServiceFinderHubBuilder;
@@ -117,7 +116,7 @@ public class ServiceHubTest {
 
         refreshProviderSignal.trigger();
         refreshHubSignal.trigger();
-        TestUtils.sleepUntilHubIsActive(hub);
+        RangerTestUtils.sleepUntilHubIsActive(hub);
 
         val node = hub.finder(RangerTestUtils.getService(NAMESPACE, "s1"))
                 .flatMap(finder -> finder.get(nodeData -> nodeData.getShardId() == 1)).orElse(null);

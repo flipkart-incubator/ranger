@@ -20,7 +20,7 @@ import com.flipkart.ranger.core.healthservice.ServiceHealthAggregator;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.Monitor;
-import com.flipkart.ranger.core.utils.TestUtils;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,7 +50,7 @@ public class ServiceHealthAggregatorTest {
         });
 
         serviceHealthAggregator.start();
-        TestUtils.sleepUntil(3, () -> serviceHealthAggregator.getRunning().get());
+        RangerTestUtils.sleepUntil(3, () -> serviceHealthAggregator.getRunning().get());
     }
 
     @After
@@ -64,14 +64,14 @@ public class ServiceHealthAggregatorTest {
         testMonitor.run();
         testMonitor.setThreadSleep(2000);
 
-        TestUtils.sleepUntil(3, () -> !testMonitor.hasValidUpdatedTime(new Date()));
+        RangerTestUtils.sleepUntil(3, () -> !testMonitor.hasValidUpdatedTime(new Date()));
 
         /* in the TestMonitor, thread was sleeping for 2 seconds, */
         /* so its state is supposed to be stale (>1 second) and service has to be unhealthy */
         Assert.assertEquals(HealthcheckStatus.unhealthy, serviceHealthAggregator.getServiceHealth());
 
         testMonitor.setThreadSleep(5);
-        TestUtils.sleepUntil(3, () -> testMonitor.hasValidUpdatedTime(new Date()));
+        RangerTestUtils.sleepUntil(3, () -> testMonitor.hasValidUpdatedTime(new Date()));
 
         /* in the TestMonitor, thread is sleeping only for 10 milliseconds, */
         /* so its state is supposed to be NOT stale (>1 second) and service has to be healthy */

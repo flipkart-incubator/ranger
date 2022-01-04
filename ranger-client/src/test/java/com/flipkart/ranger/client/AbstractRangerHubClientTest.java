@@ -18,7 +18,6 @@ package com.flipkart.ranger.client;
 import com.flipkart.ranger.client.utils.RangerHubTestUtils;
 import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
-import com.flipkart.ranger.core.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import lombok.var;
@@ -34,7 +33,7 @@ public class AbstractRangerHubClientTest {
     public void testAbstractHubClient() {
         val testAbstractHub = RangerHubTestUtils.getTestHub();
         testAbstractHub.start();
-        TestUtils.sleepUntilHubIsActive(testAbstractHub.getHub());
+        RangerTestUtils.sleepUntilHubIsActive(testAbstractHub.getHub());
         var node = testAbstractHub.getNode(service).orElse(null);
         Assert.assertNotNull(node);
         Assert.assertTrue(node.getHost().equalsIgnoreCase("localhost"));

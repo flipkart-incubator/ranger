@@ -23,7 +23,6 @@ import com.flipkart.ranger.client.stubs.RangerTestHub;
 import com.flipkart.ranger.client.utils.RangerHubTestUtils;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
-import com.flipkart.ranger.core.utils.TestUtils;
 import io.dropwizard.Configuration;
 import io.dropwizard.jersey.DropwizardResourceConfig;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
@@ -91,7 +90,7 @@ public class RangerServerBundleTest {
     public void testRangerBundle(){
         var hub = rangerServerBundle.getHubs().get(0);
         Assert.assertTrue(hub instanceof RangerTestHub);
-        TestUtils.sleepUntilHubIsActive(((RangerTestHub) hub).getHub());
+        RangerTestUtils.sleepUntilHubIsActive(((RangerTestHub) hub).getHub());
         var node = hub.getNode(service).orElse(null);
         Assert.assertNotNull(node);
         Assert.assertTrue(node.getHost().equalsIgnoreCase("localhost"));

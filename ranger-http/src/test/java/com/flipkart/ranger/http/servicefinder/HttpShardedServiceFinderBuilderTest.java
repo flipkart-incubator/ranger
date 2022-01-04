@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.utils.TestUtils;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.http.config.HttpClientConfig;
 import com.flipkart.ranger.http.model.ServiceNodesResponse;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -92,7 +92,7 @@ public class HttpShardedServiceFinderBuilderTest {
                 .withNodeRefreshIntervalMs(1000)
                 .build();
         finder.start();
-        TestUtils.sleepUntilFinderIsActive(finder);
+        RangerTestUtils.sleepUntilFinderIsActive(finder);
         Assert.assertTrue(finder.get(nodeData -> true).isPresent());
     }
 

@@ -15,17 +15,73 @@
  */
 package com.flipkart.ranger.core.utils;
 
+import com.flipkart.ranger.core.finder.ServiceFinder;
+import com.flipkart.ranger.core.finderhub.ServiceFinderHub;
 import com.flipkart.ranger.core.model.Service;
+import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.units.TestNodeData;
 import lombok.experimental.UtilityClass;
+import org.awaitility.core.ThrowingRunnable;
 
+import java.time.Duration;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import static org.awaitility.Awaitility.await;
+
+/**
+ *
+ */
 @UtilityClass
 public class RangerTestUtils {
 
-    private static String TEST_NAMESPACE = "test";
-    private static String TEST_SERVICE = "test-service";
+    static String TEST_NAMESPACE = "test";
+    static String TEST_SERVICE = "test-service";
+
+    /*
+        Node list is notEmpty only after the first updateRegistry has happened. So this should suffice for finder.start.
+        However, we have to use the sleepUntil with () -> true for when we need periodic wait (deterministic)
+     */
+    public static <T, R extends ServiceRegistry<T>> boolean validate(ServiceFinder<T, R> finder){
+        return finder.getServiceRegistry() != null &&
+                finder.getServiceRegistry().nodeList() != null &&
+                !finder.getServiceRegistry().nodeList().isEmpty();
+    }
+
+    /*
+        If we know the upper bound condition, please use the until with the upper bound.
+        Only for cases, where you have to wait till the refreshInterval periods, don't want to introduce
+        refreshed and other boolean flags throughout the code.
+     */
+    public static void sleepUntil(int numSeconds) {
+        await().pollDelay(numSeconds, TimeUnit.SECONDS).until(() -> true);
+    }
+
+    /*
+        Use this when you have to alter the numSeconds in any of the specific assertions. For finder and hub, the values are appropriately coded
+        keeping the start intervals in mind.
+     */
+    public static void sleepUntil(int numSeconds, Callable<Boolean> conditionEvaluator) {
+        await().pollDelay(numSeconds, TimeUnit.SECONDS).until(conditionEvaluator);
+    }
+
+    /*
+        Use this when you have to alter the numSeconds in any of the specific assertions. For finder and hub, the values are appropriately coded
+        keeping the start intervals in mind.
+     */
+    public static void sleepUntil(int numSeconds, ThrowingRunnable assertion){
+        await().pollDelay(Duration.ofSeconds(numSeconds)).untilAsserted(assertion);
+    }
+
+    public static <T, R extends ServiceRegistry<T>> void sleepUntilFinderIsActive(ServiceFinder<T, R> finder){
+        sleepUntil(3, () -> validate(finder));
+    }
+
+    public static <T, R extends ServiceRegistry<T>> void sleepUntilHubIsActive(ServiceFinderHub<T, R> hub){
+        sleepUntil(3, () -> hub.getServiceDataSource().start());
+        sleepUntil(3, () -> hub.getFinders().get().values().stream().allMatch(RangerTestUtils::validate));
+    }
 
     public static Predicate<TestNodeData> getCriteria(final int shardId){
         return nodeData -> nodeData.getShardId() == shardId;
