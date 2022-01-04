@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.ranger.client.RangerHubClient;
 import com.flipkart.ranger.client.stubs.RangerTestHub;
 import com.flipkart.ranger.client.utils.RangerHubTestUtils;
-import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;

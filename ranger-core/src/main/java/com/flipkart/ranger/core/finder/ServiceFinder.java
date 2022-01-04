@@ -24,7 +24,6 @@ import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import lombok.var;
 
 import java.util.Collections;
 import java.util.List;

@@ -15,7 +15,6 @@
  */
 package com.flipkart.ranger.client.http;
 
-import com.flipkart.ranger.core.finder.ServiceFinder;
 import com.flipkart.ranger.core.units.TestNodeData;
 import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.core.utils.TestUtils;
