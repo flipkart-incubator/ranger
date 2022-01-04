@@ -93,7 +93,7 @@ public class HttpShardedServiceFinderBuilderTest {
                 .build();
         finder.start();
         RangerTestUtils.sleepUntilFinderStarts(finder);
-        Assert.assertTrue(finder.get(nodeData -> true).isPresent());
+        Assert.assertNotNull(finder.get(nodeData -> true).orElse(null));
     }
 
 }

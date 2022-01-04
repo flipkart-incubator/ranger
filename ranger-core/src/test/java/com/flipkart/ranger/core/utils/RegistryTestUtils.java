@@ -27,7 +27,7 @@ import lombok.val;
 public class RegistryTestUtils {
 
     public static MapBasedServiceRegistry<TestNodeData> getServiceRegistry(){
-        val service = RangerTestUtils.getService();
+        val service = RangerTestUtils.service;
         val serviceRegistry = new MapBasedServiceRegistry<TestNodeData>(service);
         val serviceNodes = ImmutableList.of(
                 ServiceNode.<TestNodeData>builder().host("localhost-1").port(9000).nodeData(TestNodeData.builder().shardId(1).build()).build(),
@@ -39,7 +39,7 @@ public class RegistryTestUtils {
     }
 
     public static ListBasedServiceRegistry<TestNodeData> getUnshardedRegistry(){
-        val service = RangerTestUtils.getService();
+        val service = RangerTestUtils.service;
         val serviceRegistry = new ListBasedServiceRegistry<TestNodeData>(service);
         val serviceNodes = ImmutableList.of(
                 ServiceNode.<TestNodeData>builder().host("localhost-1").port(9000).nodeData(TestNodeData.builder().shardId(1).build()).build(),

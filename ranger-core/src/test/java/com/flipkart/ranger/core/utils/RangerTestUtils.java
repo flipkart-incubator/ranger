@@ -21,9 +21,7 @@ import com.flipkart.ranger.core.model.Service;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.units.TestNodeData;
 import lombok.experimental.UtilityClass;
-import org.awaitility.core.ThrowingRunnable;
 
-import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -38,13 +36,11 @@ public class RangerTestUtils {
 
     static String TEST_NAMESPACE = "test";
     static String TEST_SERVICE = "test-service";
+    //Visible outside the class scope
+    public static Service service = Service.builder().namespace(TEST_NAMESPACE).serviceName(TEST_SERVICE).build();
 
     public static Predicate<TestNodeData> getCriteria(final int shardId){
         return nodeData -> nodeData.getShardId() == shardId;
-    }
-
-    public static Service getService(){
-        return getService(TEST_NAMESPACE, TEST_SERVICE);
     }
 
     public static Service getService(String namespace, String serviceName){
@@ -58,7 +54,7 @@ public class RangerTestUtils {
         Node list is notEmpty only after the first updateRegistry has happened. So this should suffice for finder.start.
         However, we have to use the sleepUntil with () -> true for when we need periodic wait (deterministic)
      */
-    public static <T, R extends ServiceRegistry<T>> boolean validate(ServiceFinder<T, R> finder){
+    private static <T, R extends ServiceRegistry<T>> boolean validate(ServiceFinder<T, R> finder){
         return finder.getServiceRegistry() != null &&
                 finder.getServiceRegistry().nodeList() != null &&
                 !finder.getServiceRegistry().nodeList().isEmpty();
