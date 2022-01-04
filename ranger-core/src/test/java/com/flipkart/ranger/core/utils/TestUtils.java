@@ -49,7 +49,7 @@ public class TestUtils {
     }
 
     public static <T, R extends ServiceRegistry<T>> void sleepUntilHubIsActive(ServiceFinderHub<T, R> hub){
-        await().untilAsserted(() -> hub.getFinders().get().values().forEach(ServiceFinder::start));
         await().untilAsserted(() -> hub.getServiceDataSource().start());
+        await().untilAsserted(() -> hub.getFinders().get().values().forEach(ServiceFinder::start));
     }
 }
