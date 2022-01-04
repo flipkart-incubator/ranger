@@ -57,7 +57,7 @@ public class RangerTestUtils {
         refreshed and other boolean flags throughout the code.
      */
     public static void sleepUntil(int numSeconds) {
-        await().pollDelay(numSeconds, TimeUnit.SECONDS).until(() -> true);
+        await().pollDelay(Duration.ofSeconds(numSeconds)).until(() -> true);
     }
 
     /*
@@ -65,7 +65,7 @@ public class RangerTestUtils {
         keeping the start intervals in mind.
      */
     public static void sleepUntil(int numSeconds, Callable<Boolean> conditionEvaluator) {
-        await().pollDelay(numSeconds, TimeUnit.SECONDS).until(conditionEvaluator);
+        await().pollDelay(Duration.ofSeconds(numSeconds)).until(conditionEvaluator);
     }
 
     /*
