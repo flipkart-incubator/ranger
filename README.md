@@ -1,4 +1,4 @@
-# Ranger [![Travis build status](https://travis-ci.org/flipkart-incubator/ranger.svg?branch=master)](https://travis-ci.org/flipkart-incubator/ranger) [![Join the chat at https://gitter.im/flipkart-incubator/ranger](https://badges.gitter.im/flipkart-incubator/ranger.svg)](https://gitter.im/flipkart-incubator/ranger?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Ranger
 
 Ranger is a high level service discovery framework built on Zookeeper. The framework brings the following to the table:
   - Support of sharding of the service provider nodes
@@ -20,21 +20,13 @@ We'll take these up, one by one.
 ###Build instructions
   - Clone the source:
 
-        git clone github.com/flipkart-incubator/ranger
+        git clone github.com/appform-io/ranger
 
   - Build
 
         mvn install
 
 ### Maven Dependency
-Use the following repository:
-```
-<repository>
-    <id>clojars</id>
-    <name>Clojars repository</name>
-    <url>https://clojars.org/repo</url>
-</repository>
-```
 Use the following maven dependency:
 ```
 <dependency>
@@ -43,8 +35,10 @@ Use the following maven dependency:
     <versio>1.0-SNAPSHOT</version>
 </dependency>
 ```
+
 ## How it works
 There are service providers and service clients. We will look at the interactions from both sides.
+
 ### Service Provider
 Service providers register to the Ranger system by building and starting a ServiceProvider instance. During registering itself the provider must provide the following:
 - _ShardInfo type_ - This is a type parameter to the ServiceProvider class. This can be any class that can be serialized and deserialized by the Serializer and Deserializer provided (see below). The hashCode() for this class is used to match and find the matching shard for a query. So be sure to implement this properly. A special version of this class _UnshardedClusterInfo_ is provided for unsharded discovery.
@@ -385,10 +379,6 @@ To use the http server bundle along with boostrap use.
 It comes with a rangerResource that provides you with interfaces for getting the list of services across hubs and the nodes per service across hubs. 
 
 
-Version
-----
-1.0-SNAPSHOT
-
 Tech
 -----------
 
@@ -397,50 +387,13 @@ Ranger uses Apache Curator:
 * [Curator](http://curator.apache.org/) - Abstraction library for ZooKeeper operations
 
 # Contribution, Bugs and Feedback
-For bugs, questions and discussions please use the [Github Issues](https://github.com/flipkart-incubator/ranger/issues).
+For bugs, questions and discussions please use the [Github Issues](https://github.com/appform-io/ranger/issues).
 
 If you would like to contribute code you can do so through GitHub by forking the repository and sending a pull request.
 
 When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible.
 
-## Contribution License
-
-By contributing your code, you agree to license your contribution under the terms of the APLv2:  http://www.apache.org/licenses/LICENSE-2.0
-
-All files are released with the Apache 2.0 license.
-
-If you are adding a new file it should have a header like this:
-
-    /**
-     * Copyright 2015 Flipkart Internet Pvt. Ltd.
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     * http://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-
-LICENSE
--------
-
-Copyright 2015 Flipkart Internet Pvt. Ltd.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Original Repo
+-------------
+This repo is a fork of: [Ranger](https://github.com/flipkart-incubator/ranger)
 
