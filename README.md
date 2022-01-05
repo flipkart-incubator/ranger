@@ -32,7 +32,7 @@ Use the following maven dependency:
 <dependency>
     <groupId>io.appform.ranger</groupId>
     <artifactId>ranger</artifactId>
-    <versio>1.0-RC1</version>
+    <versio>1.0-RC2</version>
 </dependency>
 ```
 
