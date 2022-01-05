@@ -91,6 +91,7 @@
         <junit.version>4.13.2</junit.version>
         <awaitility.version>4.1.1</awaitility.version>
         <guava-retrying.version>2.0.0</guava-retrying.version>
+        <logback.version>1.2.10</logback.version>
     </properties>
 
     <dependencies>
@@ -123,11 +124,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>runtime</scope>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
