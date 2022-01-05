@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,16 +19,16 @@ package com.flipkart.ranger.zookeeper.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinder;
 import com.flipkart.ranger.core.healthcheck.Healthcheck;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.model.ServiceNode;
-import com.flipkart.ranger.core.serviceprovider.ServiceProvider;
-import com.flipkart.ranger.core.utils.TestUtils;
+import com.flipkart.ranger.core.units.TestNodeData;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import com.flipkart.ranger.zookeeper.ServiceProviderBuilders;
-import com.flipkart.ranger.zookeeper.serde.ZkNodeDataSerializer;
 import com.google.common.collect.Maps;
+import lombok.Getter;
+import lombok.val;
 import org.apache.curator.test.TestingCluster;
 import org.junit.After;
 import org.junit.Assert;
@@ -61,52 +61,16 @@ public class ServiceProviderHealthcheckTest {
         }
     }
 
-    private static final class TestShardInfo {
-        private int shardId;
-
-        public TestShardInfo(int shardId) {
-            this.shardId = shardId;
-        }
-
-        public TestShardInfo() {
-        }
-
-        public int getShardId() {
-            return shardId;
-        }
-
-        public void setShardId(int shardId) {
-            this.shardId = shardId;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            TestShardInfo that = (TestShardInfo) o;
-
-            if (shardId != that.shardId) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return shardId;
-        }
-    }
-
     @Test
-    public void testBasicDiscovery() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+    public void testBasicDiscovery() {
+        val serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
                 .withDeserializer(data -> {
                     try {
                         return objectMapper.readValue(data,
-                                new TypeReference<ServiceNode<TestShardInfo>>() {
+                                new TypeReference<ServiceNode<TestNodeData>>() {
                                 });
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -116,13 +80,13 @@ public class ServiceProviderHealthcheckTest {
                 .withNodeRefreshIntervalMs(1000)
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
+        val node = serviceFinder.get(RangerTestUtils.getCriteria(1)).orElse(null);
         Assert.assertNotNull(node);
         Assert.assertEquals("localhost-1", node.getHost());
         TestServiceProvider testServiceProvider = serviceProviders.get(node.getHost());
         testServiceProvider.oor();
-        TestUtils.sleepForSeconds(6);
-        Assert.assertNull(serviceFinder.get(new TestShardInfo(1)));
+        RangerTestUtils.sleepUntil(2); //Sleep till the increment refresh healthCheck interval (> 1sec), no upper bound condition.
+        Assert.assertFalse(serviceFinder.get(RangerTestUtils.getCriteria(1)).isPresent());
         serviceFinder.stop();
     }
 
@@ -147,6 +111,8 @@ public class ServiceProviderHealthcheckTest {
         private final String host;
         private final int port;
         private final int shardId;
+        @Getter
+        private boolean started = false;
 
         public TestServiceProvider(ObjectMapper objectMapper,
                                    String connectionString,
@@ -169,7 +135,7 @@ public class ServiceProviderHealthcheckTest {
         }
 
         public void start() throws Exception {
-            final ServiceProvider<TestShardInfo, ZkNodeDataSerializer<TestShardInfo>> serviceProvider = ServiceProviderBuilders.<TestShardInfo>shardedServiceProviderBuilder()
+            val serviceProvider = ServiceProviderBuilders.<TestNodeData>shardedServiceProviderBuilder()
                     .withConnectionString(connectionString)
                     .withNamespace("test")
                     .withServiceName("test-service")
@@ -183,16 +149,17 @@ public class ServiceProviderHealthcheckTest {
                     })
                     .withHostname(host)
                     .withPort(port)
-                    .withNodeData(new TestShardInfo(shardId))
+                    .withNodeData(TestNodeData.builder().shardId(shardId).build())
                     .withHealthcheck(healthcheck)
                     .withHealthUpdateIntervalMs(1000)
                     .build();
             serviceProvider.start();
+            started = true;
         }
     }
 
     private void registerService(String host, int port, int shardId) throws Exception {
-        TestServiceProvider serviceProvider = new TestServiceProvider(objectMapper, testingCluster.getConnectString(), host, port, shardId);
+        val serviceProvider = new TestServiceProvider(objectMapper, testingCluster.getConnectString(), host, port, shardId);
         serviceProvider.start();
         serviceProviders.put(host, serviceProvider);
     }

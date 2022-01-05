@@ -1,12 +1,12 @@
-/**
- * Copyright 2016 Flipkart Internet Pvt. Ltd.
- *
+/*
+ * Copyright 2015 Flipkart Internet Pvt. Ltd.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ package com.flipkart.ranger.core.healthservice.monitor.sample;
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
 import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
+import lombok.val;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -73,11 +74,7 @@ public class RotationStatusMonitor extends IsolatedHealthMonitor {
      */
     @Override
     public HealthcheckStatus monitor() {
-        File file = new File(filePath);
-        if (file.exists()) {
-            return HealthcheckStatus.healthy;
-        } else {
-            return HealthcheckStatus.unhealthy;
-        }
+        val file = new File(filePath);
+        return file.exists() ? HealthcheckStatus.healthy : HealthcheckStatus.unhealthy;
     }
 }

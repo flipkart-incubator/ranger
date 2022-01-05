@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,15 +17,18 @@
 package com.flipkart.ranger.core.finder;
 
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import com.flipkart.ranger.core.model.ServiceRegistry;
 import com.flipkart.ranger.core.model.ShardSelector;
 import com.flipkart.ranger.core.signals.ExternalTriggeredSignal;
-import com.flipkart.ranger.core.model.ServiceNodeSelector;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 @Slf4j
 public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
@@ -47,15 +50,12 @@ public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegist
         this.nodeSelector = nodeSelector;
     }
 
-    public ServiceNode<T> get(T criteria) {
-        List<ServiceNode<T>> nodes = shardSelector.nodes(criteria, serviceRegistry);
-        if (null == nodes || nodes.isEmpty()) {
-            return null;
-        }
-        return nodeSelector.select(nodes);
+    public Optional<ServiceNode<T>> get(Predicate<T> criteria) {
+        val nodes = shardSelector.nodes(criteria, serviceRegistry);
+        return null == nodes || nodes.isEmpty() ? Optional.empty() : Optional.of(nodeSelector.select(nodes));
     }
 
-    public List<ServiceNode<T>> getAll(T criteria) {
+    public List<ServiceNode<T>> getAll(Predicate<T> criteria) {
         return shardSelector.nodes(criteria, serviceRegistry);
     }
 

@@ -1,12 +1,12 @@
-/**
- * Copyright 2016 Flipkart Internet Pvt. Ltd.
- *
+/*
+ * Copyright 2015 Flipkart Internet Pvt. Ltd.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,10 @@
 
 package com.flipkart.ranger.core.healthservice.monitor;
 
+import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.sample.CountMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.sample.PingCheckMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.sample.RotationStatusMonitor;
-import com.flipkart.ranger.core.healthservice.TimeEntity;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -110,23 +110,16 @@ public abstract class IsolatedHealthMonitor<T> implements Runnable, Monitor<T> {
         return healthStatus.get();
     }
 
-    public Date getLastStatusUpdateTime() {
-        return null != lastStatusUpdateTime ? new Date(lastStatusUpdateTime.getTime()) : null;
-    }
-
     public String getName() {
         return name;
-    }
-
-    /**
-     * @return default of 60 seconds if not set
-     */
-    public long getStalenessAllowedInMillis() {
-        return stalenessAllowedInMillis;
     }
 
     @Override
     public boolean isDisabled() {
         return disabled.get();
+    }
+
+    public boolean hasValidUpdatedTime(Date currentTime){
+        return null != lastStatusUpdateTime && (currentTime.getTime() - lastStatusUpdateTime.getTime() <= stalenessAllowedInMillis);
     }
 }

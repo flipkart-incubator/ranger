@@ -1,19 +1,18 @@
-/**
- * Copyright 2016 Flipkart Internet Pvt. Ltd.
- *
+/*
+ * Copyright 2015 Flipkart Internet Pvt. Ltd.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.flipkart.ranger.core.healthservice.monitor.sample;
 
 import com.flipkart.ranger.core.healthcheck.HealthcheckStatus;
@@ -21,10 +20,10 @@ import com.flipkart.ranger.core.healthservice.TimeEntity;
 import com.flipkart.ranger.core.healthservice.monitor.IsolatedHealthMonitor;
 import com.flipkart.ranger.core.healthservice.monitor.RollingWindowHealthQueue;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -71,7 +70,7 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
         this.port = port;
         this.rollingWindowHealthQueue = new RollingWindowHealthQueue(pingWindowSize, maxFailures);
         this.executorService = Executors.newSingleThreadExecutor();
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        val connectionManager = new PoolingHttpClientConnectionManager();
         connectionManager.setMaxPerRoute(new HttpRoute(new HttpHost(host, port)), 2);
         this.httpClient = HttpClients.custom()
                 .setConnectionManager(connectionManager)
@@ -81,15 +80,13 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
     @Override
     public HealthcheckStatus monitor() {
         log.debug("Running ping monitor :{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
-        Future<Boolean> futurePingResponse = executorService.submit(this::healthPing);
+        val futurePingResponse = executorService.submit(this::healthPing);
 
         try {
-            final Boolean pingSuccessful = futurePingResponse.get(pingTimeoutInMilliseconds, TimeUnit.MILLISECONDS);
-            if (!pingSuccessful) {
-                return getRollingWindowHealthcheckStatus(HealthcheckStatus.unhealthy);
-            } else {
-                return getRollingWindowHealthcheckStatus(HealthcheckStatus.healthy);
-            }
+            val pingSuccessful = futurePingResponse.get(pingTimeoutInMilliseconds, TimeUnit.MILLISECONDS);
+            return getRollingWindowHealthcheckStatus(
+                    pingSuccessful ? HealthcheckStatus.healthy : HealthcheckStatus.unhealthy
+            );
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             log.error("Ping monitor failed:{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
             log.error("Error running ping monitor: ", e);
@@ -110,7 +107,7 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
     private boolean healthPing() {
         try {
             log.debug("executing http HttpRequest: {}, host:{}, port:{}", httpRequest, host, port);
-            CloseableHttpResponse response = httpClient.execute(new HttpHost(host, port), httpRequest);
+            val response = httpClient.execute(new HttpHost(host, port), httpRequest);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 log.error("Error while executing Ping Test. HttpRequest: {}, host:{}, port:{}, reason:{}", httpRequest, host, port, response.getStatusLine().getReasonPhrase());
                 response.close();

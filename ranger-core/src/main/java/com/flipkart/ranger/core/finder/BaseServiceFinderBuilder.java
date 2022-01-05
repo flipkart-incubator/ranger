@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,9 @@
 
 package com.flipkart.ranger.core.finder;
 
-import com.flipkart.ranger.core.finder.signals.ScheduledRegistryUpdateSignal;
+import com.flipkart.ranger.core.finder.nodeselector.RandomServiceNodeSelector;
+import com.flipkart.ranger.core.finder.serviceregistry.ServiceRegistryUpdater;
+import com.flipkart.ranger.core.finder.serviceregistry.signal.ScheduledRegistryUpdateSignal;
 import com.flipkart.ranger.core.model.*;
 import com.flipkart.ranger.core.signals.Signal;
 import com.google.common.base.Preconditions;
@@ -31,6 +33,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
+@SuppressWarnings("unchecked")
 public abstract class BaseServiceFinderBuilder
         <
                 T,
@@ -137,7 +140,7 @@ public abstract class BaseServiceFinderBuilder
                      serviceName, nodeRefreshIntervalMs);
             nodeRefreshIntervalMs = 1000;
         }
-        val service = new Service(namespace, serviceName);
+        val service = Service.builder().namespace(namespace).serviceName(serviceName).build();
         val finder = buildFinder(service, shardSelector, nodeSelector);
         val registry = finder.getServiceRegistry();
         val signalGenerators = new ArrayList<Signal<T>>();
@@ -150,7 +153,7 @@ public abstract class BaseServiceFinderBuilder
             log.debug("Added additional signal handlers");
         }
 
-        val updater = new ServiceRegistryUpdater<T, D>(registry, nodeDataSource, signalGenerators, deserializer);
+        val updater = new ServiceRegistryUpdater<>(registry, nodeDataSource, signalGenerators, deserializer);
         finder.getStartSignal()
                 .registerConsumers(startSignalHandlers)
                 .registerConsumer(x -> nodeDataSource.start())

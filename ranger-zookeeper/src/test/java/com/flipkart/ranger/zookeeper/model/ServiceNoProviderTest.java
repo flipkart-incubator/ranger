@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Flipkart Internet Pvt. Ltd.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.flipkart.ranger.zookeeper.model;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.ranger.core.finder.RoundRobinServiceNodeSelector;
-import com.flipkart.ranger.core.finder.sharded.SimpleShardedServiceFinder;
+import com.flipkart.ranger.core.finder.nodeselector.RoundRobinServiceNodeSelector;
 import com.flipkart.ranger.core.model.ServiceNode;
+import com.flipkart.ranger.core.units.TestNodeData;
+import com.flipkart.ranger.core.utils.RangerTestUtils;
 import com.flipkart.ranger.zookeeper.ServiceFinderBuilders;
 import lombok.val;
 import org.apache.curator.test.TestingCluster;
@@ -41,9 +41,6 @@ public class ServiceNoProviderTest {
         objectMapper = new ObjectMapper();
         testingCluster = new TestingCluster(3);
         testingCluster.start();
-        //registerService("localhost-1", 9000, 1);
-        //registerService("localhost-2", 9000, 1);
-        //registerService("localhost-3", 9000, 2);
     }
 
     @After
@@ -53,58 +50,16 @@ public class ServiceNoProviderTest {
         }
     }
 
-    private static final class TestShardInfo {
-        private int shardId;
-
-        public TestShardInfo(int shardId) {
-            this.shardId = shardId;
-        }
-
-        public TestShardInfo() {
-        }
-
-        public int getShardId() {
-            return shardId;
-        }
-
-        public void setShardId(int shardId) {
-            this.shardId = shardId;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            TestShardInfo that = (TestShardInfo) o;
-
-            if (shardId != that.shardId) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return shardId;
-        }
-    }
-
     @Test
-    public void testBasicDiscovery() throws Exception {
-        SimpleShardedServiceFinder<TestShardInfo> serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+    public void testBasicDiscovery() {
+        val serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
                 .withDeserializer(data -> {
                     try {
                         return objectMapper.readValue(data,
-                                                      new TypeReference<ServiceNode<TestShardInfo>>() {
+                                                      new TypeReference<ServiceNode<TestNodeData>>() {
                                                       });
                     }
                     catch (IOException e) {
@@ -114,15 +69,15 @@ public class ServiceNoProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
+        val node = serviceFinder.get(RangerTestUtils.getCriteria(1)).orElse(null);
         Assert.assertNull(node);
         serviceFinder.stop();
 
     }
 
     @Test
-    public void testBasicDiscoveryRR() throws Exception {
-        val serviceFinder = ServiceFinderBuilders.<TestShardInfo>shardedFinderBuilder()
+    public void testBasicDiscoveryRR() {
+        val serviceFinder = ServiceFinderBuilders.<TestNodeData>shardedFinderBuilder()
                 .withConnectionString(testingCluster.getConnectString())
                 .withNamespace("test")
                 .withServiceName("test-service")
@@ -130,7 +85,7 @@ public class ServiceNoProviderTest {
                 .withDeserializer(data -> {
                     try {
                         return objectMapper.readValue(data,
-                                                      new TypeReference<ServiceNode<TestShardInfo>>() {
+                                                      new TypeReference<ServiceNode<TestNodeData>>() {
                                                       });
                     }
                     catch (IOException e) {
@@ -140,7 +95,7 @@ public class ServiceNoProviderTest {
                 })
                 .build();
         serviceFinder.start();
-        ServiceNode<TestShardInfo> node = serviceFinder.get(new TestShardInfo(1));
+        val node = serviceFinder.get(RangerTestUtils.getCriteria(1)).orElse(null);
         Assert.assertNull(node);
         serviceFinder.stop();
     }
