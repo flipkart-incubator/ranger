@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>ranger</artifactId>
-        <groupId>com.flipkart.ranger</groupId>
+        <groupId>io.appform.ranger</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -17,17 +17,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.flipkart.ranger</groupId>
+            <groupId>io.appform.ranger</groupId>
             <artifactId>ranger-http-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.flipkart.ranger</groupId>
+            <groupId>io.appform.ranger</groupId>
             <artifactId>ranger-server-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.flipkart.ranger</groupId>
+            <groupId>io.appform.ranger</groupId>
             <artifactId>ranger-server-common</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -38,7 +38,7 @@ Use the following repository:
 Use the following maven dependency:
 ```
 <dependency>
-    <groupId>com.flipkart.ranger</groupId>
+    <groupId>io.appform.ranger</groupId>
     <artifactId>ranger</artifactId>
     <versio>1.0-SNAPSHOT</version>
 </dependency>

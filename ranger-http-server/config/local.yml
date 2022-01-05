@@ -27,7 +27,7 @@ logging:
   level: INFO
 
   loggers:
-    com.flipkart.ranger.http.server: DEBUG
+    io.appform.ranger.http.server: DEBUG
 
   appenders:
     - type: console
