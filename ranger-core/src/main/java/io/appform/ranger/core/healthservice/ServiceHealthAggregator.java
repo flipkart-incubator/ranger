@@ -50,7 +50,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
     private List<Monitor<HealthcheckStatus>> inlineHealthMonitorList;
 
     /* List of all registered isolated monitors */
-    private List<IsolatedHealthMonitor> isolatedHealthMonitorList;
+    private final List<IsolatedHealthMonitor<HealthcheckStatus>> isolatedHealthMonitorList;
 
     /* If aggregator is running or not */
     @Getter
@@ -71,7 +71,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
      * @param monitor any extension of the {@link IsolatedHealthMonitor}
      */
     @Override
-    public void addIsolatedMonitor(IsolatedHealthMonitor monitor) {
+    public void addIsolatedMonitor(IsolatedHealthMonitor<HealthcheckStatus> monitor) {
         if (running.get()) {
             /* cant add monitors when the Aggregator is already running */
             throw new IllegalStateException("Cannot add a monitor when Aggregator is running");
@@ -158,7 +158,7 @@ public class ServiceHealthAggregator implements HealthService<HealthcheckStatus>
         return getServiceHealth();
     }
 
-    private boolean isIsolatedMonitorHealthy(IsolatedHealthMonitor isolatedHealthMonitor, Date currentTime) {
+    private boolean isIsolatedMonitorHealthy(IsolatedHealthMonitor<HealthcheckStatus> isolatedHealthMonitor, Date currentTime) {
         if (HealthcheckStatus.unhealthy == isolatedHealthMonitor.getHealthStatus()) {
             return true;
         }

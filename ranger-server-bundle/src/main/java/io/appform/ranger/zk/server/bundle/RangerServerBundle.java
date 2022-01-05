@@ -63,6 +63,7 @@ public abstract class RangerServerBundle<
     /*
         Letting the subclasses override should they have to again. The default is set to false always. Need not be abstract, not a mandatory parameter.
      */
+    @SuppressWarnings("unused")
     protected boolean withInitialRotationStatus(U configuration){
         return false;
     }
@@ -71,6 +72,7 @@ public abstract class RangerServerBundle<
         Not a mandatory parameter (for example, needed for zk, not for http!
         Letting the subclasses override should they have to, need not be abstract. Avoids boilerplate code everywhere, the default impl!
      */
+    @SuppressWarnings("unused")
     protected List<Signal<T>> withLifecycleSignals(U configuration){
         return ImmutableList.of();
     }

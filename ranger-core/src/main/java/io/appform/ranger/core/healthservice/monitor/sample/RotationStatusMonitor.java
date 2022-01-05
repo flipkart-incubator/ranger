@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * </li>
  * </ul>
  */
-public class RotationStatusMonitor extends IsolatedHealthMonitor {
+public class RotationStatusMonitor extends IsolatedHealthMonitor<HealthcheckStatus> {
 
     private String filePath;
 

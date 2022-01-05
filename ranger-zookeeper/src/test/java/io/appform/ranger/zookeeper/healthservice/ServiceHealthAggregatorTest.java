@@ -99,6 +99,7 @@ public class ServiceHealthAggregatorTest {
             try {
                 Thread.sleep(threadSleep);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
             return HealthcheckStatus.healthy;
         }

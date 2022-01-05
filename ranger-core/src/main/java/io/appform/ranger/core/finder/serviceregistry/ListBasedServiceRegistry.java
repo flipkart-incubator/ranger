@@ -19,12 +19,14 @@ import io.appform.ranger.core.model.Service;
 import io.appform.ranger.core.model.ServiceNode;
 import io.appform.ranger.core.model.ServiceRegistry;
 import com.google.common.collect.ImmutableList;
+import lombok.EqualsAndHashCode;
 import lombok.val;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+@EqualsAndHashCode(callSuper = true)
 public class ListBasedServiceRegistry<T> extends ServiceRegistry<T> {
     private final AtomicReference<List<ServiceNode<T>>> nodes
                                         = new AtomicReference<>();

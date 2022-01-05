@@ -18,6 +18,7 @@ package io.appform.ranger.core.model;
 /**
  *
  */
+@SuppressWarnings("unused")
 public interface NodeDataStoreConnector<T> {
     void start();
 

@@ -54,16 +54,17 @@ public class HttpNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> 
 
     @Override
     public void start() {
+        //Nothing to do here
     }
 
     @Override
     public void ensureConnected() {
-
+        //Nothing to do here
     }
 
     @Override
     public void stop() {
-
+        //Nothing to do here
     }
 
     protected int defaultPort() {

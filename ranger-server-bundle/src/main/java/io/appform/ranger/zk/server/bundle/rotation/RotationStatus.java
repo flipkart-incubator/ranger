@@ -18,21 +18,21 @@ package io.appform.ranger.zk.server.bundle.rotation;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RotationStatus {
-    private AtomicBoolean rotationStatus;
+    private final AtomicBoolean status;
 
     public RotationStatus(boolean initialStatus) {
-        rotationStatus = new AtomicBoolean(initialStatus);
+        status = new AtomicBoolean(initialStatus);
     }
 
     public void oor() {
-        rotationStatus.set(false);
+        status.set(false);
     }
 
     public void bir() {
-        rotationStatus.set(true);
+        status.set(true);
     }
 
     public boolean status() {
-        return rotationStatus.get();
+        return status.get();
     }
 }

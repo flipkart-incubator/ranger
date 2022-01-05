@@ -15,5 +15,6 @@
  */
 package io.appform.ranger.core.model;
 
+@SuppressWarnings("unused")
 public interface Deserializer<T> {
 }

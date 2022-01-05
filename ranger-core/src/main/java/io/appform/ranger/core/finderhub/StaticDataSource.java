@@ -33,17 +33,17 @@ public class StaticDataSource implements ServiceDataSource{
     private final Set<Service> services;
 
     @Override
-    public Collection<Service> services() throws Exception {
+    public Collection<Service> services() {
         return services;
     }
 
     @Override
     public void start() {
-
+        //Nothing to do here
     }
 
     @Override
     public void stop() {
-
+        //Nothing to do here
     }
 }

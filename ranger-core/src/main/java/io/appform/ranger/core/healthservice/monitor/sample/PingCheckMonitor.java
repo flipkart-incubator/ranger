@@ -36,7 +36,7 @@ import java.util.concurrent.*;
  * Maintains every healthcheck in a {@link RollingWindowHealthQueue} to prevent continuous flaps of health
  */
 @Slf4j
-public class PingCheckMonitor extends IsolatedHealthMonitor {
+public class PingCheckMonitor extends IsolatedHealthMonitor<HealthcheckStatus> {
     
     private HttpRequest httpRequest;
     private String host;
@@ -87,7 +87,12 @@ public class PingCheckMonitor extends IsolatedHealthMonitor {
             return getRollingWindowHealthcheckStatus(
                     pingSuccessful ? HealthcheckStatus.healthy : HealthcheckStatus.unhealthy
             );
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException e) {
+            log.error("Request thread interrupted");
+            Thread.currentThread().interrupt();
+            return getRollingWindowHealthcheckStatus(HealthcheckStatus.unhealthy);
+        }
+        catch (ExecutionException | TimeoutException e) {
             log.error("Ping monitor failed:{} with HttpRequest:{} on host:{} port:{}", name, httpRequest, host, port);
             log.error("Error running ping monitor: ", e);
             return getRollingWindowHealthcheckStatus(HealthcheckStatus.unhealthy);

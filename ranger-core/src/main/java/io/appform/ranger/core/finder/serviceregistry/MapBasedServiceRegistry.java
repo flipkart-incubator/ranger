@@ -22,12 +22,14 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
+import lombok.EqualsAndHashCode;
 import lombok.val;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+@EqualsAndHashCode(callSuper = true)
 public class MapBasedServiceRegistry<T> extends ServiceRegistry<T> {
     private final AtomicReference<ListMultimap<T, ServiceNode<T>>> nodes = new AtomicReference<>();
 

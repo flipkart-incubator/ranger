@@ -71,8 +71,9 @@ public class ZkNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> {
 
     @Override
     public void start() {
-        if(storeType == ZkStoreType.SOURCE){
-            log.info("Start called on a data source will not do anything, since we don't have to create paths for services found in source. Ignoring after setting started");
+        if (storeType == ZkStoreType.SOURCE) {
+            log.info(
+                    "Start called on a data source will not do anything, since we don't have to create paths for services found in source. Ignoring after setting started");
             started.set(true);
             return;
         }
@@ -95,6 +96,13 @@ public class ZkNodeDataStoreConnector<T> implements NodeDataStoreConnector<T> {
             if (e.code() == KeeperException.Code.NODEEXISTS) {
                 log.info("Service node {} already exists for service: {}", path, service.getServiceName());
             }
+        }
+        catch (InterruptedException e) {
+            log.error("Thread interrupted");
+            Thread.currentThread().interrupt();
+            Exceptions.illegalState("Could not start ZK data source for service: "
+                                            + service.getServiceName()
+                                            + " as thread was interrupted");
         }
         catch (Exception e) {
             Exceptions.illegalState("Could not start ZK data source for service: " + service.getServiceName(), e);

@@ -24,7 +24,7 @@ import java.util.Collection;
  */
 public interface ServiceDataSource {
 
-    Collection<Service> services() throws Exception;
+    Collection<Service> services();
 
     void start();
     void stop();

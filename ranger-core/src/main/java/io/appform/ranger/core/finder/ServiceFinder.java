@@ -31,10 +31,10 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 @Slf4j
-public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegistry<T>> {
+public abstract class ServiceFinder<T, R extends ServiceRegistry<T>> {
     @Getter
-    private final ServiceRegistryType serviceRegistry;
-    private final ShardSelector<T, ServiceRegistryType> shardSelector;
+    private final R serviceRegistry;
+    private final ShardSelector<T, R> shardSelector;
     private final ServiceNodeSelector<T> nodeSelector;
     @Getter
     private final ExternalTriggeredSignal<Void> startSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
@@ -42,8 +42,8 @@ public abstract class ServiceFinder<T, ServiceRegistryType extends ServiceRegist
     private final ExternalTriggeredSignal<Void> stopSignal = new ExternalTriggeredSignal<>(() -> null, Collections.emptyList());
 
     protected ServiceFinder(
-            ServiceRegistryType serviceRegistry,
-            ShardSelector<T, ServiceRegistryType> shardSelector,
+            R serviceRegistry,
+            ShardSelector<T, R> shardSelector,
             ServiceNodeSelector<T> nodeSelector) {
         this.serviceRegistry = serviceRegistry;
         this.shardSelector = shardSelector;

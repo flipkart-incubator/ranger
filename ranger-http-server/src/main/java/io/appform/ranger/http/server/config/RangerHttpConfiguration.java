@@ -34,9 +34,11 @@ public class RangerHttpConfiguration {
     @NotEmpty
     @NotNull
     String namespace;
+
     @NotEmpty
     @NotNull
     List<HttpClientConfig> httpClientConfigs;
-    @Min(1000)
-    int nodeRefreshTimeMs = RangerClientConstants.MINIMUM_REFRESH_TIME;;
+
+    @Min(RangerClientConstants.MINIMUM_REFRESH_TIME)
+    int nodeRefreshTimeMs = RangerClientConstants.MINIMUM_REFRESH_TIME;
 }

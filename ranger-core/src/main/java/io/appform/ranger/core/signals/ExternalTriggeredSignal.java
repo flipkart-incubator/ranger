@@ -36,11 +36,11 @@ public class ExternalTriggeredSignal<T> extends Signal<T> {
 
     @Override
     public void start() {
-
+        //Nothing to do here
     }
 
     @Override
     public void stop() {
-
+        //Nothing to do here
     }
 }

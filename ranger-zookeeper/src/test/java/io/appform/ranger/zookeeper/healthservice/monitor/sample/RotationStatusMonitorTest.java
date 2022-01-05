@@ -44,8 +44,7 @@ public class RotationStatusMonitorTest {
     public void testMonitor() throws Exception {
         deleteRotationFile();
         val rotationStatusMonitor = new RotationStatusMonitor("/tmp/rotationFile.html");
-        val monitorResult = rotationStatusMonitor.monitor();
-        Assert.assertEquals(HealthcheckStatus.unhealthy, monitorResult);
+        Assert.assertEquals(HealthcheckStatus.unhealthy, rotationStatusMonitor.monitor());
     }
 
     @Test
@@ -54,7 +53,7 @@ public class RotationStatusMonitorTest {
         if (file.createNewFile()) {
             val rotationStatusMonitor = new RotationStatusMonitor(filePath);
             val monitorResult = rotationStatusMonitor.monitor();
-            Assert.assertEquals(HealthcheckStatus.healthy, monitorResult);
+            Assert.assertEquals(HealthcheckStatus.healthy, rotationStatusMonitor.monitor());
         } else {
             System.out.println("Unable to create file = " + filePath);
             throw new Exception("Unable to create file = " + filePath);

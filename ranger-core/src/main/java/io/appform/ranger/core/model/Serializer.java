@@ -15,6 +15,7 @@
  */
 package io.appform.ranger.core.model;
 
+@SuppressWarnings("unused")
 public interface Serializer<T> {
 
 }

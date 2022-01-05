@@ -58,7 +58,7 @@ public abstract class IsolatedHealthMonitor<T> implements Runnable, Monitor<T> {
      * @param runInterval initial delay, time interval of how regularly the monitor is to be run, and timeunit
      *                   to specify how often the {@link #monitor()} check needs to be executed
      */
-    public IsolatedHealthMonitor(String name, TimeEntity runInterval) {
+    protected IsolatedHealthMonitor(String name, TimeEntity runInterval) {
         this(name, runInterval, 60000);
     }
 
@@ -68,7 +68,7 @@ public abstract class IsolatedHealthMonitor<T> implements Runnable, Monitor<T> {
      *                                 to specify how often the {@link #monitor()} check needs to be executed
      * @param stalenessAllowedInMillis after how long (in milliseconds) should the monitor be regarded as stale (default: 60 seconds)
      */
-    public IsolatedHealthMonitor(String name, TimeEntity runInterval, long stalenessAllowedInMillis) {
+    protected IsolatedHealthMonitor(String name, TimeEntity runInterval, long stalenessAllowedInMillis) {
         this.name = name;
         this.stalenessAllowedInMillis = stalenessAllowedInMillis;
         this.healthStatus = new AtomicReference<>();

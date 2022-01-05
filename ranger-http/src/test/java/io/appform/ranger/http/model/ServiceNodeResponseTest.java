@@ -41,7 +41,7 @@ public class ServiceNodeResponseTest {
         Assert.assertFalse(serviceNodesResponse.getData().isEmpty());
         Assert.assertNotNull(((ServiceNode<?>) serviceNodesResponse.getData().get(0)).getNodeData());
         Assert.assertNotNull(((ServiceNode<?>) serviceNodesResponse.getData().get(1)).getNodeData());
-        Assert.assertEquals(((ServiceNode<?>) serviceNodesResponse.getData().get(0)).getHost(), "localhost-1");
-        Assert.assertEquals(((ServiceNode<?>) serviceNodesResponse.getData().get(1)).getHost(), "localhost-2");
+        Assert.assertEquals("localhost-1", ((ServiceNode<?>) serviceNodesResponse.getData().get(0)).getHost());
+        Assert.assertEquals("localhost-2", ((ServiceNode<?>) serviceNodesResponse.getData().get(1)).getHost());
     }
 }

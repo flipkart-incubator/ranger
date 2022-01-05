@@ -15,14 +15,11 @@
  */
 package io.appform.ranger.core.model;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class ServiceRegistry<T> {
     private final Service service;
 
