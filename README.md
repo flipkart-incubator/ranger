@@ -40,7 +40,7 @@ Use the following maven dependency:
 <dependency>
     <groupId>com.flipkart.ranger</groupId>
     <artifactId>ranger</artifactId>
-    <version>0.6.1</version>
+    <versio>1.0-SNAPSHOT</version>
 </dependency>
 ```
 ## How it works
@@ -297,10 +297,97 @@ Stop the finder once you are done. (Generally this is when process ends)
 serviceFinder.stop()
 ```
 
+### Service Finder Hub
+A service finder hub contains a collection of the above-mentioned service finders. A hub also makes creation of serviceFinders easy, for a service
+that is dependent on multiple other services, don't have to now create multiple serviceFinders, instead create a hub, with the set of services and 
+the service finders get created automatically. 
+
+Could either be an http hub or a ZK hub. (Can add any hub in the future)
+
+Hub clients for both ZK and http have been provided to initialize the same. A sample http hub client would look like the following.  
+
+```
+  RangerHubClient<TestShardInfo> hubClient = UnshardedRangerZKHubClient.<TestShardInfo>builder()
+                .namespace(rangerConfiguration.getNamespace())
+                .connectionString(rangerConfiguration.getZookeeper())
+                .curatorFramework(curatorFramework)
+                .disablePushUpdaters(rangerConfiguration.isDisablePushUpdaters())
+                .mapper(getMapper())
+                .refreshTimeMs(rangerConfiguration.getNodeRefreshTimeMs())
+                .deserializer(data -> {
+                    try {
+                        return getMapper().readValue(data, new TypeReference<ServiceNode<TestShardInfo>>() {
+                        });
+                    } catch (IOException e) {
+                        log.warn("Error parsing node data with value {}", new String(data));
+                    }
+                    return null;
+                })
+                .services(Sets.newHashset("service1", "service2")) //Set of services here.
+                .build()
+  hubClient.start();                
+```
+
+Now you can find the service:
+
+```
+ServiceNode<TestShardInfo> node = hubClient.get(new TestShardInfo(1));
+//Use host, port etc from the node
+```
+
+Stop the hub client once you are done. (Generally this is when process ends)
+
+```
+hubClient.stop()
+```
+
+### Ranger Server
+
+The earlier ranger's service finder construct operated on zookeeper as the datasource, the server has been introduced to support http data sources and to be 
+able to provide a serviceFinder interface atop multiple data sources. Eg: you could have one server running atop zk, one atop http - and can deploy another http
+server fronting them both. Particularly useful when you have to aggregate amongst multiple service registries. A server bundle is provided to start a quick server (atop dropwizard)
+
+To use the http server bundle along with boostrap use. 
+ ```
+   bootstrap.add(new RangerServerBundle<ShardInfo, AppConfiguration> {
+      @Override
+      protected List<RangerHubClient<ShardInfo>> withHubs(AppConfiguration configuration) {
+          val rangerConfiguration = configuration.getRangerConfiguration();
+          return rangerConfiguration.getHttpClientConfigs().stream().map(clientConfig -> UnshardedRangerHttpHubClient.<ShardInfo>builder()
+                  .namespace(rangerConfiguration.getNamespace())
+                  .mapper(getMapper())
+                  .clientConfig(clientConfig)
+                  .nodeRefreshIntervalMs(rangerConfiguration.getNodeRefreshTimeMs())
+                  .deserializer(data -> {
+                      try {
+                          return getMapper().readValue(data, new TypeReference<ServiceNodesResponse<ShardInfo>>() {
+                          });
+                      } catch (IOException e) {
+                          log.warn("Error parsing node data with value {}", new String(data));
+                      }
+                      return null;
+                  })
+                  .build()).collect(Collectors.toList());
+      }
+
+      @Override
+      protected boolean withInitialRotationStatus(AppConfiguration configuration) {
+          return configuration.isInitialRotationStatus();
+      }
+
+      @Override
+      protected List<HealthCheck> withHealthChecks(AppConfiguration configuration) {
+          return ImmutableList.of(new RangerHttpHealthCheck());
+      }
+  });                
+```
+
+It comes with a rangerResource that provides you with interfaces for getting the list of services across hubs and the nodes per service across hubs. 
+
+
 Version
 ----
-
-0.3.0
+1.0-SNAPSHOT
 
 Tech
 -----------

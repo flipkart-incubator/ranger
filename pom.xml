@@ -6,8 +6,21 @@
 
     <groupId>com.flipkart.ranger</groupId>
     <artifactId>ranger</artifactId>
-    <packaging>jar</packaging>
-    <version>0.6.3</version>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>ranger-core</module>
+        <module>ranger-zookeeper</module>
+        <module>ranger-http</module>
+        <module>ranger-client</module>
+        <module>ranger-zk-client</module>
+        <module>ranger-http-client</module>
+        <module>ranger-server-common</module>
+        <module>ranger-server-bundle</module>
+        <module>ranger-zk-server</module>
+        <module>ranger-http-server</module>
+        <module>ranger-http-model</module>
+    </modules>
 
     <distributionManagement>
         <repository>
@@ -44,44 +57,50 @@
             <name>Tushar Naik</name>
             <email>tushar.naik@flipkart.com</email>
         </developer>
+        <developer>
+            <id>koushikr</id>
+            <name>Koushik Ramachandra</name>
+            <email>rkoushik.14@gmail.com</email>
+        </developer>
     </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <guava.version>26.0-jre</guava.version>
-        <curator.version>4.0.1</curator.version>
-        <jackson.version>2.9.5</jackson.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <apache.httpclient.version>4.5.6</apache.httpclient.version>
+        <guava.version>30.1.1-jre</guava.version>
+        <curator.version>4.2.0</curator.version>
+        <jackson.version>2.12.5</jackson.version>
+        <slf4j.version>1.7.32</slf4j.version>
 
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <java.version>1.8</java.version>
+        <lombok.version>1.18.20</lombok.version>
+
+        <junit.version>4.13.2</junit.version>
+        <awaitility.version>4.1.0</awaitility.version>
+        <guava-retrying.version>2.0.0</guava-retrying.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+            <version>3.0.1</version>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-
-        <!--Curator-->
         <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-framework</artifactId>
-            <version>${curator.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-recipes</artifactId>
-            <version>${curator.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-test</artifactId>
-            <version>${curator.version}</version>
-            <scope>test</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <dependency>
@@ -99,18 +118,20 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${junit.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.rholder</groupId>
             <artifactId>guava-retrying</artifactId>
-            <version>2.0.0</version>
+            <version>${guava-retrying.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${apache.httpclient.version}</version>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -147,6 +168,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -159,6 +181,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>

@@ -1,0 +1,8 @@
+{
+  "host" : "localhost-1",
+  "port" : 80,
+  "secure" : false,
+  "connectionTimeoutMs" : 10,
+  "operationTimeoutMs" : 10,
+  "refreshIntervalMillis" : 1000
+}
